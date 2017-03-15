@@ -1,0 +1,31 @@
+{
+    "name": "ethanhann/redisearch-php",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Eeh\\": "src/Eeh"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Eeh\\Tests\\": "tests/"
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ethan Hann",
+            "email": "ethanhann@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=7"
+    },
+    "require-dev": {
+        "ukko/phpredis-phpdoc": "^2.2@dev",
+        "phpunit/phpunit": "^6.0",
+        "mockery/mockery": "^0.9.9"
+    }
+}
