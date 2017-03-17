@@ -8,7 +8,7 @@ composer install ethanhann/redisearch-php
 
 ## Basic Usage
 
-Create an index by extending Eeh/Redisearch/AbstractIndex...*
+Create an index by extending Eeh/Redisearch/AbstractIndex...
 
 ```php
 <?php

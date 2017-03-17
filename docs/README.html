@@ -88,7 +88,7 @@
 <h2>Install</h2>
 <pre><code>composer install ethanhann/redisearch-php</code></pre>
 <h2>Basic Usage</h2>
-<p><strong>Create an index by extending Eeh/Redisearch/AbstractIndex...</strong></p>
+<p>Create an index by extending Eeh/Redisearch/AbstractIndex...</p>
 <pre><code class="language-php">&lt;?php
 
 namespace Your\Indexes;
@@ -98,7 +98,7 @@ use Eeh\Redisearch\AbstractIndex;
 class BookIndex extends AbstractIndex
 {
 }</code></pre>
-<p><strong>Add some fields to the index which defines the schema...</strong></p>
+<p>Add some fields to the index which defines the schema...</p>
 <pre><code class="language-php">namespace Your\Indexes;
 
 use Eeh\Redisearch\AbstractIndex;
@@ -115,10 +115,10 @@ class BookIndex extends AbstractIndex
         $this-&gt;author = new TextField('author');
     }
 }</code></pre>
-<p><strong>Create the index...</strong></p>
+<p>Create the index...</p>
 <pre><code class="language-php">$bookIndex = new BookIndex();
 $bookIndex-&gt;create();</code></pre>
-<p><strong>Add a document to the index...</strong></p>
+<p>Add a document to the index...</p>
 <pre><code class="language-php">$bookIndex-&gt;addDocument([
     new TextField('title', 'Tale of Two Cities'),
     new TextField('author', 'Charles Dickens'),
