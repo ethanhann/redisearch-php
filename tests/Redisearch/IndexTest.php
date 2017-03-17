@@ -23,6 +23,7 @@ class ClientTest extends TestCase
         $this->indexName = 'ClientTest';
         $this->redis = new Redis();
         $this->redis->connect(getenv('REDIS_HOST') ?? '127.0.0.1', getenv('REDIS_PORT') ?? 6379);
+        $this->redis->select(getenv('REDIS_DB') ?? 0);
         $this->subject = (new BookIndex($this->indexName))->setRedis($this->redis);
     }
 
