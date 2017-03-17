@@ -35,6 +35,7 @@ class BookIndex extends AbstractIndex
 Add some fields to the index which defines the schema...
 
 ```php
+<?php
 namespace Your\Indexes;
 
 use Eeh\Redisearch\AbstractIndex;
@@ -56,6 +57,7 @@ class BookIndex extends AbstractIndex
 Create the index...
 
 ```php
+<?php
 $bookIndex = new BookIndex();
 $bookIndex->create();
 ```
@@ -63,6 +65,7 @@ $bookIndex->create();
 Add a document to the index...
 
 ```php
+<?php
 $bookIndex->addDocument([
     new TextField('title', 'Tale of Two Cities'),
     new TextField('author', 'Charles Dickens'),
@@ -72,6 +75,7 @@ $bookIndex->addDocument([
 Search the index...
 
 ```php
+<?php
 $result - $bookIndex->search('two cities');
 
 $result->count();     // Number of documents.
