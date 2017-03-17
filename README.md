@@ -36,6 +36,7 @@ Add some fields to the index which defines the schema...
 
 ```php
 <?php
+
 namespace Your\Indexes;
 
 use Eeh\Redisearch\AbstractIndex;
@@ -58,6 +59,7 @@ Create the index...
 
 ```php
 <?php
+
 $bookIndex = new BookIndex();
 $bookIndex->create();
 ```
@@ -66,6 +68,7 @@ Add a document to the index...
 
 ```php
 <?php
+
 $bookIndex->addDocument([
     new TextField('title', 'Tale of Two Cities'),
     new TextField('author', 'Charles Dickens'),
@@ -76,6 +79,7 @@ Search the index...
 
 ```php
 <?php
+
 $result - $bookIndex->search('two cities');
 
 $result->count();     // Number of documents.
