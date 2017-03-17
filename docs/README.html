@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>redisearch-php</title>
+    <style>
+        body {
+            margin: 0 auto;
+            max-width: 50em;
+            font-family: "Helvetica", "Arial", sans-serif;
+            line-height: 1.5;
+            padding: 4em 1em;
+            color: #566b78;
+        }
+
+        h1, h2, strong {
+            color: #333;
+        }
+
+        h2 {
+            margin-top: 1em;
+            padding-top: 1em;
+        }
+
+        code, pre {
+            background: #f5f7f9;
+            color: #a7adba;
+        }
+
+        code {
+            padding: 2px 4px;
+            vertical-align: text-bottom;
+        }
+
+        pre {
+            padding: 1em;
+            border-left: 2px solid #69c;
+        }
+
+        a {
+            color: #e81c4f;
+        }
+
+        header {
+            background-color: #263d36;
+            background-position: center top;
+            background-repeat: no-repeat;
+            background-size: cover;
+            line-height: 1.2;
+            padding: 10vw 2em;
+            text-align: center;
+        }
+
+        header img {
+            display: inline-block;
+            height: 120px;
+            vertical-align: top;
+            width: 120px;
+        }
+
+        header h1 {
+            color: white;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+
+        header a {
+            border: 1px solid #e81c4f;
+            border-radius: 290486px;
+            color: white;
+            font-size: 0.6em;
+            letter-spacing: 0.2em;
+            padding: 1em 2em;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: none 200ms ease-out;
+            transition-property: color, background;
+        }
+
+        header a:hover {
+            background:  #e81c4f;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<h1>Redisearch-PHP</h1>
+<h2>Install</h2>
+<pre><code>composer install ethanhann/redisearch-php</code></pre>
+<h2>Basic Usage</h2>
+<p><strong>Create an index by extending Eeh/Redisearch/AbstractIndex...</strong></p>
+<pre><code class="language-php">&lt;?php
+
+namespace Your\Indexes;
+
+use Eeh\Redisearch\AbstractIndex;
+
+class BookIndex extends AbstractIndex
+{
+}</code></pre>
+<p><strong>Add some fields to the index which defines the schema...</strong></p>
+<pre><code class="language-php">namespace Your\Indexes;
+
+use Eeh\Redisearch\AbstractIndex;
+use Eeh\Redisearch\Fields\TextField;
+
+class BookIndex extends AbstractIndex
+{
+    public $title;
+    public $author;
+
+    public function __construct()
+    {
+        $this-&gt;title = new TextField('title');
+        $this-&gt;author = new TextField('author');
+    }
+}</code></pre>
+<p><strong>Create the index...</strong></p>
+<pre><code class="language-php">$bookIndex = new BookIndex();
+$bookIndex-&gt;create();</code></pre>
+<p><strong>Add a document to the index...</strong></p>
+<pre><code class="language-php">$bookIndex-&gt;addDocument([
+    new TextField('title', 'Tale of Two Cities'),
+    new TextField('author', 'Charles Dickens'),
+]);</code></pre>
+<p>Search the index...</p>
+<pre><code class="language-php">$result - $bookIndex-&gt;search('two cities');
+
+$result-&gt;count();     // Number of documents.
+$result-&gt;documents(); // Array of matches.
+
+// Documents are returned as objects by default.
+$firstResult = $result-&gt;documents()[0];
+$firstResult-&gt;title;
+$firstResult-&gt;author;</code></pre>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>
