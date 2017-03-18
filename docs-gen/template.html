@@ -38,16 +38,16 @@
         }
 
         a {
-            color: #e81c4f;
+            color: #d92b21;
         }
 
         header {
-            background-color: #263d36;
+            background-color: #2f2f2f;
             background-position: center top;
             background-repeat: no-repeat;
             background-size: cover;
             line-height: 1.2;
-            padding: 10vw 2em;
+            padding: 3vw 2em;
             text-align: center;
         }
 
@@ -64,8 +64,12 @@
             font-weight: 300;
         }
 
+        header p {
+            margin: 2em 0;
+        }
+
         header a {
-            border: 1px solid #e81c4f;
+            border: 1px solid #d92b21;
             border-radius: 290486px;
             color: white;
             font-size: 0.6em;
@@ -78,43 +82,43 @@
         }
 
         header a:hover {
-            background:  #e81c4f;
+            background: #e81c4f;
             color: white;
         }
 
-        .jumbotron {
-            background-color: #d92b21;
-            min-height: 1px;
-            padding: 0 1em;
-        }
-
-        .jumbotron h1 {
-            color: white;
-        }
-
-        .container {
+        article {
             max-width: 50em;
             padding: 1em 1.5em;
             margin: 0 auto;
         }
 
-        .text-center {
+        footer {
+            background-color: #263d36;
+            background-position: center top;
+            background-repeat: no-repeat;
+            background-size: cover;
+            line-height: 1.2;
+            padding: 2vw 2em;
             text-align: center;
         }
     </style>
 </head>
 <body>
-<div class="jumbotron">
-    <div class="container text-center">
-        <h1>Redisearch-PHP</h1>
-        <div>A PHP client library for Redisearch.</div>
-    </div>
-</div>
+<header>
+    <h1>Redisearch-PHP</h1>
+    <p>A PHP client library for Redisearch.</p>
+    <p>
+        <a href="https://github.com/ethanhann/redisearch-php">Code on Github</a>
+    </p>
+</header>
 
-<div class="container">
+<article>
     __CONTENT__
-</div>
+</article>
 
+<footer>
+    created by <a href="http//github.com/ethanhann">Ethan Hann</a>
+</footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
 </body>

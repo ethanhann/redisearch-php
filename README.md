@@ -1,6 +1,6 @@
 ## What is this?
 
-Redisearch-PHP is a PHP client library for the [Redisearch module](http://redisearch.io/) which adds Full-Text search to Redis.
+Redisearch-PHP is a PHP client library for the [Redisearch](http://redisearch.io/) module which adds Full-Text search to Redis.
 
 ## Requirements
 
