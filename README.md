@@ -86,6 +86,20 @@ $bookIndex->addDocument([
 ]);
 ```
 
+...or use the index to make a document, then add it... 
+
+```php
+<?php
+
+$document = $bookIndex->makeDocument();
+$document->title->setValue('How to be awesome.');
+$document->author->setValue('Jack');
+$document->price->setValue(9.99);
+$document->stock->setValue(231);
+
+$this->addDocument($document);
+```
+
 Search the index...
 
 ```php

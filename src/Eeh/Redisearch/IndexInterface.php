@@ -9,8 +9,8 @@ interface IndexInterface
     public function create();
     public function drop();
     public function info();
-    public function addDocument(array $fields, $noSave = false, $replace = false, $language = null, $payload = null);
-    public function indexDocument(DocumentInterface $document);
+    public function addDocument($document, $noSave = false, $replace = false, $language = null, $payload = null);
+    public function makeDocument(): DocumentInterface;
     public function search($query, bool $documentsAsArray = false) : SearchResult;
     public function getRedis(): Redis;
     public function setRedis(Redis $redis);

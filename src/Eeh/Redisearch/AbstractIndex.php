@@ -81,20 +81,18 @@ abstract class AbstractIndex implements IndexInterface
     }
 
     /**
-     * @param array $fields
+     * @param DocumentInterface|array $document
      * @param bool $noSave
      * @param bool $replace
      * @param null $language
      * @param null $payload
      * @return mixed
      */
-    public function addDocument(array $fields, $noSave = false, $replace = false, $language = null, $payload = null)
+    public function addDocument($document, $noSave = false, $replace = false, $language = null, $payload = null)
     {
-        $document = Document::makeFromArray($fields, $this->getFields())
-            ->setNoSave($noSave)
-            ->setReplace($replace)
-            ->setLanguage($language)
-            ->setPayload($payload);
+        if (is_array($document)) {
+            $document = Document::makeFromArray($document, $this->getFields(), $noSave, $replace, $language, $payload);
+        }
         return $this->indexDocument($document);
     }
 
@@ -102,9 +100,18 @@ abstract class AbstractIndex implements IndexInterface
      * @param DocumentInterface $document
      * @return mixed
      */
-    public function indexDocument(DocumentInterface $document)
+    protected function indexDocument(DocumentInterface $document)
     {
         return $this->callCommand(array_merge(['FT.ADD', $this->getIndexName()], $document->getDefinition()));
+    }
+
+    /**
+     * @return DocumentInterface
+     */
+    public function makeDocument(): DocumentInterface
+    {
+        $fields = $this->getFields();
+        return Document::makeFromArray($fields, $fields);
     }
 
     /**

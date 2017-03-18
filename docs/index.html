@@ -175,6 +175,16 @@ $bookIndex-&gt;addDocument([
     'author' =&gt; 'Charles Dickens',
     'price' =&gt; 9.99,
 ]);</code></pre>
+<p>...or use the index to make a document, then add it... </p>
+<pre><code class="language-php">&lt;?php
+
+$document = $bookIndex-&gt;makeDocument();
+$document-&gt;title-&gt;setValue('How to be awesome.');
+$document-&gt;author-&gt;setValue('Jack');
+$document-&gt;price-&gt;setValue(9.99);
+$document-&gt;stock-&gt;setValue(231);
+
+$this-&gt;addDocument($document);</code></pre>
 <p>Search the index...</p>
 <pre><code class="language-php">&lt;?php
 

@@ -20,8 +20,14 @@ class Document implements DocumentInterface
         $this->id = $id ?? uniqid(true);
     }
 
-    public static function makeFromArray(array $fields, array $availableSchemaFields): Document
-    {
+    public static function makeFromArray(
+        array $fields,
+        array $availableSchemaFields,
+        $noSave = false,
+        $replace = false,
+        $language = null,
+        $payload = null
+    ): Document {
         $document = new Document();
         foreach ($fields as $index => $field) {
             if (is_string($index)) {
@@ -38,7 +44,11 @@ class Document implements DocumentInterface
                 $document->{$field->getName()} = $field;
             }
         }
-        return $document;
+        return $document
+            ->setNoSave($noSave)
+            ->setReplace($replace)
+            ->setLanguage($language)
+            ->setPayload($payload);
     }
 
     public function getDefinition(): array

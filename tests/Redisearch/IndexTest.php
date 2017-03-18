@@ -6,6 +6,7 @@ use Eeh\Redisearch\Exceptions\NoFieldsInIndexException;
 use Eeh\Redisearch\Fields\NumericField;
 use Eeh\Redisearch\Fields\TextField;
 use Eeh\Redisearch\IndexInterface;
+use Eeh\Tests\Stubs\BookDocument;
 use Eeh\Tests\Stubs\BookIndex;
 use Eeh\Tests\Stubs\IndexWithoutFields;
 use PHPUnit\Framework\TestCase;
@@ -47,7 +48,7 @@ class ClientTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testAddDocumentUsingFields()
+    public function testAddDocumentUsingArrayOfFields()
     {
         $this->subject->create();
 
@@ -61,7 +62,7 @@ class ClientTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testAddDocumentUsingAssociativeArray()
+    public function testAddDocumentUsingAssociativeArrayOfValues()
     {
         $this->subject->create();
 
@@ -71,6 +72,21 @@ class ClientTest extends TestCase
             'price' => 9.99,
             'stock' => 231,
         ]);
+
+        $this->assertTrue($result);
+    }
+
+    public function testAddDocument()
+    {
+        $this->subject->create();
+        /** @var BookDocument $document */
+        $document = $this->subject->makeDocument();
+        $document->title->setValue('How to be awesome.');
+        $document->author->setValue('Jack');
+        $document->price->setValue(9.99);
+        $document->stock->setValue(231);
+
+        $result = $this->subject->addDocument($document);
 
         $this->assertTrue($result);
     }
