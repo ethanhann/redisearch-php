@@ -39,6 +39,7 @@
 
         a {
             color: #d92b21;
+            text-decoration: none;
         }
 
         header {
@@ -93,7 +94,7 @@
         }
 
         footer {
-            background-color: #263d36;
+            background-color: #2f2f2f;
             background-position: center top;
             background-repeat: no-repeat;
             background-size: cover;
@@ -164,6 +165,15 @@ $bookIndex-&gt;create();</code></pre>
 $bookIndex-&gt;addDocument([
     new TextField('title', 'Tale of Two Cities'),
     new TextField('author', 'Charles Dickens'),
+    new NumericField('price', 9.99),
+]);</code></pre>
+<p>...or add a document with an associative array... </p>
+<pre><code class="language-php">&lt;?php
+
+$bookIndex-&gt;addDocument([
+    'title' =&gt; 'Tale of Two Cities',
+    'author' =&gt; 'Charles Dickens',
+    'price' =&gt; 9.99,
 ]);</code></pre>
 <p>Search the index...</p>
 <pre><code class="language-php">&lt;?php

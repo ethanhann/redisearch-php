@@ -70,6 +70,19 @@ Add a document to the index...
 $bookIndex->addDocument([
     new TextField('title', 'Tale of Two Cities'),
     new TextField('author', 'Charles Dickens'),
+    new NumericField('price', 9.99),
+]);
+```
+
+...or add a document with an associative array... 
+
+```php
+<?php
+
+$bookIndex->addDocument([
+    'title' => 'Tale of Two Cities',
+    'author' => 'Charles Dickens',
+    'price' => 9.99,
 ]);
 ```
 

@@ -3,6 +3,7 @@
 namespace Eeh\Tests\Redisearch;
 
 use Eeh\Redisearch\Exceptions\NoFieldsInIndexException;
+use Eeh\Redisearch\Fields\NumericField;
 use Eeh\Redisearch\Fields\TextField;
 use Eeh\Redisearch\IndexInterface;
 use Eeh\Tests\Stubs\BookIndex;
@@ -46,13 +47,29 @@ class ClientTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testAddDocument()
+    public function testAddDocumentUsingFields()
     {
         $this->subject->create();
 
         $result = $this->subject->addDocument([
             new TextField('title', 'How to be awesome.'),
             new TextField('author', 'Jack'),
+            new NumericField('price', 9.99),
+            new NumericField('stock', 231),
+        ]);
+
+        $this->assertTrue($result);
+    }
+
+    public function testAddDocumentUsingAssociativeArray()
+    {
+        $this->subject->create();
+
+        $result = $this->subject->addDocument([
+            'title' => 'How to be awesome.',
+            'author' => 'Jack',
+            'price' => 9.99,
+            'stock' => 231,
         ]);
 
         $this->assertTrue($result);

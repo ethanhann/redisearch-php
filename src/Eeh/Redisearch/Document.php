@@ -2,6 +2,8 @@
 
 namespace Eeh\Redisearch;
 
+use Eeh\Redisearch\Exceptions\FieldNotInSchemaException;
+use Eeh\Redisearch\Fields\FieldFactory;
 use Eeh\Redisearch\Fields\FieldInterface;
 
 class Document implements DocumentInterface
@@ -18,11 +20,21 @@ class Document implements DocumentInterface
         $this->id = $id ?? uniqid(true);
     }
 
-    public static function makeFromArray(array $fields): Document
+    public static function makeFromArray(array $fields, array $availableSchemaFields): Document
     {
         $document = new Document();
-        foreach ($fields as $field) {
-            if ($field instanceof FieldInterface) {
+        foreach ($fields as $index => $field) {
+            if (is_string($index)) {
+                if (!isset($availableSchemaFields[$index])) {
+                    throw new FieldNotInSchemaException($index);
+                }
+                $document->{$index} = ($field instanceof FieldInterface) ?
+                    $availableSchemaFields[$index]->setValue($field) :
+                    FieldFactory::make($index, $field);
+            } elseif ($field instanceof FieldInterface) {
+                if (!in_array($field->getName(), array_keys($availableSchemaFields))) {
+                    throw new FieldNotInSchemaException($field->getName());
+                }
                 $document->{$field->getName()} = $field;
             }
         }

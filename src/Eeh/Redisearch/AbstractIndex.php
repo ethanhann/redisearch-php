@@ -51,6 +51,20 @@ abstract class AbstractIndex implements IndexInterface
     }
 
     /**
+     * @return array
+     */
+    protected function getFields(): array
+    {
+        $fields = [];
+        foreach (get_object_vars($this) as $field) {
+            if ($field instanceof FieldInterface) {
+                $fields[$field->getName()] = $field;
+            }
+        }
+        return $fields;
+    }
+
+    /**
      *
      */
     public function drop()
@@ -76,7 +90,7 @@ abstract class AbstractIndex implements IndexInterface
      */
     public function addDocument(array $fields, $noSave = false, $replace = false, $language = null, $payload = null)
     {
-        $document = Document::makeFromArray($fields)
+        $document = Document::makeFromArray($fields, $this->getFields())
             ->setNoSave($noSave)
             ->setReplace($replace)
             ->setLanguage($language)
