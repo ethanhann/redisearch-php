@@ -39,16 +39,21 @@ namespace Your\Indexes;
 
 use Eeh\Redisearch\AbstractIndex;
 use Eeh\Redisearch\Fields\TextField;
+use Eeh\Redisearch\Fields\NumericField;
 
 class BookIndex extends AbstractIndex
 {
     public $title;
     public $author;
-
+    public $price;
+    public $stock;
+    
     public function __construct()
     {
         $this->title = new TextField('title');
         $this->author = new TextField('author');
+        $this->price = new NumericField('price');
+        $this->stock = new NumericField('stock');
     }
 }
 ```
@@ -71,6 +76,7 @@ $bookIndex->addDocument([
     new TextField('title', 'Tale of Two Cities'),
     new TextField('author', 'Charles Dickens'),
     new NumericField('price', 9.99),
+    new NumericField('stock', 231),
 ]);
 ```
 
@@ -83,10 +89,11 @@ $bookIndex->addDocument([
     'title' => 'Tale of Two Cities',
     'author' => 'Charles Dickens',
     'price' => 9.99,
+    'stock' => 231,
 ]);
 ```
 
-...or use the index to make a document, then add it... 
+...or use the index to make a document, set values using magic methods, then add it... 
 
 ```php
 <?php
