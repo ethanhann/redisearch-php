@@ -21,6 +21,6 @@ foreach ($finder as $file) {
 }
 
 file_put_contents(
-    $docsDir . '/README.html',
+    $docsDir . '/index.html',
     str_replace('__CONTENT__', $parsedown->text(file_get_contents(__DIR__ . '/../README.md')), $template)
 );

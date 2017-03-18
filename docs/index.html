@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>redisearch-php</title>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/styles/default.min.css">
     <style>
         body {
-            margin: 0 auto;
-            max-width: 50em;
             font-family: "Helvetica", "Arial", sans-serif;
             line-height: 1.5;
-            padding: 4em 1em;
+            padding: 0;
+            margin: 0;
             color: #566b78;
         }
 
@@ -23,7 +23,7 @@
         }
 
         code, pre {
-            background: #f5f7f9;
+            background: #F0F0F0;
             color: #a7adba;
         }
 
@@ -81,20 +81,47 @@
             background:  #e81c4f;
             color: white;
         }
+
+        .jumbotron {
+            background-color: #d92b21;
+            min-height: 1px;
+            padding: 0 1em;
+        }
+
+        .jumbotron h1 {
+            color: white;
+        }
+
+        .container {
+            max-width: 50em;
+            padding: 1em 1.5em;
+            margin: 0 auto;
+        }
+
+        .text-center {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-<h1>Redisearch-PHP</h1>
-<h2>What is this?</h2>
+<div class="jumbotron">
+    <div class="container text-center">
+        <h1>Redisearch-PHP</h1>
+        <div>A PHP client library for Redisearch.</div>
+    </div>
+</div>
+
+<div class="container">
+    <h2>What is this?</h2>
 <p>Redisearch-PHP is a PHP client library for the <a href="http://redisearch.io/">Redisearch module</a> which adds Full-Text search to Redis.</p>
 <h2>Requirements</h2>
 <ul>
 <li>Redis running with the <a href="http://redisearch.io/Quick_Start/">Redisearch module loaded</a>.</li>
 <li>PHP &gt;=7</li>
-<li>The <a href="https://github.com/phpredis/phpredis">PhpRedis PHP</a> extension.</li>
+<li>The <a href="https://github.com/phpredis/phpredis">PhpRedis</a> PHP extension.</li>
 </ul>
 <h2>Install</h2>
-<pre><code>composer install ethanhann/redisearch-php</code></pre>
+<pre><code class="language-bash">composer install ethanhann/redisearch-php</code></pre>
 <h2>Basic Usage</h2>
 <p>Create an index by extending Eeh/Redisearch/AbstractIndex...</p>
 <pre><code class="language-php">&lt;?php
@@ -107,7 +134,9 @@ class BookIndex extends AbstractIndex
 {
 }</code></pre>
 <p>Add some fields to the index which defines the schema...</p>
-<pre><code class="language-php">namespace Your\Indexes;
+<pre><code class="language-php">&lt;?php
+
+namespace Your\Indexes;
 
 use Eeh\Redisearch\AbstractIndex;
 use Eeh\Redisearch\Fields\TextField;
@@ -124,15 +153,21 @@ class BookIndex extends AbstractIndex
     }
 }</code></pre>
 <p>Create the index...</p>
-<pre><code class="language-php">$bookIndex = new BookIndex();
+<pre><code class="language-php">&lt;?php
+
+$bookIndex = new BookIndex();
 $bookIndex-&gt;create();</code></pre>
 <p>Add a document to the index...</p>
-<pre><code class="language-php">$bookIndex-&gt;addDocument([
+<pre><code class="language-php">&lt;?php
+
+$bookIndex-&gt;addDocument([
     new TextField('title', 'Tale of Two Cities'),
     new TextField('author', 'Charles Dickens'),
 ]);</code></pre>
 <p>Search the index...</p>
-<pre><code class="language-php">$result - $bookIndex-&gt;search('two cities');
+<pre><code class="language-php">&lt;?php
+
+$result - $bookIndex-&gt;search('two cities');
 
 $result-&gt;count();     // Number of documents.
 $result-&gt;documents(); // Array of matches.
@@ -141,6 +176,7 @@ $result-&gt;documents(); // Array of matches.
 $firstResult = $result-&gt;documents()[0];
 $firstResult-&gt;title;
 $firstResult-&gt;author;</code></pre>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>

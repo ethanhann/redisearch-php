@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>redisearch-php</title>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/styles/default.min.css">
     <style>
         body {
-            margin: 0 auto;
-            max-width: 50em;
             font-family: "Helvetica", "Arial", sans-serif;
             line-height: 1.5;
-            padding: 4em 1em;
+            padding: 0;
+            margin: 0;
             color: #566b78;
         }
 
@@ -23,7 +23,7 @@
         }
 
         code, pre {
-            background: #f5f7f9;
+            background: #F0F0F0;
             color: #a7adba;
         }
 
@@ -81,10 +81,39 @@
             background:  #e81c4f;
             color: white;
         }
+
+        .jumbotron {
+            background-color: #d92b21;
+            min-height: 1px;
+            padding: 0 1em;
+        }
+
+        .jumbotron h1 {
+            color: white;
+        }
+
+        .container {
+            max-width: 50em;
+            padding: 1em 1.5em;
+            margin: 0 auto;
+        }
+
+        .text-center {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-__CONTENT__
+<div class="jumbotron">
+    <div class="container text-center">
+        <h1>Redisearch-PHP</h1>
+        <div>A PHP client library for Redisearch.</div>
+    </div>
+</div>
+
+<div class="container">
+    __CONTENT__
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
