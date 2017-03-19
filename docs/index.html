@@ -135,10 +135,14 @@
 <ul>
 <li>Redis running with the <a href="http://redisearch.io/Quick_Start/">Redisearch module loaded</a>.</li>
 <li>PHP &gt;=7</li>
-<li>The <a href="https://github.com/phpredis/phpredis">PhpRedis</a> PHP extension.</li>
+<li><a href="https://github.com/phpredis/phpredis">PhpRedis</a> OR <a href="https://github.com/nrk/predis">Predis</a>.</li>
 </ul>
 <h2>Install</h2>
 <pre><code class="language-bash">composer install ethanhann/redisearch-php</code></pre>
+<h2>Load</h2>
+<pre><code class="language-php">&lt;?php
+
+require_once 'vendor/autoload.php';</code></pre>
 <h2>Create an Index Class</h2>
 <pre><code class="language-php">&lt;?php
 
@@ -155,33 +159,23 @@ class BookIndex extends AbstractIndex
 namespace Your\Indexes;
 
 use Eeh\Redisearch\AbstractIndex;
-use Eeh\Redisearch\Fields\TextField;
-use Eeh\Redisearch\Fields\NumericField;
 
 class BookIndex extends AbstractIndex
 {
-    public $title;
-    public $author;
-    public $price;
-    public $stock;
-
-    public function __construct()
-    {
-        $this-&gt;title = new TextField('title');
-        $this-&gt;author = new TextField('author');
-        $this-&gt;price = new NumericField('price');
-        $this-&gt;stock = new NumericField('stock');
-    }
 }</code></pre>
 <h2>Create the Underlying Index in Redis</h2>
 <pre><code class="language-php">&lt;?php
 
 $bookIndex = new BookIndex();
-$bookIndex-&gt;create();</code></pre>
+$bookIndex-&gt;addTextField('title')
+    -&gt;addTextField('author')
+    -&gt;addNumericField('price')
+    -&gt;addNumericField('stock')
+    -&gt;create();</code></pre>
 <h2>Add a Document to the Index</h2>
 <pre><code class="language-php">&lt;?php
 
-$bookIndex-&gt;addDocument([
+$bookIndex-&gt;add([
     new TextField('title', 'Tale of Two Cities'),
     new TextField('author', 'Charles Dickens'),
     new NumericField('price', 9.99),

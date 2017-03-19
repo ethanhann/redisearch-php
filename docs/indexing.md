@@ -6,7 +6,7 @@ As shown in the quick start, an array of field objects can be added to the index
 ```php
 <?php
 
-$bookIndex->addDocument([
+$bookIndex->add([
     new TextField('title', 'Tale of Two Cities'),
     new TextField('author', 'Charles Dickens'),
     new NumericField('price', 9.99),
@@ -15,12 +15,12 @@ $bookIndex->addDocument([
 ```
 
 ## Associative Array
-Aside from adding an array of fields, an associative array can be used to add a document.
+Aside from adding an array of fields, an associative array can be used to index a document.
 
 ```php
 <?php
 
-$bookIndex->addDocument([
+$bookIndex->add([
     'title' => 'Tale of Two Cities',
     'author' => 'Charles Dickens',
     'price' => 9.99,
@@ -41,29 +41,10 @@ $document->author->setValue('Jack');
 $document->price->setValue(9.99);
 $document->stock->setValue(231);
 
-$this->addDocument($document);
+$this->add($document);
 ```
 
-DocBlocks can optionally be used to type hint the magic methods . 
-
-```php
-<?php
-
-namespace Your\Documents;
-
-use Eeh\Redisearch\Document;
-use Eeh\Redisearch\Fields\FieldInterface;
-
-/**
- * @property FieldInterface title
- * @property FieldInterface author
- * @property FieldInterface price
- * @property FieldInterface stock
- */
-class BookDocument extends Document
-{
-}
-```
+DocBlocks can optionally be used to type hint the magic methods. 
 
 ```php
 <?php
@@ -75,5 +56,38 @@ $document->author->setValue('Jack');
 $document->price->setValue(9.99);
 $document->stock->setValue(231);
 
-$this->addDocument($document);
+$this->add($document);
+```
+
+```php
+<?php
+
+namespace Your\Documents;
+
+use Eeh\Redisearch\Document\Document;
+use Eeh\Redisearch\Fields\NumericField;
+use Eeh\Redisearch\Fields\TextField;
+
+/**
+ * @property TextField title
+ * @property TextField author
+ * @property NumericField price
+ * @property NumericField stock
+ */
+class BookDocument extends Document
+{
+}
+```
+
+## Replace/Update a Document
+
+```php
+<?php
+
+$bookIndex->replace([
+    'title' => 'Tale of Two Cities',
+    'author' => 'Charles Dickens',
+    'price' => 9.99,
+    'stock' => 231,
+]);
 ```

@@ -20,8 +20,9 @@ class Builder implements BuilderInterface
         $this->indexName = $indexName;
     }
 
-    public function filter(string $fieldName, $min, $max): BuilderInterface
+    public function filter(string $fieldName, $min, $max = null): BuilderInterface
     {
+        $max = $max ?? $min;
         $this->numericFilters[] = "FILTER $fieldName $min $max";
         return $this;
     }

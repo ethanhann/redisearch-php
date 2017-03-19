@@ -2,14 +2,15 @@
 
 namespace Eeh\Tests\Stubs;
 
-use Eeh\Redisearch\Document;
-use Eeh\Redisearch\Fields\FieldInterface;
+use Eeh\Redisearch\Document\Document;
+use Eeh\Redisearch\Fields\NumericField;
+use Eeh\Redisearch\Fields\TextField;
 
 /**
- * @property FieldInterface title
- * @property FieldInterface author
- * @property FieldInterface price
- * @property FieldInterface stock
+ * @property TextField title
+ * @property TextField author
+ * @property NumericField price
+ * @property NumericField stock
  */
 class BookDocument extends Document
 {

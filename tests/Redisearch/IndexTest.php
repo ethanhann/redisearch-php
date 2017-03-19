@@ -24,13 +24,17 @@ class ClientTest extends TestCase
     public function setUp()
     {
         $this->indexName = 'ClientTest';
-        $redis = new \Redis();
-        $redis->connect(getenv('REDIS_HOST') ?? '127.0.0.1', getenv('REDIS_PORT') ?? 6379);
-        $redis->select(getenv('REDIS_DB') ?? 0);
-        $this->redisClient = (new RedisClient())->setRedis($redis);
-        $this->subject = (new BookIndex())
-            ->setIndexName($this->indexName)
-            ->setRedisClient($this->redisClient);
+        $this->redisClient = new RedisClient(
+            \Redis::class,
+            getenv('REDIS_HOST') ?? '127.0.0.1',
+            getenv('REDIS_PORT') ?? 6379,
+            getenv('REDIS_DB') ?? 0
+        );
+        $this->subject = (new BookIndex($this->redisClient, $this->indexName))
+            ->addTextField('title')
+            ->addTextField('author')
+            ->addNumericField('price')
+            ->addNumericField('stock');
     }
 
     public function tearDown()
@@ -42,7 +46,7 @@ class ClientTest extends TestCase
     {
         $this->expectException(NoFieldsInIndexException::class);
 
-        (new IndexWithoutFields())->create();
+        (new IndexWithoutFields($this->redisClient, $this->indexName))->create();
     }
 
     public function testShouldCreateIndex()
@@ -95,6 +99,26 @@ class ClientTest extends TestCase
         $this->assertTrue($result);
     }
 
+    public function testReplaceDocument()
+    {
+        $this->subject->create();
+        /** @var BookDocument $document */
+        $document = $this->subject->makeDocument();
+        $document->title->setValue('How to be awesome.');
+        $document->author->setValue('Jack');
+        $document->price->setValue(9.99);
+        $document->stock->setValue(231);
+        $this->subject->add($document);
+        $document->title->setValue('How to be awesome: Part 2.');
+        $document->price->setValue(19.99);
+
+        $isUpdated = $this->subject->replace($document);
+
+        $result = $this->subject->filter('price', 19.99)->search('Part 2');
+        $this->assertTrue($isUpdated);
+        $this->assertEquals($result->getCount(), 1);
+    }
+
     public function testSearch()
     {
         $this->subject->create();
@@ -114,18 +138,19 @@ class ClientTest extends TestCase
 
     public function testSearchWithPredis()
     {
-        $indexName = 'ClientTest';
         $redis = new Client([
             'scheme' => 'tcp',
-            'host'   => getenv('REDIS_HOST') ?? '127.0.0.1',
-            'port'   => getenv('REDIS_PORT') ?? 6379,
-            'database'     => getenv('REDIS_DB') ?? 0,
+            'host' => getenv('REDIS_HOST') ?? '127.0.0.1',
+            'port' => getenv('REDIS_PORT') ?? 6379,
+            'database' => getenv('REDIS_DB') ?? 0,
         ]);
         $redis->connect();
-        $redisClient = (new RedisClient())->setRedis($redis);
-        $subject = (new BookIndex())
-            ->setIndexName($indexName)
-            ->setRedisClient($redisClient);
+        $redisClient = new RedisClient($redis);
+        $subject = (new BookIndex($redisClient, 'PredisClientTest'))
+            ->addTextField('title')
+            ->addTextField('author')
+            ->addNumericField('price')
+            ->addNumericField('stock');
         $subject->create();
         $subject->add([
             new TextField('title', 'How to be awesome: Part 1.'),

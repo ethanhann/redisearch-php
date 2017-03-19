@@ -134,17 +134,17 @@
 <p>As shown in the quick start, an array of field objects can be added to the index.  </p>
 <pre><code class="language-php">&lt;?php
 
-$bookIndex-&gt;addDocument([
+$bookIndex-&gt;add([
     new TextField('title', 'Tale of Two Cities'),
     new TextField('author', 'Charles Dickens'),
     new NumericField('price', 9.99),
     new NumericField('stock', 231),
 ]);</code></pre>
 <h2>Associative Array</h2>
-<p>Aside from adding an array of fields, an associative array can be used to add a document.</p>
+<p>Aside from adding an array of fields, an associative array can be used to index a document.</p>
 <pre><code class="language-php">&lt;?php
 
-$bookIndex-&gt;addDocument([
+$bookIndex-&gt;add([
     'title' =&gt; 'Tale of Two Cities',
     'author' =&gt; 'Charles Dickens',
     'price' =&gt; 9.99,
@@ -160,24 +160,8 @@ $document-&gt;author-&gt;setValue('Jack');
 $document-&gt;price-&gt;setValue(9.99);
 $document-&gt;stock-&gt;setValue(231);
 
-$this-&gt;addDocument($document);</code></pre>
-<p>DocBlocks can optionally be used to type hint the magic methods . </p>
-<pre><code class="language-php">&lt;?php
-
-namespace Your\Documents;
-
-use Eeh\Redisearch\Document;
-use Eeh\Redisearch\Fields\FieldInterface;
-
-/**
- * @property FieldInterface title
- * @property FieldInterface author
- * @property FieldInterface price
- * @property FieldInterface stock
- */
-class BookDocument extends Document
-{
-}</code></pre>
+$this-&gt;add($document);</code></pre>
+<p>DocBlocks can optionally be used to type hint the magic methods. </p>
 <pre><code class="language-php">&lt;?php
 
 /** @var BookDocument $document */
@@ -187,7 +171,33 @@ $document-&gt;author-&gt;setValue('Jack');
 $document-&gt;price-&gt;setValue(9.99);
 $document-&gt;stock-&gt;setValue(231);
 
-$this-&gt;addDocument($document);</code></pre>
+$this-&gt;add($document);</code></pre>
+<pre><code class="language-php">&lt;?php
+
+namespace Your\Documents;
+
+use Eeh\Redisearch\Document\Document;
+use Eeh\Redisearch\Fields\NumericField;
+use Eeh\Redisearch\Fields\TextField;
+
+/**
+ * @property TextField title
+ * @property TextField author
+ * @property NumericField price
+ * @property NumericField stock
+ */
+class BookDocument extends Document
+{
+}</code></pre>
+<h2>Replace/Update a Document</h2>
+<pre><code class="language-php">&lt;?php
+
+$bookIndex-&gt;replace([
+    'title' =&gt; 'Tale of Two Cities',
+    'author' =&gt; 'Charles Dickens',
+    'price' =&gt; 9.99,
+    'stock' =&gt; 231,
+]);</code></pre>
     </article>
 </section>
 </div>

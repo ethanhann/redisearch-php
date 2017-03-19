@@ -2,20 +2,33 @@
 
 namespace Eeh\Redisearch\Redis;
 
-
 use Eeh\Redisearch\Exceptions\InvalidRedisClientClassException;
 
 class RedisClient
 {
     private $redis;
 
-    public function setRedis($redis): RedisClient
+    public function __construct($redis = 'Redis', $hostname = '127.0.0.1', $port = null, $db = 0, $password = '')
     {
-        if (!in_array(get_class($redis), ['Redis', 'Predis\Client'])) {
+        if ($redis === 'Redis') {
+            $this->redis = new $redis;
+            $this->redis->connect($hostname, $port);
+            $this->redis->select($db);
+            $this->redis->auth($password);
+        } else if ($redis === 'Predis\Client') {
+            $this->redis = new $redis([
+                'scheme' => 'tcp',
+                'host' => $hostname,
+                'port' => $port,
+                'database' => $db,
+                'password' => $password,
+            ]);
+            $this->redis->connect();
+        } else if (in_array(get_class($redis), ['Redis', 'Predis\Client'])) {
+            $this->redis = $redis;
+        } else {
             throw new InvalidRedisClientClassException();
         }
-        $this->redis = $redis;
-        return $this;
     }
 
     public function flushAll()

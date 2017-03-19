@@ -23,4 +23,6 @@ interface IndexInterface extends DocumentBuilderInterface, QueryBuilderInterface
     public function setNoFieldsEnabled(bool $noFieldsEnabled): IndexInterface;
     public function isNoScoreIdxEnabled(): bool;
     public function setNoScoreIdxEnabled(bool $noScoreIdxEnabled): IndexInterface;
+    public function addTextField(string $name, float $weight = 1.0): IndexInterface;
+    public function addNumericField(string $name): IndexInterface;
 }

@@ -7,6 +7,8 @@ use Eeh\Redisearch\Document\Builder as DocumentBuilder;
 use Eeh\Redisearch\Document\BuilderInterface as DocumentBuilderInterface;
 use Eeh\Redisearch\Exceptions\NoFieldsInIndexException;
 use Eeh\Redisearch\Fields\FieldInterface;
+use Eeh\Redisearch\Fields\NumericField;
+use Eeh\Redisearch\Fields\TextField;
 use Eeh\Redisearch\Query\Builder as QueryBuilder;
 use Eeh\Redisearch\Query\BuilderInterface as QueryBuilderInterface;
 use Eeh\Redisearch\Query\SearchResult;
@@ -24,6 +26,12 @@ abstract class AbstractIndex implements IndexInterface
     private $noFieldsEnabled = false;
     /** @var bool */
     private $noScoreIdxEnabled = false;
+
+    public function __construct(RedisClient $redisClient = null, string $indexName = '')
+    {
+        $this->redisClient = $redisClient ?? new RedisClient();
+        $this->indexName = $indexName;
+    }
 
     /**
      * @return mixed
@@ -71,6 +79,27 @@ abstract class AbstractIndex implements IndexInterface
             }
         }
         return $fields;
+    }
+
+    /**
+     * @param string $name
+     * @param float $weight
+     * @return IndexInterface
+     */
+    public function addTextField(string $name, float $weight = 1.0): IndexInterface
+    {
+        $this->$name = (new TextField($name))->setWeight($weight);
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @return IndexInterface
+     */
+    public function addNumericField(string $name): IndexInterface
+    {
+        $this->$name = new NumericField($name);
+        return $this;
     }
 
     /**
@@ -206,7 +235,7 @@ abstract class AbstractIndex implements IndexInterface
      * @param $max
      * @return QueryBuilderInterface
      */
-    public function filter(string $fieldName, $min, $max): QueryBuilderInterface
+    public function filter(string $fieldName, $min, $max = null): QueryBuilderInterface
     {
         return $this->makeQueryBuilder()->filter($fieldName, $min, $max);
     }

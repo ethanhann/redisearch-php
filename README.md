@@ -6,12 +6,20 @@ Redisearch-PHP is a PHP client library for the [Redisearch](http://redisearch.io
 
 * Redis running with the [Redisearch module loaded](http://redisearch.io/Quick_Start/).
 * PHP >=7
-* The [PhpRedis](https://github.com/phpredis/phpredis) PHP extension.
+* [PhpRedis](https://github.com/phpredis/phpredis) OR [Predis](https://github.com/nrk/predis).
 
 ## Install
 
 ```bash
 composer install ethanhann/redisearch-php
+```
+
+## Load
+
+```php
+<?php
+
+require_once 'vendor/autoload.php';
 ```
 
 ## Create an Index Class
@@ -36,23 +44,9 @@ class BookIndex extends AbstractIndex
 namespace Your\Indexes;
 
 use Eeh\Redisearch\AbstractIndex;
-use Eeh\Redisearch\Fields\TextField;
-use Eeh\Redisearch\Fields\NumericField;
 
 class BookIndex extends AbstractIndex
 {
-    public $title;
-    public $author;
-    public $price;
-    public $stock;
-
-    public function __construct()
-    {
-        $this->title = new TextField('title');
-        $this->author = new TextField('author');
-        $this->price = new NumericField('price');
-        $this->stock = new NumericField('stock');
-    }
 }
 ```
 
@@ -62,7 +56,11 @@ class BookIndex extends AbstractIndex
 <?php
 
 $bookIndex = new BookIndex();
-$bookIndex->create();
+$bookIndex->addTextField('title')
+    ->addTextField('author')
+    ->addNumericField('price')
+    ->addNumericField('stock')
+    ->create();
 ```
 
 ## Add a Document to the Index
