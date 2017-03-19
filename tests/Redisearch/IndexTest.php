@@ -6,11 +6,11 @@ use Eeh\Redisearch\Exceptions\NoFieldsInIndexException;
 use Eeh\Redisearch\Fields\NumericField;
 use Eeh\Redisearch\Fields\TextField;
 use Eeh\Redisearch\IndexInterface;
+use Eeh\Redisearch\Redis\RedisClient;
 use Eeh\Tests\Stubs\BookDocument;
 use Eeh\Tests\Stubs\BookIndex;
 use Eeh\Tests\Stubs\IndexWithoutFields;
 use PHPUnit\Framework\TestCase;
-use Redis;
 
 class ClientTest extends TestCase
 {
@@ -18,22 +18,23 @@ class ClientTest extends TestCase
     /** @var IndexInterface */
     private $subject;
     /** @var Redis */
-    private $redis;
+    private $redisClient;
 
     public function setUp()
     {
         $this->indexName = 'ClientTest';
-        $this->redis = new Redis();
-        $this->redis->connect(getenv('REDIS_HOST') ?? '127.0.0.1', getenv('REDIS_PORT') ?? 6379);
-        $this->redis->select(getenv('REDIS_DB') ?? 0);
+        $redis = new \Redis();
+        $redis->connect(getenv('REDIS_HOST') ?? '127.0.0.1', getenv('REDIS_PORT') ?? 6379);
+        $redis->select(getenv('REDIS_DB') ?? 0);
+        $this->redisClient = (new RedisClient())->setRedis($redis);
         $this->subject = (new BookIndex())
             ->setIndexName($this->indexName)
-            ->setRedis($this->redis);
+            ->setRedisClient($this->redisClient);
     }
 
     public function tearDown()
     {
-        $this->redis->flushAll();
+        $this->redisClient->flushAll();
     }
 
     public function testShouldFailToCreateIndexWhenThereAreNoFieldsDefined()

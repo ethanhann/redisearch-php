@@ -5,7 +5,7 @@ namespace Eeh\Redisearch\Document;
 use Eeh\Redisearch\Exceptions\FieldNotInSchemaException;
 use Eeh\Redisearch\Fields\FieldFactory;
 use Eeh\Redisearch\Fields\FieldInterface;
-use Redis;
+use Eeh\Redisearch\Redis\RedisClient;
 
 class Builder implements BuilderInterface
 {
@@ -20,7 +20,7 @@ class Builder implements BuilderInterface
     /** @var string */
     private $indexName;
 
-    public function __construct(Redis $redis, string $indexName)
+    public function __construct(RedisClient $redis, string $indexName)
     {
         $this->redis = $redis;
         $this->indexName = $indexName;
@@ -50,6 +50,7 @@ class Builder implements BuilderInterface
     public function add($document): bool
     {
         $properties = [
+            $this->indexName,
             $this->id ?? uniqid(true),
             $this->score,
         ];
@@ -82,19 +83,13 @@ class Builder implements BuilderInterface
             }
         }
 
-        return $this->callCommand(array_merge(['FT.ADD', $this->indexName], $properties));
+        return $this->redis->rawCommand('FT.ADD', $properties);
     }
 
     public function replace($document): bool
     {
         $this->replace = true;
         return $this->add($document);
-    }
-
-    protected function callCommand(array $args)
-    {
-//        print PHP_EOL . implode(' ', $args) . PHP_EOL;
-        return call_user_func_array([$this->redis, 'rawCommand'], $args);
     }
 
     public function id(string $id): BuilderInterface

@@ -10,25 +10,19 @@ use Eeh\Redisearch\Fields\FieldInterface;
 use Eeh\Redisearch\Query\Builder as QueryBuilder;
 use Eeh\Redisearch\Query\BuilderInterface as QueryBuilderInterface;
 use Eeh\Redisearch\Query\SearchResult;
-use Redis;
+use Eeh\Redisearch\Redis\RedisClient;
 
 abstract class AbstractIndex implements IndexInterface
 {
-    /** @var Redis */
-    private $redis;
+    /** @var RedisClient */
+    private $redisClient;
     /** @var string */
     private $indexName;
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $noOffsetsEnabled = false;
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $noFieldsEnabled = false;
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $noScoreIdxEnabled = false;
 
     /**
@@ -37,7 +31,7 @@ abstract class AbstractIndex implements IndexInterface
      */
     public function create()
     {
-        $properties = ['FT.CREATE', $this->getIndexName()];
+        $properties = [$this->getIndexName()];
         if ($this->isNoOffsetsEnabled()) {
             $properties[] = 'NOOFFSETS';
         }
@@ -62,7 +56,7 @@ abstract class AbstractIndex implements IndexInterface
             throw new NoFieldsInIndexException();
         }
 
-        return $this->callCommand($properties);
+        return $this->redisClient->rawCommand('FT.CREATE', $properties);
     }
 
     /**
@@ -84,7 +78,7 @@ abstract class AbstractIndex implements IndexInterface
      */
     public function drop()
     {
-        return $this->callCommand(['FT.DROP', $this->getIndexName()]);
+        return $this->redisClient->rawCommand('FT.DROP', [$this->getIndexName()]);
     }
 
     /**
@@ -92,7 +86,7 @@ abstract class AbstractIndex implements IndexInterface
      */
     public function info()
     {
-        return $this->callCommand(['FT.INFO', $this->getIndexName()]);
+        return $this->redisClient->rawCommand('FT.INFO', [$this->getIndexName()]);
     }
 
     /**
@@ -105,34 +99,24 @@ abstract class AbstractIndex implements IndexInterface
     public function makeDocument($noSave = false, $replace = false, $language = null, $payload = null): Document
     {
         $fields = $this->getFields();
-        return DocumentBuilder::makeFromArray($fields, $fields, $noSave, $replace, $language, $payload);
+        return DocumentBuilder::makeFromArray($fields, $fields);
     }
 
     /**
-     * @param array $args
-     * @return mixed
+     * @return RedisClient
      */
-    protected function callCommand(array $args)
+    public function getRedisClient(): RedisClient
     {
-//        print PHP_EOL . implode(' ', $args);
-        return call_user_func_array([$this->redis, 'rawCommand'], $args);
+        return $this->redisClient;
     }
 
     /**
-     * @return Redis
-     */
-    public function getRedis(): Redis
-    {
-        return $this->redis;
-    }
-
-    /**
-     * @param Redis $redis
+     * @param RedisClient $redisClient
      * @return IndexInterface
      */
-    public function setRedis(Redis $redis): IndexInterface
+    public function setRedisClient(RedisClient $redisClient): IndexInterface
     {
-        $this->redis = $redis;
+        $this->redisClient = $redisClient;
         return $this;
     }
 
@@ -213,7 +197,7 @@ abstract class AbstractIndex implements IndexInterface
      */
     protected function makeQueryBuilder(): QueryBuilder
     {
-        return (new QueryBuilder($this->redis, $this->getIndexName()));
+        return (new QueryBuilder($this->redisClient, $this->getIndexName()));
     }
 
     /**
@@ -242,7 +226,7 @@ abstract class AbstractIndex implements IndexInterface
      */
     protected function makeDocumentBuilder(): DocumentBuilder
     {
-        return (new DocumentBuilder($this->redis, $this->getIndexName()));
+        return (new DocumentBuilder($this->redisClient, $this->getIndexName()));
     }
 
     /**
