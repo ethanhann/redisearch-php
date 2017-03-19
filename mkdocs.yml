@@ -1,0 +1,11 @@
+docs_dir: docs-src
+site_dir: docs
+site_name: RedisSearch-PHP
+repo_url: https://github.com/ethanhann/redisearch-php
+site_author: Ethan Hann
+copyright: © 2017 - Ethan Hann
+
+pages:
+- Getting Started: 'index.md'
+- 'indexing.md'
+- 'searching.md'

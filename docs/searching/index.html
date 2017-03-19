@@ -4,27 +4,27 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="None">
+        
         <meta name="author" content="Ethan Hann">
         
-        <link rel="shortcut icon" href="./img/favicon.ico">
-        <title>RedisSearch-PHP</title>
-        <link href="./css/bootstrap-custom.min.css" rel="stylesheet">
-        <link href="./css/font-awesome-4.5.0.css" rel="stylesheet">
-        <link href="./css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="./css/highlight.css">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Searching - RedisSearch-PHP</title>
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome-4.5.0.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/highlight.css">
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
             <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
             <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
         <![endif]-->
 	
-	<script src="./js/jquery-1.10.2.min.js"></script>
-        <script src="./js/bootstrap-3.0.3.min.js"></script>
-        <script src="./js/highlight.pack.js"></script> 
+	<script src="../js/jquery-1.10.2.min.js"></script>
+        <script src="../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../js/highlight.pack.js"></script> 
     </head>
 
-    <body class="homepage">
+    <body>
 
         <div class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container">
@@ -38,21 +38,21 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href=".">RedisSearch-PHP</a>
+            <a class="navbar-brand" href="..">RedisSearch-PHP</a>
         </div>
 
         <!-- Expanded navigation -->
         <div class="navbar-collapse collapse">
                 <!-- Main navigation -->
                 <ul class="nav navbar-nav">
+                    <li >
+                        <a href="..">Getting Started</a>
+                    </li>
+                    <li >
+                        <a href="../indexing/">Indexing</a>
+                    </li>
                     <li class="active">
-                        <a href=".">Getting Started</a>
-                    </li>
-                    <li >
-                        <a href="indexing/">Indexing</a>
-                    </li>
-                    <li >
-                        <a href="searching/">Searching</a>
+                        <a href="./">Searching</a>
                     </li>
                 </ul>
 
@@ -62,13 +62,13 @@
                         <i class="fa fa-search"></i> Search
                     </a>
                 </li>
-                    <li class="disabled">
-                        <a rel="next" >
+                    <li >
+                        <a rel="next" href="../indexing/">
                             <i class="fa fa-arrow-left"></i> Previous
                         </a>
                     </li>
-                    <li >
-                        <a rel="prev" href="indexing/">
+                    <li class="disabled">
+                        <a rel="prev" >
                             Next <i class="fa fa-arrow-right"></i>
                         </a>
                     </li>
@@ -85,83 +85,49 @@
         <div class="container">
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#what-is-this">What is this?</a></li>
-            <li><a href="#requirements">Requirements</a></li>
-            <li><a href="#install">Install</a></li>
-            <li><a href="#load">Load</a></li>
-            <li><a href="#create-an-index-class">Create an Index Class</a></li>
-            <li><a href="#create-the-schema">Create the Schema</a></li>
-            <li><a href="#add-a-document">Add a Document</a></li>
-            <li><a href="#search-the-index">Search the Index</a></li>
+        <li class="main active"><a href="#searching">Searching</a></li>
+            <li><a href="#simple-text-search">Simple Text Search</a></li>
+            <li><a href="#filtering-numeric-fields">Filtering Numeric Fields</a></li>
+            <li><a href="#filtering-geo-fields">Filtering Geo Fields</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
-<h1 id="what-is-this">What is this?</h1>
-<p>RediSearch-PHP is a PHP client library for the <a href="http://redisearch.io/">RediSearch</a> module which adds Full-Text search to Redis.</p>
-<h2 id="requirements">Requirements</h2>
-<ul>
-<li>Redis running with the <a href="http://redisearch.io/Quick_Start/">RediSearch module loaded</a>.</li>
-<li>PHP &gt;=7</li>
-<li><a href="https://github.com/phpredis/phpredis">PhpRedis</a> OR <a href="https://github.com/nrk/predis">Predis</a>.</li>
-</ul>
-<h2 id="install">Install</h2>
-<pre><code class="bash">composer install ethanhann/redisearch-php
-</code></pre>
-
-<h2 id="load">Load</h2>
-<pre><code class="php">&lt;?php
-
-require_once 'vendor/autoload.php';
-</code></pre>
-
-<h2 id="create-an-index-class">Create an Index Class</h2>
-<pre><code class="php">&lt;?php
-
-namespace Your\Indexes;
-
-use Eeh\RediSearch\AbstractIndex;
-
-class BookIndex extends AbstractIndex
-{
-}
-</code></pre>
-
-<h2 id="create-the-schema">Create the Schema</h2>
-<pre><code class="php">&lt;?php
-
-$bookIndex = new BookIndex();
-
-$bookIndex-&gt;addTextField('title')
-    -&gt;addTextField('author')
-    -&gt;addNumericField('price')
-    -&gt;addNumericField('stock')
-    -&gt;create();
-</code></pre>
-
-<h2 id="add-a-document">Add a Document</h2>
-<pre><code class="php">&lt;?php
-
-$bookIndex-&gt;add([
-    new TextField('title', 'Tale of Two Cities'),
-    new TextField('author', 'Charles Dickens'),
-    new NumericField('price', 9.99),
-    new NumericField('stock', 231),
-]);
-</code></pre>
-
-<h2 id="search-the-index">Search the Index</h2>
+<h1 id="searching">Searching</h1>
+<h2 id="simple-text-search">Simple Text Search</h2>
+<p>Text fields can be filtered with the index's search method.</p>
 <pre><code class="php">&lt;?php
 
 $result = $bookIndex-&gt;search('two cities');
 
 $result-&gt;count();     // Number of documents.
-$result-&gt;documents(); // Array of matches.
+$result-&gt;documents(); // Array of stdObjects.
+</code></pre>
 
-// Documents are returned as objects by default.
-$firstResult = $result-&gt;documents()[0];
-$firstResult-&gt;title;
-$firstResult-&gt;author;
+<p>Documents can also be returned as arrays instead of objects by passing true as the second parameter to the search method.</p>
+<pre><code class="php">&lt;?php
+
+$result = $bookIndex-&gt;search('two cities', true);
+
+$result-&gt;documents(); // Array of arrays.
+</code></pre>
+
+<h2 id="filtering-numeric-fields">Filtering Numeric Fields</h2>
+<p>Numeric fields can be filtered with the index's filter method.</p>
+<pre><code class="php">&lt;?php
+
+$result = $bookIndex
+    -&gt;filter('price', 4.99, 19.99)
+    -&gt;search('two cities');
+</code></pre>
+
+<h2 id="filtering-geo-fields">Filtering Geo Fields</h2>
+<p>Numeric fields can be filtered with the index's filter method.</p>
+<pre><code class="php">&lt;?php
+
+$result = $bookIndex
+    -&gt;filter('price', 4.99, 19.99)
+    -&gt;search('two cities');
 </code></pre></div>
         </div>
 
@@ -170,9 +136,9 @@ $firstResult-&gt;author;
                 <p>© 2017 - Ethan Hann</p>
             <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
         </footer>
-        <script>var base_url = '.';</script>
-        <script data-main="./mkdocs/js/search.js" src="./mkdocs/js/require.js"></script>
-        <script src="./js/base.js"></script><div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+        <script>var base_url = '..';</script>
+        <script data-main="../mkdocs/js/search.js" src="../mkdocs/js/require.js"></script>
+        <script src="../js/base.js"></script><div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -199,8 +165,3 @@ $firstResult-&gt;author;
 
     </body>
 </html>
-
-<!--
-MkDocs version : 0.16.2
-Build Date UTC : 2017-03-19 23:58:31
--->
