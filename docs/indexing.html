@@ -191,13 +191,20 @@ class BookDocument extends Document
 }</code></pre>
 <h2>Replace/Update a Document</h2>
 <pre><code class="language-php">&lt;?php
+// Make a document.
+$document = $this-&gt;subject-&gt;makeDocument();
+$document-&gt;title-&gt;setValue('How to be awesome.');
+$document-&gt;author-&gt;setValue('Jack');
+$document-&gt;price-&gt;setValue(9.99);
+$document-&gt;stock-&gt;setValue(231);
+$this-&gt;subject-&gt;add($document);
 
-$bookIndex-&gt;replace([
-    'title' =&gt; 'Tale of Two Cities',
-    'author' =&gt; 'Charles Dickens',
-    'price' =&gt; 9.99,
-    'stock' =&gt; 231,
-]);</code></pre>
+// Update a couple fields
+$document-&gt;title-&gt;setValue('How to be awesome: Part 2.');
+$document-&gt;price-&gt;setValue(19.99);
+
+// Update the document.
+$this-&gt;subject-&gt;replace($document);</code></pre>
     </article>
 </section>
 </div>

@@ -153,20 +153,11 @@ use Eeh\Redisearch\AbstractIndex;
 class BookIndex extends AbstractIndex
 {
 }</code></pre>
-<h2>Define the Index's Schema</h2>
-<pre><code class="language-php">&lt;?php
-
-namespace Your\Indexes;
-
-use Eeh\Redisearch\AbstractIndex;
-
-class BookIndex extends AbstractIndex
-{
-}</code></pre>
-<h2>Create the Underlying Index in Redis</h2>
+<h2>Define the Index's Schema and Create the Underlying Index in Redis</h2>
 <pre><code class="language-php">&lt;?php
 
 $bookIndex = new BookIndex();
+
 $bookIndex-&gt;addTextField('title')
     -&gt;addTextField('author')
     -&gt;addNumericField('price')
