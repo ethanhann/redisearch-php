@@ -2,7 +2,9 @@
 
 namespace Eeh\Redisearch\Query;
 
+use Eeh\Redisearch\Exceptions\UnknownIndexNameException;
 use Eeh\Redisearch\Redis\RedisClient;
+use Exception;
 
 class Builder implements BuilderInterface
 {
@@ -26,9 +28,14 @@ class Builder implements BuilderInterface
 
     public function search(string $query, bool $documentsAsArray = false): SearchResult
     {
-        return SearchResult::makeSearchResult(
-            $this->redis->rawCommand('FT.SEARCH', array_merge([$this->indexName, $query], $this->numericFilters)),
-            $documentsAsArray
-        );
+        $rawResult = $this->redis->rawCommand('FT.SEARCH', array_merge([$this->indexName, $query], $this->numericFilters));
+        if (is_string($rawResult)) {
+            if ($rawResult === 'Unknown Index name') {
+                throw new UnknownIndexNameException();
+            } else {
+                throw new Exception($rawResult);
+            }
+        }
+        return SearchResult::makeSearchResult($rawResult, $documentsAsArray);
     }
 }

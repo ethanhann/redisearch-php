@@ -14,7 +14,7 @@ interface IndexInterface extends DocumentBuilderInterface, QueryBuilderInterface
     public function info();
     public function makeDocument(): Document;
     public function getRedisClient(): RedisClient;
-    public function setRedisClient(RedisClient $redisClient);
+    public function setRedisClient(RedisClient $redisClient): IndexInterface;
     public function getIndexName(): string;
     public function setIndexName(string $indexName): IndexInterface;
     public function isNoOffsetsEnabled(): bool;

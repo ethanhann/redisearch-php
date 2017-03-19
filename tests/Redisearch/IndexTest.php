@@ -11,13 +11,14 @@ use Eeh\Tests\Stubs\BookDocument;
 use Eeh\Tests\Stubs\BookIndex;
 use Eeh\Tests\Stubs\IndexWithoutFields;
 use PHPUnit\Framework\TestCase;
+use Predis\Client;
 
 class ClientTest extends TestCase
 {
     private $indexName;
     /** @var IndexInterface */
     private $subject;
-    /** @var Redis */
+    /** @var RedisClient */
     private $redisClient;
 
     public function setUp()
@@ -107,6 +108,35 @@ class ClientTest extends TestCase
         ]);
 
         $result = $this->subject->search('awesome');
+
+        $this->assertEquals($result->getCount(), 2);
+    }
+
+    public function testSearchWithPredis()
+    {
+        $indexName = 'ClientTest';
+        $redis = new Client([
+            'scheme' => 'tcp',
+            'host'   => getenv('REDIS_HOST') ?? '127.0.0.1',
+            'port'   => getenv('REDIS_PORT') ?? 6379,
+            'database'     => getenv('REDIS_DB') ?? 0,
+        ]);
+        $redis->connect();
+        $redisClient = (new RedisClient())->setRedis($redis);
+        $subject = (new BookIndex())
+            ->setIndexName($indexName)
+            ->setRedisClient($redisClient);
+        $subject->create();
+        $subject->add([
+            new TextField('title', 'How to be awesome: Part 1.'),
+            new TextField('author', 'Jack'),
+        ]);
+        $subject->add([
+            new TextField('title', 'How to be awesome: Part 2.'),
+            new TextField('author', 'Jack'),
+        ]);
+
+        $result = $subject->search('awesome');
 
         $this->assertEquals($result->getCount(), 2);
     }

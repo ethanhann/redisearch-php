@@ -45,7 +45,7 @@ class BookIndex extends AbstractIndex
     public $author;
     public $price;
     public $stock;
-    
+
     public function __construct()
     {
         $this->title = new TextField('title');
@@ -70,7 +70,7 @@ $bookIndex->create();
 ```php
 <?php
 
-$bookIndex->addDocument([
+$bookIndex->add([
     new TextField('title', 'Tale of Two Cities'),
     new TextField('author', 'Charles Dickens'),
     new NumericField('price', 9.99),
