@@ -2,6 +2,8 @@
 
 namespace Eeh\Redisearch\Fields;
 
+use InvalidArgumentException;
+
 class FieldFactory
 {
     public static function make($name, $value)
@@ -12,6 +14,9 @@ class FieldFactory
         if (is_numeric($value)) {
             return new NumericField($name, $value);
         }
-        return new GeoField($name, $value);
+        if ($value instanceof GeoLocation) {
+            return new GeoField($name, $value);
+        }
+        throw new InvalidArgumentException('There is no mapping field type between for the value. ' . $value);
     }
 }

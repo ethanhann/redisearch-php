@@ -3,12 +3,13 @@
 namespace Eeh\Tests\Redisearch;
 
 use Eeh\Redisearch\Exceptions\NoFieldsInIndexException;
+use Eeh\Redisearch\Fields\GeoLocation;
 use Eeh\Redisearch\Fields\NumericField;
 use Eeh\Redisearch\Fields\TextField;
 use Eeh\Redisearch\IndexInterface;
 use Eeh\Redisearch\Redis\RedisClient;
-use Eeh\Tests\Stubs\BookDocument;
-use Eeh\Tests\Stubs\BookIndex;
+use Eeh\Tests\Stubs\TestDocument;
+use Eeh\Tests\Stubs\TestIndex;
 use Eeh\Tests\Stubs\IndexWithoutFields;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
@@ -30,7 +31,7 @@ class ClientTest extends TestCase
             getenv('REDIS_PORT') ?? 6379,
             getenv('REDIS_DB') ?? 0
         );
-        $this->subject = (new BookIndex($this->redisClient, $this->indexName))
+        $this->subject = (new TestIndex($this->redisClient, $this->indexName))
             ->addTextField('title')
             ->addTextField('author')
             ->addNumericField('price')
@@ -87,7 +88,7 @@ class ClientTest extends TestCase
     public function testAddDocument()
     {
         $this->subject->create();
-        /** @var BookDocument $document */
+        /** @var TestDocument $document */
         $document = $this->subject->makeDocument();
         $document->title->setValue('How to be awesome.');
         $document->author->setValue('Jack');
@@ -102,7 +103,7 @@ class ClientTest extends TestCase
     public function testReplaceDocument()
     {
         $this->subject->create();
-        /** @var BookDocument $document */
+        /** @var TestDocument $document */
         $document = $this->subject->makeDocument();
         $document->title->setValue('How to be awesome.');
         $document->author->setValue('Jack');
@@ -114,7 +115,7 @@ class ClientTest extends TestCase
 
         $isUpdated = $this->subject->replace($document);
 
-        $result = $this->subject->filter('price', 19.99)->search('Part 2');
+        $result = $this->subject->numericFilter('price', 19.99)->search('Part 2');
         $this->assertTrue($isUpdated);
         $this->assertEquals($result->getCount(), 1);
     }
@@ -177,14 +178,33 @@ class ClientTest extends TestCase
         ]);
 
         $result = $this->subject
-            ->filter('price', 1, 500)
+            ->numericFilter('price', 1, 500)
             ->search('awesome');
 
         $this->assertEquals($result->getCount(), 1);
     }
 
-//    public function testAddDocumentWithGeoField
-//    {
-//
-//    }
+    public function testAddDocumentWithGeoField()
+    {
+        $index = (new TestIndex())
+            ->setIndexName('GeoTest');
+        $index
+            ->addTextField('name')
+            ->addNumericField('population')
+            ->addGeoField('place')
+            ->create();
+        $index->add([
+            'name' => 'Foo Bar',
+            'population' => 231,
+            'place' => new GeoLocation(-77.0366, 38.8977),
+        ]);
+
+        $result = $index
+            ->geoFilter('place', -77.0366, 38.897, 100)
+            ->numericFilter('population', 1, 500)
+            ->search('Foo')
+        ;
+
+        $this->assertEquals($result->getCount(), 1);
+    }
 }

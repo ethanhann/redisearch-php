@@ -7,6 +7,7 @@ use Eeh\Redisearch\Document\Builder as DocumentBuilder;
 use Eeh\Redisearch\Document\BuilderInterface as DocumentBuilderInterface;
 use Eeh\Redisearch\Exceptions\NoFieldsInIndexException;
 use Eeh\Redisearch\Fields\FieldInterface;
+use Eeh\Redisearch\Fields\GeoField;
 use Eeh\Redisearch\Fields\NumericField;
 use Eeh\Redisearch\Fields\TextField;
 use Eeh\Redisearch\Query\Builder as QueryBuilder;
@@ -99,6 +100,16 @@ abstract class AbstractIndex implements IndexInterface
     public function addNumericField(string $name): IndexInterface
     {
         $this->$name = new NumericField($name);
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @return IndexInterface
+     */
+    public function addGeoField(string $name): IndexInterface
+    {
+        $this->$name = new GeoField($name);
         return $this;
     }
 
@@ -235,9 +246,22 @@ abstract class AbstractIndex implements IndexInterface
      * @param $max
      * @return QueryBuilderInterface
      */
-    public function filter(string $fieldName, $min, $max = null): QueryBuilderInterface
+    public function numericFilter(string $fieldName, $min, $max = null): QueryBuilderInterface
     {
-        return $this->makeQueryBuilder()->filter($fieldName, $min, $max);
+        return $this->makeQueryBuilder()->numericFilter($fieldName, $min, $max);
+    }
+
+    /**
+     * @param string $fieldName
+     * @param float $longitude
+     * @param float $latitude
+     * @param float $radius
+     * @param string $distanceUnit
+     * @return QueryBuilderInterface
+     */
+    public function geoFilter(string $fieldName, float $longitude, float $latitude, float $radius, string $distanceUnit = 'km'): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->geoFilter($fieldName, $longitude, $latitude, $radius, $distanceUnit);
     }
 
     /**

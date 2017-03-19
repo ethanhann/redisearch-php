@@ -12,6 +12,6 @@ use Eeh\Redisearch\Fields\TextField;
  * @property NumericField price
  * @property NumericField stock
  */
-class BookDocument extends Document
+class TestDocument extends Document
 {
 }
