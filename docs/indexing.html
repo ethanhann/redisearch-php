@@ -129,56 +129,9 @@
         </ul>
     </aside>
     <article class="col-md-10">
-        <h1>Quick Start</h1>
-<p>Redisearch-PHP is a PHP client library for the <a href="http://redisearch.io/">Redisearch</a> module which adds Full-Text search to Redis.</p>
-<h2>Requirements</h2>
-<ul>
-<li>Redis running with the <a href="http://redisearch.io/Quick_Start/">Redisearch module loaded</a>.</li>
-<li>PHP &gt;=7</li>
-<li>The <a href="https://github.com/phpredis/phpredis">PhpRedis</a> PHP extension.</li>
-</ul>
-<h2>Install</h2>
-<pre><code class="language-bash">composer install ethanhann/redisearch-php</code></pre>
-<h2>Create an Index Class</h2>
-<pre><code class="language-php">&lt;?php
-
-namespace Your\Indexes;
-
-use Eeh\Redisearch\AbstractIndex;
-
-class BookIndex extends AbstractIndex
-{
-}</code></pre>
-<h2>Define the Index's Schema</h2>
-<pre><code class="language-php">&lt;?php
-
-namespace Your\Indexes;
-
-use Eeh\Redisearch\AbstractIndex;
-use Eeh\Redisearch\Fields\TextField;
-use Eeh\Redisearch\Fields\NumericField;
-
-class BookIndex extends AbstractIndex
-{
-    public $title;
-    public $author;
-    public $price;
-    public $stock;
-
-    public function __construct()
-    {
-        $this-&gt;title = new TextField('title');
-        $this-&gt;author = new TextField('author');
-        $this-&gt;price = new NumericField('price');
-        $this-&gt;stock = new NumericField('stock');
-    }
-}</code></pre>
-<h2>Create the Underlying Index in Redis</h2>
-<pre><code class="language-php">&lt;?php
-
-$bookIndex = new BookIndex();
-$bookIndex-&gt;create();</code></pre>
-<h2>Add a Document to the Index</h2>
+        <h1>Indexing</h1>
+<h2>Array of Field Objects</h2>
+<p>As shown in the quick start, an array of field objects can be added to the index.  </p>
 <pre><code class="language-php">&lt;?php
 
 $bookIndex-&gt;addDocument([
@@ -187,18 +140,54 @@ $bookIndex-&gt;addDocument([
     new NumericField('price', 9.99),
     new NumericField('stock', 231),
 ]);</code></pre>
-<h2>Search the Index</h2>
+<h2>Associative Array</h2>
+<p>Aside from adding an array of fields, an associative array can be used to add a document.</p>
 <pre><code class="language-php">&lt;?php
 
-$result = $bookIndex-&gt;search('two cities');
+$bookIndex-&gt;addDocument([
+    'title' =&gt; 'Tale of Two Cities',
+    'author' =&gt; 'Charles Dickens',
+    'price' =&gt; 9.99,
+    'stock' =&gt; 231,
+]);</code></pre>
+<h2>Document Factory and Magic Methods</h2>
+<p>Another way is to use the index to make a document, set values using magic methods, then add it.</p>
+<pre><code class="language-php">&lt;?php
 
-$result-&gt;count();     // Number of documents.
-$result-&gt;documents(); // Array of matches.
+$document = $bookIndex-&gt;makeDocument();
+$document-&gt;title-&gt;setValue('How to be awesome.');
+$document-&gt;author-&gt;setValue('Jack');
+$document-&gt;price-&gt;setValue(9.99);
+$document-&gt;stock-&gt;setValue(231);
 
-// Documents are returned as objects by default.
-$firstResult = $result-&gt;documents()[0];
-$firstResult-&gt;title;
-$firstResult-&gt;author;</code></pre>
+$this-&gt;addDocument($document);</code></pre>
+<p>DocBlocks can optionally be used to type hint the magic methods . </p>
+<pre><code class="language-php">&lt;?php
+
+namespace Your\Documents;
+
+use Eeh\Redisearch\Document;
+use Eeh\Redisearch\Fields\FieldInterface;
+
+/**
+ * @property FieldInterface title
+ * @property FieldInterface author
+ * @property FieldInterface price
+ * @property FieldInterface stock
+ */
+class BookDocument extends Document
+{
+}</code></pre>
+<pre><code class="language-php">&lt;?php
+
+/** @var BookDocument $document */
+$document = $bookIndex-&gt;makeDocument();
+$document-&gt;title-&gt;setValue('How to be awesome.');
+$document-&gt;author-&gt;setValue('Jack');
+$document-&gt;price-&gt;setValue(9.99);
+$document-&gt;stock-&gt;setValue(231);
+
+$this-&gt;addDocument($document);</code></pre>
     </article>
 </section>
 </div>

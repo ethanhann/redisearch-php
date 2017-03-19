@@ -129,76 +129,28 @@
         </ul>
     </aside>
     <article class="col-md-10">
-        <h1>Quick Start</h1>
-<p>Redisearch-PHP is a PHP client library for the <a href="http://redisearch.io/">Redisearch</a> module which adds Full-Text search to Redis.</p>
-<h2>Requirements</h2>
-<ul>
-<li>Redis running with the <a href="http://redisearch.io/Quick_Start/">Redisearch module loaded</a>.</li>
-<li>PHP &gt;=7</li>
-<li>The <a href="https://github.com/phpredis/phpredis">PhpRedis</a> PHP extension.</li>
-</ul>
-<h2>Install</h2>
-<pre><code class="language-bash">composer install ethanhann/redisearch-php</code></pre>
-<h2>Create an Index Class</h2>
-<pre><code class="language-php">&lt;?php
-
-namespace Your\Indexes;
-
-use Eeh\Redisearch\AbstractIndex;
-
-class BookIndex extends AbstractIndex
-{
-}</code></pre>
-<h2>Define the Index's Schema</h2>
-<pre><code class="language-php">&lt;?php
-
-namespace Your\Indexes;
-
-use Eeh\Redisearch\AbstractIndex;
-use Eeh\Redisearch\Fields\TextField;
-use Eeh\Redisearch\Fields\NumericField;
-
-class BookIndex extends AbstractIndex
-{
-    public $title;
-    public $author;
-    public $price;
-    public $stock;
-
-    public function __construct()
-    {
-        $this-&gt;title = new TextField('title');
-        $this-&gt;author = new TextField('author');
-        $this-&gt;price = new NumericField('price');
-        $this-&gt;stock = new NumericField('stock');
-    }
-}</code></pre>
-<h2>Create the Underlying Index in Redis</h2>
-<pre><code class="language-php">&lt;?php
-
-$bookIndex = new BookIndex();
-$bookIndex-&gt;create();</code></pre>
-<h2>Add a Document to the Index</h2>
-<pre><code class="language-php">&lt;?php
-
-$bookIndex-&gt;addDocument([
-    new TextField('title', 'Tale of Two Cities'),
-    new TextField('author', 'Charles Dickens'),
-    new NumericField('price', 9.99),
-    new NumericField('stock', 231),
-]);</code></pre>
-<h2>Search the Index</h2>
+        <h1>Searching</h1>
+<h2>Simple Text Search</h2>
+<p>Text fields can be filtered with the index's search method.</p>
 <pre><code class="language-php">&lt;?php
 
 $result = $bookIndex-&gt;search('two cities');
 
 $result-&gt;count();     // Number of documents.
-$result-&gt;documents(); // Array of matches.
+$result-&gt;documents(); // Array of stdObjects.</code></pre>
+<p>Documents can also be returned as arrays instead of objects by passing true as the second parameter to the search method.</p>
+<pre><code class="language-php">&lt;?php
 
-// Documents are returned as objects by default.
-$firstResult = $result-&gt;documents()[0];
-$firstResult-&gt;title;
-$firstResult-&gt;author;</code></pre>
+$result = $bookIndex-&gt;search('two cities', true);
+
+$result-&gt;documents(); // Array of arrays.</code></pre>
+<h2>Filtering Numeric Fields</h2>
+<p>Numeric fields can be filtered with the index's filter method.</p>
+<pre><code class="language-php">&lt;?php
+
+$result = $bookIndex
+    -&gt;filter('price', 4.99, 19.99)
+    -&gt;search('two cities');</code></pre>
     </article>
 </section>
 </div>

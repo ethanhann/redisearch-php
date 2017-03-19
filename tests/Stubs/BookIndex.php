@@ -5,6 +5,8 @@ namespace Eeh\Tests\Stubs;
 use Eeh\Redisearch\AbstractIndex;
 use Eeh\Redisearch\Fields\NumericField;
 use Eeh\Redisearch\Fields\TextField;
+use Eeh\Redisearch\Query\BuilderInterface;
+use Eeh\Redisearch\SearchResult;
 
 class BookIndex extends AbstractIndex
 {

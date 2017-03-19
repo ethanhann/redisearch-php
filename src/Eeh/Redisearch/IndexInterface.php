@@ -2,16 +2,16 @@
 
 namespace Eeh\Redisearch;
 
+use Eeh\Redisearch\Query\BuilderInterface;
 use Redis;
 
-interface IndexInterface
+interface IndexInterface extends BuilderInterface
 {
     public function create();
     public function drop();
     public function info();
     public function addDocument($document, $noSave = false, $replace = false, $language = null, $payload = null);
     public function makeDocument(): DocumentInterface;
-    public function search($query, bool $documentsAsArray = false) : SearchResult;
     public function getRedis(): Redis;
     public function setRedis(Redis $redis);
     public function getIndexName(): string;

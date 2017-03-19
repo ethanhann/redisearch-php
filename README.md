@@ -1,4 +1,4 @@
-## What is this?
+# Quick Start
 
 Redisearch-PHP is a PHP client library for the [Redisearch](http://redisearch.io/) module which adds Full-Text search to Redis.
 
@@ -14,9 +14,7 @@ Redisearch-PHP is a PHP client library for the [Redisearch](http://redisearch.io
 composer install ethanhann/redisearch-php
 ```
 
-## Basic Usage
-
-Create an index by extending Eeh/Redisearch/AbstractIndex...
+## Create an Index Class
 
 ```php
 <?php
@@ -30,7 +28,7 @@ class BookIndex extends AbstractIndex
 }
 ```
 
-Add some fields to the index which defines the schema...
+## Define the Index's Schema
 
 ```php
 <?php
@@ -58,7 +56,7 @@ class BookIndex extends AbstractIndex
 }
 ```
 
-Create the index...
+## Create the Underlying Index in Redis
 
 ```php
 <?php
@@ -67,7 +65,7 @@ $bookIndex = new BookIndex();
 $bookIndex->create();
 ```
 
-Add a document to the index...
+## Add a Document to the Index
 
 ```php
 <?php
@@ -80,39 +78,12 @@ $bookIndex->addDocument([
 ]);
 ```
 
-...or add a document with an associative array... 
+## Search the Index
 
 ```php
 <?php
 
-$bookIndex->addDocument([
-    'title' => 'Tale of Two Cities',
-    'author' => 'Charles Dickens',
-    'price' => 9.99,
-    'stock' => 231,
-]);
-```
-
-...or use the index to make a document, set values using magic methods, then add it... 
-
-```php
-<?php
-
-$document = $bookIndex->makeDocument();
-$document->title->setValue('How to be awesome.');
-$document->author->setValue('Jack');
-$document->price->setValue(9.99);
-$document->stock->setValue(231);
-
-$this->addDocument($document);
-```
-
-Search the index...
-
-```php
-<?php
-
-$result - $bookIndex->search('two cities');
+$result = $bookIndex->search('two cities');
 
 $result->count();     // Number of documents.
 $result->documents(); // Array of matches.
@@ -122,3 +93,4 @@ $firstResult = $result->documents()[0];
 $firstResult->title;
 $firstResult->author;
 ```
+

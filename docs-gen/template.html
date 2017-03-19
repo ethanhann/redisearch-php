@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>redisearch-php</title>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/styles/default.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
     <style>
         body {
             font-family: "Helvetica", "Arial", sans-serif;
@@ -15,11 +18,6 @@
 
         h1, h2, strong {
             color: #333;
-        }
-
-        h2 {
-            margin-top: 1em;
-            padding-top: 1em;
         }
 
         code, pre {
@@ -87,10 +85,18 @@
             color: white;
         }
 
+        aside {
+            margin-top: 60px;
+        }
+
         article {
-            max-width: 50em;
-            padding: 1em 1.5em;
-            margin: 0 auto;
+            margin-top: 20px;
+        }
+
+        article > h1 {
+            padding-bottom: 9px;
+            margin: 40px 0 20px;
+            border-bottom: 1px solid #eee;
         }
 
         footer {
@@ -113,9 +119,20 @@
     </p>
 </header>
 
-<article>
-    __CONTENT__
-</article>
+<div class="container">
+<section class="row">
+    <aside class="col-md-2">
+        <ul class="list-unstyled">
+            <li><a href="index.html">Quick Start</a></li>
+            <li><a href="indexing.html">Indexing</a></li>
+            <li><a href="searching.html">Searching</a></li>
+        </ul>
+    </aside>
+    <article class="col-md-10">
+        __CONTENT__
+    </article>
+</section>
+</div>
 
 <footer>
     created by <a href="http//github.com/ethanhann">Ethan Hann</a>

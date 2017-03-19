@@ -26,7 +26,9 @@ class ClientTest extends TestCase
         $this->redis = new Redis();
         $this->redis->connect(getenv('REDIS_HOST') ?? '127.0.0.1', getenv('REDIS_PORT') ?? 6379);
         $this->redis->select(getenv('REDIS_DB') ?? 0);
-        $this->subject = (new BookIndex($this->indexName))->setRedis($this->redis);
+        $this->subject = (new BookIndex())
+            ->setIndexName($this->indexName)
+            ->setRedis($this->redis);
     }
 
     public function tearDown()
@@ -107,4 +109,26 @@ class ClientTest extends TestCase
 
         $this->assertEquals($result->getCount(), 2);
     }
+
+    public function testSearchForNumeric()
+    {
+        $this->subject->create();
+        $this->subject->addDocument([
+            'title' => 'How to be awesome.',
+            'author' => 'Jack',
+            'price' => 9.99,
+            'stock' => 231,
+        ]);
+
+        $result = $this->subject
+            ->filter('price', 1, 500)
+            ->search('awesome');
+
+        $this->assertEquals($result->getCount(), 1);
+    }
+
+//    public function testAddDocumentWithGeoField
+//    {
+//
+//    }
 }

@@ -28,6 +28,11 @@ class SearchResult
         if (!$rawRedisearchResult) {
             return false;
         }
+
+        if (count($rawRedisearchResult) === 1) {
+            return new SearchResult(0, []);
+        }
+
         $count = array_shift($rawRedisearchResult);
         $documents = [];
         for ($i = 0; $i <= $count; $i += 2) {

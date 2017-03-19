@@ -4,6 +4,8 @@ namespace Eeh\Redisearch;
 
 use Eeh\Redisearch\Exceptions\NoFieldsInIndexException;
 use Eeh\Redisearch\Fields\FieldInterface;
+use Eeh\Redisearch\Query\Builder;
+use Eeh\Redisearch\Query\BuilderInterface;
 use Redis;
 
 abstract class AbstractIndex implements IndexInterface
@@ -69,7 +71,7 @@ abstract class AbstractIndex implements IndexInterface
      */
     public function drop()
     {
-        $this->redis->rawCommand('FT.DROP', $this->getIndexName());
+        $this->callCommand(['FT.DROP', $this->getIndexName()]);
     }
 
     /**
@@ -77,7 +79,7 @@ abstract class AbstractIndex implements IndexInterface
      */
     public function info()
     {
-        return $this->redis->rawCommand('FT.INFO', $this->getIndexName());
+        return $this->callCommand(['FT.INFO', $this->getIndexName()]);
     }
 
     /**
@@ -105,26 +107,19 @@ abstract class AbstractIndex implements IndexInterface
         return $this->callCommand(array_merge(['FT.ADD', $this->getIndexName()], $document->getDefinition()));
     }
 
-    /**
-     * @return DocumentInterface
-     */
-    public function makeDocument(): DocumentInterface
-    {
-        $fields = $this->getFields();
-        return Document::makeFromArray($fields, $fields);
-    }
+
 
     /**
-     * @param $query
-     * @param bool $documentsAsArray
-     * @return SearchResult
+     * @param bool $noSave
+     * @param bool $replace
+     * @param null $language
+     * @param null $payload
+     * @return DocumentInterface
      */
-    public function search($query, bool $documentsAsArray = false): SearchResult
+    public function makeDocument($noSave = false, $replace = false, $language = null, $payload = null): DocumentInterface
     {
-        return SearchResult::makeSearchResult(
-            $this->callCommand(['FT.SEARCH', $this->getIndexName(), $query]),
-            $documentsAsArray
-        );
+        $fields = $this->getFields();
+        return Document::makeFromArray($fields, $fields, $noSave, $replace, $language, $payload);
     }
 
     /**
@@ -133,6 +128,7 @@ abstract class AbstractIndex implements IndexInterface
      */
     protected function callCommand(array $args)
     {
+//        print PHP_EOL . implode(' ', $args);
         return call_user_func_array([$this->redis, 'rawCommand'], $args);
     }
 
@@ -224,5 +220,20 @@ abstract class AbstractIndex implements IndexInterface
     {
         $this->noScoreIdxEnabled = $noScoreIdxEnabled;
         return $this;
+    }
+
+    protected function makeBuilder()
+    {
+        return (new Builder($this->redis, $this->getIndexName()));
+    }
+
+    public function filter(string $fieldName, $min, $max): BuilderInterface
+    {
+        return $this->makeBuilder()->filter($fieldName, $min, $max);
+    }
+
+    public function search(string $query, bool $documentsAsArray = false): SearchResult
+    {
+        return $this->makeBuilder()->search($query, $documentsAsArray);
     }
 }
