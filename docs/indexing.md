@@ -83,11 +83,18 @@ class BookDocument extends Document
 
 ```php
 <?php
+// Make a document.
+$document = $this->subject->makeDocument();
+$document->title->setValue('How to be awesome.');
+$document->author->setValue('Jack');
+$document->price->setValue(9.99);
+$document->stock->setValue(231);
+$this->subject->add($document);
 
-$bookIndex->replace([
-    'title' => 'Tale of Two Cities',
-    'author' => 'Charles Dickens',
-    'price' => 9.99,
-    'stock' => 231,
-]);
+// Update a couple fields
+$document->title->setValue('How to be awesome: Part 2.');
+$document->price->setValue(19.99);
+
+// Update the document.
+$this->subject->replace($document);
 ```
