@@ -36,26 +36,13 @@ class BookIndex extends AbstractIndex
 }
 ```
 
-## Define the Index's Schema
-
-```php
-<?php
-
-namespace Your\Indexes;
-
-use Eeh\Redisearch\AbstractIndex;
-
-class BookIndex extends AbstractIndex
-{
-}
-```
-
-## Create the Underlying Index in Redis
+## Define the Index's Schema and Create the Underlying Index in Redis
 
 ```php
 <?php
 
 $bookIndex = new BookIndex();
+
 $bookIndex->addTextField('title')
     ->addTextField('author')
     ->addNumericField('price')
