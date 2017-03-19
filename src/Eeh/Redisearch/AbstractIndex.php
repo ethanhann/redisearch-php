@@ -147,16 +147,13 @@ abstract class AbstractIndex implements IndexInterface
     }
 
     /**
-     * @param bool $noSave
-     * @param bool $replace
-     * @param null $language
-     * @param null $payload
      * @return Document
      */
-    public function makeDocument($noSave = false, $replace = false, $language = null, $payload = null): Document
+    public function makeDocument($id = null): Document
     {
         $fields = $this->getFields();
-        return DocumentBuilder::makeFromArray($fields, $fields);
+        $document = DocumentBuilder::makeFromArray($fields, $fields, $id);
+        return $document;
     }
 
     /**

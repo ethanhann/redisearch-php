@@ -130,46 +130,55 @@
     </aside>
     <article class="col-md-10">
         <h1>Indexing</h1>
-<h2>Array of Field Objects</h2>
-<p>As shown in the quick start, an array of field objects can be added to the index.  </p>
+<h2>Field Types</h2>
+<p>There are three types of fields that can be added to a document: <strong>TextField</strong>, <strong>NumericField</strong>, and <strong>GeoField</strong>.</p>
+<p>They are instantiated like this...</p>
+<pre><code class="language-php">&lt;?php
+new TextField('author', 'Charles Dickens');
+new NumericField('price', 9.99);
+new GeoField('place', new GeoLocation(-77.0366, 38.8977));</code></pre>
+<p>Fields can also be made with the FieldFactory class...</p>
+<pre><code class="language-php">&lt;?php
+FieldFactory::make('author', 'Charles Dickens');                 // equal to new TextField('author', 'Charles Dickens');
+FieldFactory::make('price', 9.99);                               // equal to new NumericField('price', 9.99);
+FieldFactory::make('place', new GeoLocation(-77.0366, 38.8977)); // equal to new GeoField('place', new GeoLocation(-77.0366, 38.8977));</code></pre>
+<h2>Adding Documents</h2>
+<p>Add an array of field objects...</p>
 <pre><code class="language-php">&lt;?php
 
 $bookIndex-&gt;add([
     new TextField('title', 'Tale of Two Cities'),
     new TextField('author', 'Charles Dickens'),
     new NumericField('price', 9.99),
-    new NumericField('stock', 231),
+    new GeoField('place', new GeoLocation(-77.0366, 38.8977)),
 ]);</code></pre>
-<h2>Associative Array</h2>
-<p>Aside from adding an array of fields, an associative array can be used to index a document.</p>
+<p>Add an associative array...</p>
 <pre><code class="language-php">&lt;?php
 
 $bookIndex-&gt;add([
     'title' =&gt; 'Tale of Two Cities',
     'author' =&gt; 'Charles Dickens',
     'price' =&gt; 9.99,
-    'stock' =&gt; 231,
+    'place' =&gt; new GeoLocation(-77.0366, 38.8977),
 ]);</code></pre>
-<h2>Document Factory and Magic Methods</h2>
-<p>Another way is to use the index to make a document, set values using magic methods, then add it.</p>
+<p>Create a document with the index's makeDocument method, then set field values...</p>
 <pre><code class="language-php">&lt;?php
 
 $document = $bookIndex-&gt;makeDocument();
 $document-&gt;title-&gt;setValue('How to be awesome.');
 $document-&gt;author-&gt;setValue('Jack');
 $document-&gt;price-&gt;setValue(9.99);
-$document-&gt;stock-&gt;setValue(231);
+$document-&gt;place-&gt;setValue(new GeoLocation(-77.0366, 38.8977));
 
 $this-&gt;add($document);</code></pre>
-<p>DocBlocks can optionally be used to type hint the magic methods. </p>
+<p>DocBlocks can (optionally) be used to type hint field property names... </p>
 <pre><code class="language-php">&lt;?php
 
 /** @var BookDocument $document */
 $document = $bookIndex-&gt;makeDocument();
+
+// "title" will auto-complete correctly in your IDE provided BookDocument has a "title" property or @property annotation.
 $document-&gt;title-&gt;setValue('How to be awesome.');
-$document-&gt;author-&gt;setValue('Jack');
-$document-&gt;price-&gt;setValue(9.99);
-$document-&gt;stock-&gt;setValue(231);
 
 $this-&gt;add($document);</code></pre>
 <pre><code class="language-php">&lt;?php
@@ -184,32 +193,68 @@ use Eeh\Redisearch\Fields\TextField;
  * @property TextField title
  * @property TextField author
  * @property NumericField price
- * @property NumericField stock
+ * @property GeoField place
  */
 class BookDocument extends Document
 {
 }</code></pre>
-<h2>Replace/Update a Document</h2>
+<h2>Updating a Document</h2>
+<p>Documents are updated with an index's replace method.</p>
 <pre><code class="language-php">&lt;?php
 // Make a document.
-$document = $this-&gt;subject-&gt;makeDocument();
+$document = $bookIndex-&gt;makeDocument();
 $document-&gt;title-&gt;setValue('How to be awesome.');
 $document-&gt;author-&gt;setValue('Jack');
 $document-&gt;price-&gt;setValue(9.99);
-$document-&gt;stock-&gt;setValue(231);
-$this-&gt;subject-&gt;add($document);
+$document-&gt;place-&gt;setValue(new GeoLocation(-77.0366, 38.8977));
+$bookIndex-&gt;add($document);
 
 // Update a couple fields
 $document-&gt;title-&gt;setValue('How to be awesome: Part 2.');
 $document-&gt;price-&gt;setValue(19.99);
 
 // Update the document.
-$this-&gt;subject-&gt;replace($document);</code></pre>
+$bookIndex-&gt;replace($document);</code></pre>
+<p>A document can also be updating when its ID is specified...</p>
+<pre><code class="language-php">&lt;?php
+// Make a document.
+$document = $bookIndex-&gt;makeDocument();
+$document-&gt;title-&gt;setValue('How to be awesome.');
+$document-&gt;author-&gt;setValue('Jack');
+$document-&gt;price-&gt;setValue(9.99);
+$document-&gt;place-&gt;setValue(new GeoLocation(-77.0366, 38.8977));
+$bookIndex-&gt;add($document);
+
+// Create a new document and assign the old document's ID to it.
+$newDocument = $bookIndex-&gt;makeDocument($document-&gt;getId());
+
+// Set a couple fields.
+$document-&gt;title-&gt;setValue('');
+$document-&gt;author-&gt;setValue('Jack');
+$newDocument-&gt;title-&gt;setValue('How to be awesome: Part 2.');
+$newDocument-&gt;price-&gt;setValue(19.99);
+
+// Update the document.
+$bookIndex-&gt;replace($newDocument);</code></pre>
+<h2>Indexing an External Collection</h2>
+<p>To index an external collection, make sure to set the document's ID to the ID of the record in the external collection.</p>
+<pre><code class="language-php">&lt;?php
+
+// Get a record set from your DB (or some other datastore)...
+$records = $someDatabase-&gt;findAll();
+
+foreach ($records as $record) {
+    // Make a new document with the external record's ID.
+    $newDocument = $bookIndex-&gt;makeDocument($record-&gt;id);
+    $newDocument-&gt;title-&gt;setValue($record-&gt;title);
+    $newDocument-&gt;author-&gt;setValue($record-&gt;author);
+    $index-&gt;add($newDocument);
+}</code></pre>
     </article>
 </section>
 </div>
 
-<footer>
+<footer class="m-t-lg">
     created by <a href="http//github.com/ethanhann">Ethan Hann</a>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/highlight.min.js"></script>

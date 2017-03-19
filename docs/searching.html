@@ -151,11 +151,18 @@ $result-&gt;documents(); // Array of arrays.</code></pre>
 $result = $bookIndex
     -&gt;filter('price', 4.99, 19.99)
     -&gt;search('two cities');</code></pre>
+<h2>Filtering Geo Fields</h2>
+<p>Numeric fields can be filtered with the index's filter method.</p>
+<pre><code class="language-php">&lt;?php
+
+$result = $bookIndex
+    -&gt;filter('price', 4.99, 19.99)
+    -&gt;search('two cities');</code></pre>
     </article>
 </section>
 </div>
 
-<footer>
+<footer class="m-t-lg">
     created by <a href="http//github.com/ethanhann">Ethan Hann</a>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/highlight.min.js"></script>

@@ -34,3 +34,15 @@ $result = $bookIndex
     ->filter('price', 4.99, 19.99)
     ->search('two cities');
 ```
+
+## Filtering Geo Fields
+
+Numeric fields can be filtered with the index's filter method.
+
+```php
+<?php
+
+$result = $bookIndex
+    ->filter('price', 4.99, 19.99)
+    ->search('two cities');
+```

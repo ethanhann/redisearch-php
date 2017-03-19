@@ -26,9 +26,9 @@ class Builder implements BuilderInterface
         $this->indexName = $indexName;
     }
 
-    public static function makeFromArray(array $fields, array $availableSchemaFields): Document
+    public static function makeFromArray(array $fields, array $availableSchemaFields, $id = null): Document
     {
-        $document = new Document();
+        $document = new Document($id);
         foreach ($fields as $index => $field) {
             if (is_string($index)) {
                 if (!isset($availableSchemaFields[$index])) {
