@@ -1,9 +1,9 @@
 <?php
 
-namespace Eeh\Redisearch\Query;
+namespace Eeh\RediSearch\Query;
 
-use Eeh\Redisearch\Exceptions\UnknownIndexNameException;
-use Eeh\Redisearch\Redis\RedisClient;
+use Eeh\RediSearch\Exceptions\UnknownIndexNameException;
+use Eeh\RediSearch\Redis\RedisClient;
 use Exception;
 use InvalidArgumentException;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Eeh\Redisearch\Document;
+namespace Eeh\RediSearch\Document;
 
 interface BuilderInterface
 {

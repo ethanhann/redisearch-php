@@ -2,9 +2,9 @@
 
 namespace Eeh\Tests\Stubs;
 
-use Eeh\Redisearch\Document\Document;
-use Eeh\Redisearch\Fields\NumericField;
-use Eeh\Redisearch\Fields\TextField;
+use Eeh\RediSearch\Document\Document;
+use Eeh\RediSearch\Fields\NumericField;
+use Eeh\RediSearch\Fields\TextField;
 
 /**
  * @property TextField title

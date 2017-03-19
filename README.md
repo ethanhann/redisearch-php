@@ -1,10 +1,10 @@
 # Quick Start
 
-Redisearch-PHP is a PHP client library for the [Redisearch](http://redisearch.io/) module which adds Full-Text search to Redis.
+RediSearch-PHP is a PHP client library for the [RediSearch](http://redisearch.io/) module which adds Full-Text search to Redis.
 
 ## Requirements
 
-* Redis running with the [Redisearch module loaded](http://redisearch.io/Quick_Start/).
+* Redis running with the [RediSearch module loaded](http://redisearch.io/Quick_Start/).
 * PHP >=7
 * [PhpRedis](https://github.com/phpredis/phpredis) OR [Predis](https://github.com/nrk/predis).
 
@@ -29,7 +29,7 @@ require_once 'vendor/autoload.php';
 
 namespace Your\Indexes;
 
-use Eeh\Redisearch\AbstractIndex;
+use Eeh\RediSearch\AbstractIndex;
 
 class BookIndex extends AbstractIndex
 {

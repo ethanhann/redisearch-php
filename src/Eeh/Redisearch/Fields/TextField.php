@@ -1,6 +1,6 @@
 <?php
 
-namespace Eeh\Redisearch\Fields;
+namespace Eeh\RediSearch\Fields;
 
 class TextField extends AbstractField
 {

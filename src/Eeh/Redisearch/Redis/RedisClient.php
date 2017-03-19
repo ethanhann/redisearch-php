@@ -1,8 +1,8 @@
 <?php
 
-namespace Eeh\Redisearch\Redis;
+namespace Eeh\RediSearch\Redis;
 
-use Eeh\Redisearch\Exceptions\InvalidRedisClientClassException;
+use Eeh\RediSearch\Exceptions\InvalidRedisClientClassException;
 
 class RedisClient
 {

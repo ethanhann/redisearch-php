@@ -1,19 +1,19 @@
 <?php
 
-namespace Eeh\Redisearch;
+namespace Eeh\RediSearch;
 
-use Eeh\Redisearch\Document\Document;
-use Eeh\Redisearch\Document\Builder as DocumentBuilder;
-use Eeh\Redisearch\Document\BuilderInterface as DocumentBuilderInterface;
-use Eeh\Redisearch\Exceptions\NoFieldsInIndexException;
-use Eeh\Redisearch\Fields\FieldInterface;
-use Eeh\Redisearch\Fields\GeoField;
-use Eeh\Redisearch\Fields\NumericField;
-use Eeh\Redisearch\Fields\TextField;
-use Eeh\Redisearch\Query\Builder as QueryBuilder;
-use Eeh\Redisearch\Query\BuilderInterface as QueryBuilderInterface;
-use Eeh\Redisearch\Query\SearchResult;
-use Eeh\Redisearch\Redis\RedisClient;
+use Eeh\RediSearch\Document\Document;
+use Eeh\RediSearch\Document\Builder as DocumentBuilder;
+use Eeh\RediSearch\Document\BuilderInterface as DocumentBuilderInterface;
+use Eeh\RediSearch\Exceptions\NoFieldsInIndexException;
+use Eeh\RediSearch\Fields\FieldInterface;
+use Eeh\RediSearch\Fields\GeoField;
+use Eeh\RediSearch\Fields\NumericField;
+use Eeh\RediSearch\Fields\TextField;
+use Eeh\RediSearch\Query\Builder as QueryBuilder;
+use Eeh\RediSearch\Query\BuilderInterface as QueryBuilderInterface;
+use Eeh\RediSearch\Query\SearchResult;
+use Eeh\RediSearch\Redis\RedisClient;
 
 abstract class AbstractIndex implements IndexInterface
 {

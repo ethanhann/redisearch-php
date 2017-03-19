@@ -2,7 +2,7 @@
 
 namespace Eeh\Tests\Stubs;
 
-use Eeh\Redisearch\AbstractIndex;
+use Eeh\RediSearch\AbstractIndex;
 
 class TestIndex extends AbstractIndex
 {

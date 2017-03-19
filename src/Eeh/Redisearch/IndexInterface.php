@@ -1,11 +1,11 @@
 <?php
 
-namespace Eeh\Redisearch;
+namespace Eeh\RediSearch;
 
-use Eeh\Redisearch\Document\BuilderInterface as DocumentBuilderInterface;
-use Eeh\Redisearch\Document\Document;
-use Eeh\Redisearch\Query\BuilderInterface as QueryBuilderInterface;
-use Eeh\Redisearch\Redis\RedisClient;
+use Eeh\RediSearch\Document\BuilderInterface as DocumentBuilderInterface;
+use Eeh\RediSearch\Document\Document;
+use Eeh\RediSearch\Query\BuilderInterface as QueryBuilderInterface;
+use Eeh\RediSearch\Redis\RedisClient;
 
 interface IndexInterface extends DocumentBuilderInterface, QueryBuilderInterface
 {

@@ -1,13 +1,13 @@
 <?php
 
-namespace Eeh\Tests\Redisearch;
+namespace Eeh\Tests\RediSearch;
 
-use Eeh\Redisearch\Exceptions\NoFieldsInIndexException;
-use Eeh\Redisearch\Fields\GeoLocation;
-use Eeh\Redisearch\Fields\NumericField;
-use Eeh\Redisearch\Fields\TextField;
-use Eeh\Redisearch\IndexInterface;
-use Eeh\Redisearch\Redis\RedisClient;
+use Eeh\RediSearch\Exceptions\NoFieldsInIndexException;
+use Eeh\RediSearch\Fields\GeoLocation;
+use Eeh\RediSearch\Fields\NumericField;
+use Eeh\RediSearch\Fields\TextField;
+use Eeh\RediSearch\IndexInterface;
+use Eeh\RediSearch\Redis\RedisClient;
 use Eeh\Tests\Stubs\TestDocument;
 use Eeh\Tests\Stubs\TestIndex;
 use Eeh\Tests\Stubs\IndexWithoutFields;

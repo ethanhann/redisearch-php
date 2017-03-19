@@ -1,6 +1,6 @@
 <?php
 
-namespace Eeh\Redisearch\Query;
+namespace Eeh\RediSearch\Query;
 
 class SearchResult
 {
@@ -23,24 +23,24 @@ class SearchResult
         return $this->documents;
     }
 
-    public static function makeSearchResult(array $rawRedisearchResult, bool $documentsAsArray)
+    public static function makeSearchResult(array $rawRediSearchResult, bool $documentsAsArray)
     {
-        if (!$rawRedisearchResult) {
+        if (!$rawRediSearchResult) {
             return false;
         }
 
-        if (count($rawRedisearchResult) === 1) {
+        if (count($rawRediSearchResult) === 1) {
             return new SearchResult(0, []);
         }
 
-        $count = array_shift($rawRedisearchResult);
+        $count = array_shift($rawRediSearchResult);
         $documents = [];
         for ($i = 0; $i <= $count; $i += 2) {
             $document = $documentsAsArray ? [] : new \stdClass();
             $documentsAsArray ?
-                $document['id'] = $rawRedisearchResult[$i] :
-                $document->id = $rawRedisearchResult[$i];
-            $fields = $rawRedisearchResult[$i + 1];
+                $document['id'] = $rawRediSearchResult[$i] :
+                $document->id = $rawRediSearchResult[$i];
+            $fields = $rawRediSearchResult[$i + 1];
             for ($j = 0; $j < count($fields); $j += 2) {
                 $documentsAsArray ?
                     $document[$fields[$j]] = $fields[$j + 1] :
