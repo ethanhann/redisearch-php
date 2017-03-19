@@ -1,12 +1,13 @@
 <?php
 
-namespace Eeh\Redisearch;
+namespace Eeh\Redisearch\Document;
 
 use Eeh\Redisearch\Exceptions\FieldNotInSchemaException;
 use Eeh\Redisearch\Fields\FieldFactory;
 use Eeh\Redisearch\Fields\FieldInterface;
+use Redis;
 
-class Document implements DocumentInterface
+class Builder implements BuilderInterface
 {
     protected $id;
     protected $score = 1.0;
@@ -14,20 +15,19 @@ class Document implements DocumentInterface
     protected $replace = false;
     protected $payload;
     protected $language;
+    /** @var Redis */
+    private $redis;
+    /** @var string */
+    private $indexName;
 
-    public function __construct($id = null)
+    public function __construct(Redis $redis, string $indexName)
     {
-        $this->id = $id ?? uniqid(true);
+        $this->redis = $redis;
+        $this->indexName = $indexName;
     }
 
-    public static function makeFromArray(
-        array $fields,
-        array $availableSchemaFields,
-        $noSave = false,
-        $replace = false,
-        $language = null,
-        $payload = null
-    ): Document {
+    public static function makeFromArray(array $fields, array $availableSchemaFields): Document
+    {
         $document = new Document();
         foreach ($fields as $index => $field) {
             if (is_string($index)) {
@@ -44,111 +44,84 @@ class Document implements DocumentInterface
                 $document->{$field->getName()} = $field;
             }
         }
-        return $document
-            ->setNoSave($noSave)
-            ->setReplace($replace)
-            ->setLanguage($language)
-            ->setPayload($payload);
+        return $document;
     }
 
-    public function getDefinition(): array
+    public function add($document): bool
     {
         $properties = [
-            $this->getId(),
-            $this->getScore(),
+            $this->id ?? uniqid(true),
+            $this->score,
         ];
 
-        if ($this->isNoSave()) {
+        if ($this->noSave) {
             $properties[] = 'NOSAVE';
         }
 
-        if ($this->isReplace()) {
+        if ($this->replace) {
             $properties[] = 'REPLACE';
         }
 
-        if (!is_null($this->getLanguage())) {
+        if (!is_null($this->language)) {
             $properties[] = 'LANGUAGE';
-            $properties[] = $this->getLanguage();
+            $properties[] = $this->language;
         }
 
-        if (!is_null($this->getPayload())) {
+        if (!is_null($this->payload)) {
             $properties[] = 'PAYLOAD';
-            $properties[] = $this->getPayload();
+            $properties[] = $this->payload;
         }
 
         $properties[] = 'FIELDS';
 
         /** @var FieldInterface $field */
-        foreach (get_object_vars($this) as $field) {
+        foreach (get_object_vars($document) as $field) {
             if ($field instanceof FieldInterface) {
                 $properties[] = $field->getName();
                 $properties[] = $field->getValue();
             }
         }
-        return $properties;
+
+        return $this->callCommand(array_merge(['FT.ADD', $this->indexName], $properties));
     }
 
-    public function getId(): string
+    public function replace($document): bool
     {
-        return $this->id;
+        $this->replace = true;
+        return $this->add($document);
     }
 
-    public function setId(string $id)
+    protected function callCommand(array $args)
+    {
+//        print PHP_EOL . implode(' ', $args) . PHP_EOL;
+        return call_user_func_array([$this->redis, 'rawCommand'], $args);
+    }
+
+    public function id(string $id): BuilderInterface
     {
         $this->id = $id;
         return $this;
     }
 
-    public function getScore()
-    {
-        return $this->score;
-    }
-
-    public function setScore($score)
+    public function score($score): BuilderInterface
     {
         $this->score = $score;
         return $this;
     }
 
-    public function isNoSave(): bool
+    public function noSave(): BuilderInterface
     {
-        return $this->noSave;
-    }
-
-    public function setNoSave(bool $noSave): Document
-    {
-        $this->noSave = $noSave;
+        $this->noSave = true;
         return $this;
     }
 
-    public function isReplace(): bool
-    {
-        return $this->replace;
-    }
-
-    public function setReplace(bool $replace): Document
-    {
-        $this->replace = $replace;
-        return $this;
-    }
-
-    public function getPayload()
-    {
-        return $this->payload;
-    }
-
-    public function setPayload($payload)
+    public function payload($payload): BuilderInterface
     {
         $this->payload = $payload;
         return $this;
     }
 
-    public function getLanguage()
-    {
-        return $this->language;
-    }
-
-    public function setLanguage($language)
+    public function language($language): BuilderInterface
     {
         $this->language = $language;
         return $this;

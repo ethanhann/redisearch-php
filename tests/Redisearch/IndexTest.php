@@ -54,7 +54,7 @@ class ClientTest extends TestCase
     {
         $this->subject->create();
 
-        $result = $this->subject->addDocument([
+        $result = $this->subject->add([
             new TextField('title', 'How to be awesome.'),
             new TextField('author', 'Jack'),
             new NumericField('price', 9.99),
@@ -68,7 +68,7 @@ class ClientTest extends TestCase
     {
         $this->subject->create();
 
-        $result = $this->subject->addDocument([
+        $result = $this->subject->add([
             'title' => 'How to be awesome.',
             'author' => 'Jack',
             'price' => 9.99,
@@ -88,7 +88,7 @@ class ClientTest extends TestCase
         $document->price->setValue(9.99);
         $document->stock->setValue(231);
 
-        $result = $this->subject->addDocument($document);
+        $result = $this->subject->add($document);
 
         $this->assertTrue($result);
     }
@@ -96,11 +96,11 @@ class ClientTest extends TestCase
     public function testSearch()
     {
         $this->subject->create();
-        $this->subject->addDocument([
+        $this->subject->add([
             new TextField('title', 'How to be awesome: Part 1.'),
             new TextField('author', 'Jack'),
         ]);
-        $this->subject->addDocument([
+        $this->subject->add([
             new TextField('title', 'How to be awesome: Part 2.'),
             new TextField('author', 'Jack'),
         ]);
@@ -113,7 +113,7 @@ class ClientTest extends TestCase
     public function testSearchForNumeric()
     {
         $this->subject->create();
-        $this->subject->addDocument([
+        $this->subject->add([
             'title' => 'How to be awesome.',
             'author' => 'Jack',
             'price' => 9.99,

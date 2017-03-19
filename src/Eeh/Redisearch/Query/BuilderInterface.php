@@ -2,7 +2,7 @@
 
 namespace Eeh\Redisearch\Query;
 
-use Eeh\Redisearch\SearchResult;
+use Eeh\Redisearch\Query\SearchResult;
 
 interface BuilderInterface
 {

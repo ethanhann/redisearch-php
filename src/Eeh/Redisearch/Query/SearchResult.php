@@ -1,6 +1,6 @@
 <?php
 
-namespace Eeh\Redisearch;
+namespace Eeh\Redisearch\Query;
 
 class SearchResult
 {
