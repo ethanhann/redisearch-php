@@ -130,6 +130,23 @@ abstract class AbstractIndex implements IndexInterface
     }
 
     /**
+     * @param $id
+     * @return bool
+     */
+    public function delete($id)
+    {
+        return $this->redisClient->rawCommand('FT.DEL', [$this->getIndexName(), $id]);
+    }
+
+    /**
+     * @return int
+     */
+    public function optimize()
+    {
+        return $this->redisClient->rawCommand('FT.OPTIMIZE', [$this->getIndexName()]);
+    }
+
+    /**
      * @param bool $noSave
      * @param bool $replace
      * @param null $language
@@ -272,6 +289,85 @@ abstract class AbstractIndex implements IndexInterface
     public function search(string $query, bool $documentsAsArray = false): SearchResult
     {
         return $this->makeQueryBuilder()->search($query, $documentsAsArray);
+    }
+
+    /**
+     * @return QueryBuilderInterface
+     */
+    public function noContent(): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->noContent();
+    }
+
+    /**
+     * @param int $offset
+     * @param int $pageSize
+     * @return QueryBuilderInterface
+     */
+    public function limit(int $offset, int $pageSize = 10): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->limit($offset, $pageSize);
+    }
+
+    /**
+     * @param int $number
+     * @param array $fields
+     * @return QueryBuilderInterface
+     */
+    public function inFields(int $number, array $fields): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->inFields($number, $fields);
+    }
+
+    /**
+     * @param int $number
+     * @param array $keys
+     * @return QueryBuilderInterface
+     */
+    public function inKeys(int $number, array $keys): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->inKeys($number, $keys);
+    }
+
+    /**
+     * @param int $slop
+     * @return QueryBuilderInterface
+     */
+    public function slop(int $slop): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->slop($slop);
+    }
+
+    /**
+     * @return QueryBuilderInterface
+     */
+    public function noStopWords(): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->noStopWords();
+    }
+
+    /**
+     * @return QueryBuilderInterface
+     */
+    public function withPayloads(): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->withPayloads();
+    }
+
+    /**
+     * @return QueryBuilderInterface
+     */
+    public function withScores(): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->withScores();
+    }
+
+    /**
+     * @return QueryBuilderInterface
+     */
+    public function verbatim(): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->verbatim();
     }
 
     /**

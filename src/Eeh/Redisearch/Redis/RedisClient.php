@@ -44,7 +44,7 @@ class RedisClient
             }
         }
         array_unshift($arguments, $command);
-        print PHP_EOL . implode(' ', $arguments);
+//        print PHP_EOL . implode(' ', $arguments);
         return get_class($this->redis) === 'Predis\Client' ?
             $this->redis->executeRaw($arguments) :
             call_user_func_array([$this->redis, 'rawCommand'], $arguments);

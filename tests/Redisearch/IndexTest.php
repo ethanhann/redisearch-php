@@ -147,7 +147,7 @@ class ClientTest extends TestCase
         ]);
         $redis->connect();
         $redisClient = new RedisClient($redis);
-        $subject = (new BookIndex($redisClient, 'PredisClientTest'))
+        $subject = (new TestIndex($redisClient, 'PredisClientTest'))
             ->addTextField('title')
             ->addTextField('author')
             ->addNumericField('price')
