@@ -9,6 +9,7 @@ pages:
 - Getting Started: 'index.md'
 - 'indexing.md'
 - 'searching.md'
+- 'changelog.md'
 
 extra_css:
     - css/style.css

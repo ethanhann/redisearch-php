@@ -2,8 +2,8 @@
 
 namespace Eeh\Tests\Stubs;
 
-use Eeh\RediSearch\AbstractIndex;
+use Eeh\RediSearch\Index;
 
-class IndexWithoutFields extends AbstractIndex
+class IndexWithoutFields extends Index
 {
 }

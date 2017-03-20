@@ -22,26 +22,12 @@ composer install ethanhann/redisearch-php
 require_once 'vendor/autoload.php';
 ```
 
-## Create an Index Class
-
-```php
-<?php
-
-namespace Your\Indexes;
-
-use Eeh\RediSearch\AbstractIndex;
-
-class BookIndex extends AbstractIndex
-{
-}
-```
-
 ## Create the Schema
 
 ```php
 <?php
 
-$bookIndex = new BookIndex();
+$bookIndex = new Index();
 
 $bookIndex->addTextField('title')
     ->addTextField('author')

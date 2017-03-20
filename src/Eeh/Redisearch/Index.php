@@ -15,7 +15,7 @@ use Eeh\RediSearch\Query\BuilderInterface as QueryBuilderInterface;
 use Eeh\RediSearch\Query\SearchResult;
 use Eeh\RediSearch\Redis\RedisClient;
 
-abstract class AbstractIndex implements IndexInterface
+class Index implements IndexInterface
 {
     /** @var RedisClient */
     private $redisClient;
