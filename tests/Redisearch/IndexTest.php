@@ -207,4 +207,23 @@ class ClientTest extends TestCase
 
         $this->assertEquals($result->getCount(), 1);
     }
+
+    public function testAddDocumentWithCustomId()
+    {
+        $this->subject->create();
+        $expectedId = '1';
+        /** @var TestDocument $document */
+        $document = $this->subject->makeDocument($expectedId);
+        $document->title->setValue('How to be awesome.');
+        $document->author->setValue('Jack');
+        $document->price->setValue(9.99);
+        $document->stock->setValue(231);
+
+        $isDocumentAdded = $this->subject->add($document);
+        $result = $this->subject->search('How to be awesome.');
+
+        $this->assertTrue($isDocumentAdded);
+        $this->assertEquals(1, $result->getCount());
+        $this->assertEquals($expectedId, $result->getDocuments()[0]->id);
+    }
 }
