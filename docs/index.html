@@ -55,6 +55,9 @@
                     <li >
                         <a href="searching/">Searching</a>
                     </li>
+                    <li >
+                        <a href="changelog/">Changelog</a>
+                    </li>
                 </ul>
 
             <ul class="nav navbar-nav navbar-right">
@@ -90,7 +93,6 @@
             <li><a href="#requirements">Requirements</a></li>
             <li><a href="#install">Install</a></li>
             <li><a href="#load">Load</a></li>
-            <li><a href="#create-an-index-class">Create an Index Class</a></li>
             <li><a href="#create-the-schema">Create the Schema</a></li>
             <li><a href="#add-a-document">Add a Document</a></li>
             <li><a href="#search-the-index">Search the Index</a></li>
@@ -116,22 +118,10 @@
 require_once 'vendor/autoload.php';
 </code></pre>
 
-<h2 id="create-an-index-class">Create an Index Class</h2>
-<pre><code class="php">&lt;?php
-
-namespace Your\Indexes;
-
-use Eeh\RediSearch\AbstractIndex;
-
-class BookIndex extends AbstractIndex
-{
-}
-</code></pre>
-
 <h2 id="create-the-schema">Create the Schema</h2>
 <pre><code class="php">&lt;?php
 
-$bookIndex = new BookIndex();
+$bookIndex = new Index();
 
 $bookIndex-&gt;addTextField('title')
     -&gt;addTextField('author')
@@ -203,5 +193,5 @@ $firstResult-&gt;author;
 
 <!--
 MkDocs version : 0.16.2
-Build Date UTC : 2017-03-20 14:14:46
+Build Date UTC : 2017-03-20 23:59:10
 -->
