@@ -12,7 +12,7 @@ interface IndexInterface extends DocumentBuilderInterface, QueryBuilderInterface
     public function create();
     public function drop();
     public function info();
-    public function makeDocument(): Document;
+    public function makeDocument($id = null): Document;
     public function getRedisClient(): RedisClient;
     public function setRedisClient(RedisClient $redisClient): IndexInterface;
     public function getIndexName(): string;

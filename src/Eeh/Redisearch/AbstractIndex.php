@@ -147,6 +147,7 @@ abstract class AbstractIndex implements IndexInterface
     }
 
     /**
+     * @param null $id
      * @return Document
      */
     public function makeDocument($id = null): Document
