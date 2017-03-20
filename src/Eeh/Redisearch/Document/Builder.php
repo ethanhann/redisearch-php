@@ -51,7 +51,7 @@ class Builder implements BuilderInterface
     {
         $properties = [
             $this->indexName,
-            $this->id ?? uniqid(true),
+            $this->id ?? $document->getId() ?? uniqid(true),
             $this->score,
         ];
 
