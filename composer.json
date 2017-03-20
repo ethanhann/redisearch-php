@@ -3,12 +3,12 @@
     "type": "library",
     "autoload": {
         "psr-4": {
-            "Eeh\\": "src/Eeh"
+            "Ehann\\": "src/Ehann"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Eeh\\Tests\\": "tests/"
+            "Ehann\\Tests\\": "tests/"
         }
     },
     "license": "MIT",

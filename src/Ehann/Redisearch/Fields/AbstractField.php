@@ -1,6 +1,6 @@
 <?php
 
-namespace Eeh\RediSearch\Fields;
+namespace Ehann\RediSearch\Fields;
 
 abstract class AbstractField implements FieldInterface
 {

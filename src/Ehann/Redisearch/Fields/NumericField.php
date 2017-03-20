@@ -1,6 +1,6 @@
 <?php
 
-namespace Eeh\RediSearch\Fields;
+namespace Ehann\RediSearch\Fields;
 
 class NumericField extends AbstractField
 {

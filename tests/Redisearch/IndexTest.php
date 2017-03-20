@@ -1,16 +1,16 @@
 <?php
 
-namespace Eeh\Tests\RediSearch;
+namespace Ehann\Tests\RediSearch;
 
-use Eeh\RediSearch\Exceptions\NoFieldsInIndexException;
-use Eeh\RediSearch\Fields\GeoLocation;
-use Eeh\RediSearch\Fields\NumericField;
-use Eeh\RediSearch\Fields\TextField;
-use Eeh\RediSearch\IndexInterface;
-use Eeh\RediSearch\Redis\RedisClient;
-use Eeh\Tests\Stubs\TestDocument;
-use Eeh\Tests\Stubs\TestIndex;
-use Eeh\Tests\Stubs\IndexWithoutFields;
+use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
+use Ehann\RediSearch\Fields\GeoLocation;
+use Ehann\RediSearch\Fields\NumericField;
+use Ehann\RediSearch\Fields\TextField;
+use Ehann\RediSearch\IndexInterface;
+use Ehann\RediSearch\Redis\RedisClient;
+use Ehann\Tests\Stubs\TestDocument;
+use Ehann\Tests\Stubs\TestIndex;
+use Ehann\Tests\Stubs\IndexWithoutFields;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
 

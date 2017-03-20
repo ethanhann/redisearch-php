@@ -83,9 +83,9 @@ $this->add($document);
 
 namespace Your\Documents;
 
-use Eeh\RediSearch\Document\Document;
-use Eeh\RediSearch\Fields\NumericField;
-use Eeh\RediSearch\Fields\TextField;
+use Ehann\RediSearch\Document\Document;
+use Ehann\RediSearch\Fields\NumericField;
+use Ehann\RediSearch\Fields\TextField;
 
 /**
  * @property TextField title

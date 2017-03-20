@@ -1,8 +1,8 @@
 <?php
 
-namespace Eeh\Tests\Stubs;
+namespace Ehann\Tests\Stubs;
 
-use Eeh\RediSearch\Index;
+use Ehann\RediSearch\Index;
 
 class TestIndex extends Index
 {

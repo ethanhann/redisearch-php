@@ -1,19 +1,19 @@
 <?php
 
-namespace Eeh\RediSearch;
+namespace Ehann\RediSearch;
 
-use Eeh\RediSearch\Document\Document;
-use Eeh\RediSearch\Document\Builder as DocumentBuilder;
-use Eeh\RediSearch\Document\BuilderInterface as DocumentBuilderInterface;
-use Eeh\RediSearch\Exceptions\NoFieldsInIndexException;
-use Eeh\RediSearch\Fields\FieldInterface;
-use Eeh\RediSearch\Fields\GeoField;
-use Eeh\RediSearch\Fields\NumericField;
-use Eeh\RediSearch\Fields\TextField;
-use Eeh\RediSearch\Query\Builder as QueryBuilder;
-use Eeh\RediSearch\Query\BuilderInterface as QueryBuilderInterface;
-use Eeh\RediSearch\Query\SearchResult;
-use Eeh\RediSearch\Redis\RedisClient;
+use Ehann\RediSearch\Document\Document;
+use Ehann\RediSearch\Document\Builder as DocumentBuilder;
+use Ehann\RediSearch\Document\BuilderInterface as DocumentBuilderInterface;
+use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
+use Ehann\RediSearch\Fields\FieldInterface;
+use Ehann\RediSearch\Fields\GeoField;
+use Ehann\RediSearch\Fields\NumericField;
+use Ehann\RediSearch\Fields\TextField;
+use Ehann\RediSearch\Query\Builder as QueryBuilder;
+use Ehann\RediSearch\Query\BuilderInterface as QueryBuilderInterface;
+use Ehann\RediSearch\Query\SearchResult;
+use Ehann\RediSearch\Redis\RedisClient;
 
 class Index implements IndexInterface
 {

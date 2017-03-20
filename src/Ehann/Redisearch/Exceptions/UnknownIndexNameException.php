@@ -1,6 +1,6 @@
 <?php
 
-namespace Eeh\RediSearch\Exceptions;
+namespace Ehann\RediSearch\Exceptions;
 
 use Exception;
 

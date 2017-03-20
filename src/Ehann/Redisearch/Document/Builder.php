@@ -1,11 +1,11 @@
 <?php
 
-namespace Eeh\RediSearch\Document;
+namespace Ehann\RediSearch\Document;
 
-use Eeh\RediSearch\Exceptions\FieldNotInSchemaException;
-use Eeh\RediSearch\Fields\FieldFactory;
-use Eeh\RediSearch\Fields\FieldInterface;
-use Eeh\RediSearch\Redis\RedisClient;
+use Ehann\RediSearch\Exceptions\FieldNotInSchemaException;
+use Ehann\RediSearch\Fields\FieldFactory;
+use Ehann\RediSearch\Fields\FieldInterface;
+use Ehann\RediSearch\Redis\RedisClient;
 
 class Builder implements BuilderInterface
 {

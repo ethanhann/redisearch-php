@@ -1,6 +1,6 @@
 <?php
 
-namespace Eeh\RediSearch\Query;
+namespace Ehann\RediSearch\Query;
 
 interface BuilderInterface
 {
