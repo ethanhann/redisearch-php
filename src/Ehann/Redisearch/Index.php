@@ -389,6 +389,15 @@ class Index implements IndexInterface
     }
 
     /**
+     * @param array $documents
+     * @param bool $disableAtomicity
+     */
+    public function addMany(array $documents, $disableAtomicity = false)
+    {
+        $this->makeDocumentBuilder()->addMany($documents, $disableAtomicity);
+    }
+
+    /**
      * @param $document
      * @return bool
      */

@@ -15,14 +15,14 @@ class Builder implements BuilderInterface
     protected $replace = false;
     protected $payload;
     protected $language;
-    /** @var Redis */
-    private $redis;
+    /** @var RedisClient */
+    private $redisClient;
     /** @var string */
     private $indexName;
 
     public function __construct(RedisClient $redis, string $indexName)
     {
-        $this->redis = $redis;
+        $this->redisClient = $redis;
         $this->indexName = $indexName;
     }
 
@@ -30,24 +30,33 @@ class Builder implements BuilderInterface
     {
         $document = new Document($id);
         foreach ($fields as $index => $field) {
-            if (is_string($index)) {
+            if ($field instanceof FieldInterface) {
+                if (!in_array($field->getName(), array_keys($availableSchemaFields))) {
+                    throw new FieldNotInSchemaException($field->getName());
+                }
+                $document->{$field->getName()} = $field;
+            } elseif (is_string($index)) {
                 if (!isset($availableSchemaFields[$index])) {
                     throw new FieldNotInSchemaException($index);
                 }
                 $document->{$index} = ($field instanceof FieldInterface) ?
                     $availableSchemaFields[$index]->setValue($field) :
                     FieldFactory::make($index, $field);
-            } elseif ($field instanceof FieldInterface) {
-                if (!in_array($field->getName(), array_keys($availableSchemaFields))) {
-                    throw new FieldNotInSchemaException($field->getName());
-                }
-                $document->{$field->getName()} = $field;
             }
         }
         return $document;
     }
 
-    public function add($document): bool
+    public function addMany(array $documents, $disableAtomicity = false)
+    {
+        $pipe = $this->redisClient->multi($disableAtomicity);
+        foreach ($documents as $document) {
+            $this->_add($document);
+        }
+        $pipe->exec();
+    }
+
+    protected function _add($document)
     {
         $properties = [
             $this->indexName,
@@ -83,7 +92,12 @@ class Builder implements BuilderInterface
             }
         }
 
-        return $this->redis->rawCommand('FT.ADD', $properties);
+        return $this->redisClient->rawCommand('FT.ADD', $properties);
+    }
+
+    public function add($document): bool
+    {
+        return $this->_add($document);
     }
 
     public function replace($document): bool

@@ -117,7 +117,7 @@ class ClientTest extends TestCase
 
         $result = $this->subject->numericFilter('price', 19.99)->search('Part 2');
         $this->assertTrue($isUpdated);
-        $this->assertEquals($result->getCount(), 1);
+        $this->assertEquals(1, $result->getCount());
     }
 
     public function testSearch()
@@ -134,37 +134,26 @@ class ClientTest extends TestCase
 
         $result = $this->subject->search('awesome');
 
-        $this->assertEquals($result->getCount(), 2);
+        $this->assertEquals(2, $result->getCount());
     }
 
     public function testSearchWithPredis()
     {
-        $redis = new Client([
-            'scheme' => 'tcp',
-            'host' => getenv('REDIS_HOST') ?? '127.0.0.1',
-            'port' => getenv('REDIS_PORT') ?? 6379,
-            'database' => getenv('REDIS_DB') ?? 0,
-        ]);
-        $redis->connect();
-        $redisClient = new RedisClient($redis);
-        $subject = (new TestIndex($redisClient, 'PredisClientTest'))
-            ->addTextField('title')
-            ->addTextField('author')
-            ->addNumericField('price')
-            ->addNumericField('stock');
-        $subject->create();
-        $subject->add([
+        $this->subject->setIndexName('PredisClientTest')
+            ->setRedisClient(new RedisClient($this->makePredisConnection()))
+            ->create();
+        $this->subject->add([
             new TextField('title', 'How to be awesome: Part 1.'),
             new TextField('author', 'Jack'),
         ]);
-        $subject->add([
+        $this->subject->add([
             new TextField('title', 'How to be awesome: Part 2.'),
             new TextField('author', 'Jack'),
         ]);
 
-        $result = $subject->search('awesome');
+        $result = $this->subject->search('awesome');
 
-        $this->assertEquals($result->getCount(), 2);
+        $this->assertEquals(2, $result->getCount());
     }
 
     public function testSearchForNumeric()
@@ -205,7 +194,8 @@ class ClientTest extends TestCase
             ->search('Foo')
         ;
 
-        $this->assertEquals($result->getCount(), 1);
+        $this->assertEquals(1, $result->getCount());
+
     }
 
     public function testAddDocumentWithCustomId()
@@ -225,5 +215,112 @@ class ClientTest extends TestCase
         $this->assertTrue($isDocumentAdded);
         $this->assertEquals(1, $result->getCount());
         $this->assertEquals($expectedId, $result->getDocuments()[0]->id);
+    }
+
+    public function testBatchIndexWithAddUsingPhpRedis()
+    {
+        $this->subject->create();
+        $expectedDocumentCount = 10;
+        $documents = $this->makeDocuments();
+        $expectedCount = count($documents);
+
+        $start = microtime(true);
+        foreach ($documents as $document) {
+            $this->subject->add($document);
+        }
+        print 'Batch insert time: ' . round(microtime(true) - $start, 4) . PHP_EOL;
+        $result = $this->subject->search('How to be awesome.');
+
+        $this->assertEquals($expectedCount, $result->getCount());
+        $this->assertEquals($expectedDocumentCount, count($result->getDocuments()));
+    }
+
+    public function testBatchIndexWithAddManyUsingPhpRedis()
+    {
+        $this->subject->create();
+        $expectedDocumentCount = 10;
+        $documents = $this->makeDocuments();
+        $expectedCount = count($documents);
+
+        $start = microtime(true);
+        $this->subject->addMany($documents);
+        print 'Batch insert time: ' . round(microtime(true) - $start, 4) . PHP_EOL;
+        $result = $this->subject->search('How to be awesome.');
+
+        $this->assertEquals($expectedCount, $result->getCount());
+        $this->assertEquals($expectedDocumentCount, count($result->getDocuments()));
+    }
+
+    public function testBatchIndexWithAddManyUsingPhpRedisAndNoAtomicity()
+    {
+        $this->subject->create();
+        $expectedDocumentCount = 10;
+        $documents = $this->makeDocuments();
+        $expectedCount = count($documents);
+
+        $start = microtime(true);
+        $this->subject->addMany($documents, 1000, true);
+        print 'Batch insert time: ' . round(microtime(true) - $start, 4) . PHP_EOL;
+        $result = $this->subject->search('How to be awesome.');
+
+        $this->assertEquals($expectedCount, $result->getCount());
+        $this->assertEquals($expectedDocumentCount, count($result->getDocuments()));
+    }
+
+    public function testBatchIndexWithAddUsingPredisClient()
+    {
+        $this->subject->setRedisClient(new RedisClient($this->makePredisConnection()))->create();
+        $expectedDocumentCount = 10;
+        $documents = $this->makeDocuments();
+        $expectedCount = count($documents);
+
+        $start = microtime(true);
+        foreach ($documents as $document) {
+            $this->subject->add($document);
+        }
+        print 'Batch insert time: ' . round(microtime(true) - $start, 4) . PHP_EOL;
+        $result = $this->subject->search('How to be awesome.');
+
+        $this->assertEquals($expectedCount, $result->getCount());
+        $this->assertEquals($expectedDocumentCount, count($result->getDocuments()));
+    }
+
+    public function testBatchIndexWithAddManyUsingPredisClient()
+    {
+        $this->subject->setRedisClient(new RedisClient($this->makePredisConnection()))->create();
+        $expectedDocumentCount = 10;
+        $documents = $this->makeDocuments();
+        $expectedCount = count($documents);
+
+        $start = microtime(true);
+        $this->subject->addMany($documents);
+        print 'Batch insert time: ' . round(microtime(true) - $start, 4) . PHP_EOL;
+        $result = $this->subject->search('How to be awesome.');
+
+        $this->assertEquals($expectedCount, $result->getCount());
+        $this->assertEquals($expectedDocumentCount, count($result->getDocuments()));
+    }
+
+    private function makeDocuments($count = 30000): array
+    {
+        $documents = [];
+        foreach (range(1, $count) as $id) {
+            $document = $this->subject->makeDocument($id);
+            $document->title->setValue('How to be awesome.');
+            $documents[] = $document;
+        }
+        return $documents;
+    }
+
+    private function makePredisConnection()
+    {
+        $redis = new Client([
+            'scheme' => 'tcp',
+            'host' => getenv('REDIS_HOST') ?? '127.0.0.1',
+            'port' => getenv('REDIS_PORT') ?? 6379,
+            'database' => getenv('REDIS_DB') ?? 0,
+        ]);
+        $redis->connect();
+        return $redis;
     }
 }
