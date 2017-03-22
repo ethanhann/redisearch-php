@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.6.0
+
+* Add [batch indexing](indexing.md#batch-indexing).
+
 ## 0.5.0
 
 * Rename vendor namespace from **Eeh** to **Ehann**
