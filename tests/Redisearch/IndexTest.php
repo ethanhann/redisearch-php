@@ -301,7 +301,7 @@ class ClientTest extends TestCase
         $this->assertEquals($expectedDocumentCount, count($result->getDocuments()));
     }
 
-    private function makeDocuments($count = 30000): array
+    private function makeDocuments($count = 3000): array
     {
         $documents = [];
         foreach (range(1, $count) as $id) {
