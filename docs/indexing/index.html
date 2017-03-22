@@ -93,7 +93,7 @@
             <li><a href="#field-types">Field Types</a></li>
             <li><a href="#adding-documents">Adding Documents</a></li>
             <li><a href="#updating-a-document">Updating a Document</a></li>
-            <li><a href="#indexing-an-external-collection">Indexing an External Collection</a></li>
+            <li><a href="#batch-indexing-an-external-collection">Batch Indexing (an External Collection)</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
@@ -223,20 +223,28 @@ $newDocument-&gt;price-&gt;setValue(19.99);
 $bookIndex-&gt;replace($newDocument);
 </code></pre>
 
-<h2 id="indexing-an-external-collection">Indexing an External Collection</h2>
-<p>To index an external collection, make sure to set the document's ID to the ID of the record in the external collection.</p>
+<h2 id="batch-indexing-an-external-collection">Batch Indexing (an External Collection)</h2>
+<p>Batch indexing is possible with the <strong>addMany</strong> method.
+To index an external collection, make sure to set the document's ID to the ID of the record in the external collection.</p>
 <pre><code class="php">&lt;?php
 
 // Get a record set from your DB (or some other datastore)...
 $records = $someDatabase-&gt;findAll();
 
+$documents = [];
 foreach ($records as $record) {
     // Make a new document with the external record's ID.
     $newDocument = $bookIndex-&gt;makeDocument($record-&gt;id);
     $newDocument-&gt;title-&gt;setValue($record-&gt;title);
     $newDocument-&gt;author-&gt;setValue($record-&gt;author);
-    $index-&gt;add($newDocument);
+    $documents[] = $newDocument; 
 }
+
+// Add all the documents at once.
+$index-&gt;addMany($documents);
+
+// It is possible to increase indexing speed by disabling atomicity, but it is only possible with phpredis.
+$index-&gt;addMany($documents, true);
 </code></pre></div>
         </div>
 

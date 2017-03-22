@@ -145,8 +145,9 @@ $newDocument->price->setValue(19.99);
 $bookIndex->replace($newDocument);
 ```
 
-## Indexing an External Collection
+## Batch Indexing (an External Collection)
 
+Batch indexing is possible with the **addMany** method.
 To index an external collection, make sure to set the document's ID to the ID of the record in the external collection.
 
 ```php
@@ -155,11 +156,18 @@ To index an external collection, make sure to set the document's ID to the ID of
 // Get a record set from your DB (or some other datastore)...
 $records = $someDatabase->findAll();
 
+$documents = [];
 foreach ($records as $record) {
     // Make a new document with the external record's ID.
     $newDocument = $bookIndex->makeDocument($record->id);
     $newDocument->title->setValue($record->title);
     $newDocument->author->setValue($record->author);
-    $index->add($newDocument);
+    $documents[] = $newDocument; 
 }
+
+// Add all the documents at once.
+$index->addMany($documents);
+
+// It is possible to increase indexing speed by disabling atomicity, but it is only possible with phpredis.
+$index->addMany($documents, true);
 ```
