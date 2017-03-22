@@ -36,6 +36,23 @@ class RedisClient
         $this->redis->flushAll();
     }
 
+    public function isPredisClient()
+    {
+        return get_class($this->redis) === 'Predis\Client';
+    }
+
+    public function isPhpRedis()
+    {
+        return get_class($this->redis) === 'Redis';
+    }
+
+    public function multi(bool $usePipelineForPhpRedis = false)
+    {
+        return $this->isPredisClient() ?
+            $this->redis->pipeline()  :
+            $this->redis->multi($usePipelineForPhpRedis ? \Redis::PIPELINE : \Redis::MULTI) ;
+    }
+
     public function rawCommand(string $command, array $arguments)
     {
         foreach ($arguments as $index => $argument) {
@@ -45,7 +62,7 @@ class RedisClient
         }
         array_unshift($arguments, $command);
 //        print PHP_EOL . implode(' ', $arguments);
-        return get_class($this->redis) === 'Predis\Client' ?
+        return $this->isPredisClient() ?
             $this->redis->executeRaw($arguments) :
             call_user_func_array([$this->redis, 'rawCommand'], $arguments);
     }

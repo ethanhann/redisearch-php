@@ -109,7 +109,17 @@ class Builder implements BuilderInterface
             'FT.SEARCH',
             array_merge(
                 [$this->indexName, $query],
-                [$this->noContent, $this->inFields, $this->inKeys],
+                [
+                    $this->limit,
+                    $this->slop,
+                    $this->verbatim,
+                    $this->withScores,
+                    $this->withPayloads,
+                    $this->noStopWords,
+                    $this->noContent,
+                    $this->inFields,
+                    $this->inKeys
+                ],
                 $this->numericFilters,
                 $this->geoFilters
             )
@@ -121,6 +131,9 @@ class Builder implements BuilderInterface
                 throw new Exception($rawResult);
             }
         }
-        return SearchResult::makeSearchResult($rawResult, $documentsAsArray);
+
+        return $rawResult ?
+            SearchResult::makeSearchResult($rawResult, $documentsAsArray) :
+            new SearchResult(0, []);
     }
 }

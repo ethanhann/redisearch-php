@@ -35,7 +35,7 @@ class SearchResult
 
         $count = array_shift($rawRediSearchResult);
         $documents = [];
-        for ($i = 0; $i <= $count; $i += 2) {
+        for ($i = 0; $i < count($rawRediSearchResult); $i += 2) {
             $document = $documentsAsArray ? [] : new \stdClass();
             $documentsAsArray ?
                 $document['id'] = $rawRediSearchResult[$i] :
