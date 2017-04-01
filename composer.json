@@ -28,6 +28,7 @@
         "phpunit/phpunit": "^6.0",
         "mockery/mockery": "^0.9.9",
         "predis/predis": "^1.1",
-        "friendsofphp/php-cs-fixer": "^2.2"
+        "friendsofphp/php-cs-fixer": "^2.2",
+        "consolidation/robo": "^1.0"
     }
 }
