@@ -15,7 +15,7 @@ class RedisClient
             $this->redis->connect($hostname, $port);
             $this->redis->select($db);
             $this->redis->auth($password);
-        } else if ($redis === 'Predis\Client') {
+        } elseif ($redis === 'Predis\Client') {
             $this->redis = new $redis([
                 'scheme' => 'tcp',
                 'host' => $hostname,
@@ -24,7 +24,7 @@ class RedisClient
                 'password' => $password,
             ]);
             $this->redis->connect();
-        } else if (in_array(get_class($redis), ['Redis', 'Predis\Client'])) {
+        } elseif (in_array(get_class($redis), ['Redis', 'Predis\Client'])) {
             $this->redis = $redis;
         } else {
             throw new InvalidRedisClientClassException();
