@@ -3,7 +3,7 @@
     "type": "library",
     "autoload": {
         "psr-4": {
-            "Ehann\\": "src/Ehann"
+            "Ehann\\RediSearch\\": "src"
         }
     },
     "autoload-dev": {
