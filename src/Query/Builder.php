@@ -132,8 +132,12 @@ class Builder implements BuilderInterface
             }
         }
 
-        return $rawResult ?
-            SearchResult::makeSearchResult($rawResult, $documentsAsArray) :
-            new SearchResult(0, []);
+        return $rawResult ? SearchResult::makeSearchResult(
+            $rawResult,
+            $documentsAsArray,
+            $this->withScores !== '',
+            $this->withPayloads !== '',
+            $this->noContent !== ''
+        ) : new SearchResult(0, []);
     }
 }
