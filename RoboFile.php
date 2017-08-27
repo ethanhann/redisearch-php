@@ -1,6 +1,7 @@
 <?php
 
 use Robo\Tasks;
+use Robo\Collection\Collection;
 
 require_once 'vendor/autoload.php';
 
@@ -8,8 +9,10 @@ class RoboFile extends Tasks
 {
     function build()
     {
-        $this->fixCodeStyle();
-        $this->test();
+        return (new Collection())
+            ->add($this->taskFixCodeStyle())
+            ->add($this->taskPhpUnit())
+            ->run();
     }
 
     function test()
@@ -17,8 +20,13 @@ class RoboFile extends Tasks
         return $this->taskPhpUnit()->run();
     }
 
+    function taskFixCodeStyle()
+    {
+        return $this->taskExec('./vendor/bin/php-cs-fixer fix src');
+    }
+
     function fixCodeStyle()
     {
-        return $this->_exec('./vendor/bin/php-cs-fixer fix src');
+        return $this->taskFixCodeStyle()->run();
     }
 }
