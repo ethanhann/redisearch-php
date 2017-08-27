@@ -14,11 +14,11 @@ class RoboFile extends Tasks
 
     function test()
     {
-        $this->taskPhpUnit()->run();
+        return $this->taskPhpUnit()->run();
     }
 
     function fixCodeStyle()
     {
-        $this->_exec('./vendor/bin/php-cs-fixer fix src');
+        return $this->_exec('./vendor/bin/php-cs-fixer fix src');
     }
 }
