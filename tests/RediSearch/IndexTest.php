@@ -242,7 +242,7 @@ class ClientAbstractTest extends AbstractTestCase
         $this->assertEquals($expectedDocumentCount, count($result->getDocuments()));
     }
 
-    public function testBatchIndexWithAddManyUsingPhpRedisAndNoAtomicity()
+    public function testBatchIndexWithAddManyUsingPhpRedisWithAtomicityDisabled()
     {
         $this->subject->create();
         $expectedDocumentCount = 10;
@@ -250,7 +250,7 @@ class ClientAbstractTest extends AbstractTestCase
         $expectedCount = count($documents);
 
         $start = microtime(true);
-        $this->subject->addMany($documents, 1000, true);
+        $this->subject->addMany($documents, true);
         print 'Batch insert time: ' . round(microtime(true) - $start, 4) . PHP_EOL;
         $result = $this->subject->search('How to be awesome.');
 
