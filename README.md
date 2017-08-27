@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ethanhann/redisearch-php.svg?branch=master)](https://travis-ci.org/ethanhann/redisearch-php)
+
 # Quick Start
 
 RediSearch-PHP is a PHP client library for the [RediSearch](http://redisearch.io/) module which adds Full-Text search to Redis.
