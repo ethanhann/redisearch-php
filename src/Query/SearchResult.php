@@ -30,8 +30,7 @@ class SearchResult
         bool $withScores = false,
         bool $withPayloads = false,
         bool $noContent = false
-    )
-    {
+    ) {
         $documentWidth = $noContent ? 1 : 2;
 
         if (!$rawRediSearchResult) {
