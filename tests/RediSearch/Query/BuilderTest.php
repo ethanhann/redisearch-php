@@ -3,27 +3,17 @@
 namespace Ehann\Tests\RediSearch;
 
 use Ehann\RediSearch\Query\Builder;
-use Ehann\RediSearch\Redis\RedisClient;
 use Ehann\Tests\Stubs\TestIndex;
-use PHPUnit\Framework\TestCase;
+use Ehann\Tests\AbstractTestCase;
 
-class BuilderTest extends TestCase
+class BuilderTest extends AbstractTestCase
 {
-    private $indexName;
     /** @var Builder */
     private $subject;
-    /** @var RedisClient */
-    private $redisClient;
 
     public function setUp()
     {
         $this->indexName = 'QueryBuilderTest';
-        $this->redisClient = new RedisClient(
-            \Redis::class,
-            getenv('REDIS_HOST') ?? '127.0.0.1',
-            getenv('REDIS_PORT') ?? 6379,
-            getenv('REDIS_DB') ?? 0
-        );
         $index = (new TestIndex($this->redisClient, $this->indexName))
             ->addTextField('title')
             ->addTextField('author')
@@ -63,5 +53,28 @@ class BuilderTest extends TestCase
         $result = $this->subject->withScores()->search('awesome');
 
         $this->assertTrue($result->getCount() === 1);
+        $this->assertTrue(property_exists($result->getDocuments()[0], 'score'));
+    }
+
+    public function testSearchWithPayloads()
+    {
+        $result = $this->subject->withPayloads()->search('awesome');
+
+        $this->assertEquals(1, $result->getCount());
+        $this->assertTrue(property_exists($result->getDocuments()[0], 'payload'));
+    }
+
+    public function testVerbatimSearch()
+    {
+        $result = $this->subject->verbatim()->search('Shoes in the 22st Century');
+
+        $this->assertEquals(1, $result->getCount());
+    }
+
+    public function testVerbatimSearchFails()
+    {
+        $result = $this->subject->verbatim()->search('Shoess');
+
+        $this->assertEquals(0, $result->getCount());
     }
 }

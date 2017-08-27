@@ -11,26 +11,17 @@ use Ehann\RediSearch\Redis\RedisClient;
 use Ehann\Tests\Stubs\TestDocument;
 use Ehann\Tests\Stubs\TestIndex;
 use Ehann\Tests\Stubs\IndexWithoutFields;
-use PHPUnit\Framework\TestCase;
+use Ehann\Tests\AbstractTestCase;
 use Predis\Client;
 
-class ClientTest extends TestCase
+class ClientAbstractTest extends AbstractTestCase
 {
-    private $indexName;
     /** @var IndexInterface */
     private $subject;
-    /** @var RedisClient */
-    private $redisClient;
 
     public function setUp()
     {
         $this->indexName = 'ClientTest';
-        $this->redisClient = new RedisClient(
-            \Redis::class,
-            getenv('REDIS_HOST') ?? '127.0.0.1',
-            getenv('REDIS_PORT') ?? 6379,
-            getenv('REDIS_DB') ?? 0
-        );
         $this->subject = (new TestIndex($this->redisClient, $this->indexName))
             ->addTextField('title')
             ->addTextField('author')
