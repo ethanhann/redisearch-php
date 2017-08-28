@@ -7,5 +7,7 @@ language: php
 php:
   - '7.0'
   - '7.1'
-before_script: composer install
+before_script:
+  - pecl upgrade redis
+  - composer install
 script: vendor/bin/robo build
