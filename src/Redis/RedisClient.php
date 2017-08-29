@@ -24,7 +24,7 @@ class RedisClient
                 'password' => $password,
             ]);
             $this->redis->connect();
-        } elseif (in_array(get_class($redis), ['Redis', 'Predis\Client'])) {
+        } elseif (is_object($redis) && in_array(get_class($redis), ['Redis', 'Predis\Client'])) {
             $this->redis = $redis;
         } else {
             throw new InvalidRedisClientClassException();

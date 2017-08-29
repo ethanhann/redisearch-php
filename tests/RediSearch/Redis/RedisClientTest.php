@@ -2,6 +2,7 @@
 
 namespace Ehann\Tests\RediSearch\Redis;
 
+use Ehann\RediSearch\Exceptions\InvalidRedisClientClassException;
 use Ehann\RediSearch\Redis\RedisClient;
 use Ehann\Tests\AbstractTestCase;
 use Predis\Client;
@@ -59,5 +60,12 @@ class RedisClientTest extends AbstractTestCase
 
         $this->assertTrue($redisClient->isPredisClient());
         $this->assertFalse($redisClient->isPhpRedis());
+    }
+
+    public function testShouldThrowInvalidRedisClientClassException()
+    {
+        $this->expectException(InvalidRedisClientClassException::class);
+
+        new RedisClient('foo');
     }
 }
