@@ -8,7 +8,7 @@ class RedisClient
 {
     private $redis;
 
-    public function __construct($redis = 'Redis', $hostname = '127.0.0.1', $port = null, $db = 0, $password = '')
+    public function __construct($redis = 'Redis', $hostname = '127.0.0.1', $port = 6379, $db = 0, $password = null)
     {
         if ($redis === 'Redis') {
             $this->redis = new $redis;
@@ -49,8 +49,8 @@ class RedisClient
     public function multi(bool $usePipelineForPhpRedis = false)
     {
         return $this->isPredisClient() ?
-            $this->redis->pipeline()  :
-            $this->redis->multi($usePipelineForPhpRedis ? \Redis::PIPELINE : \Redis::MULTI) ;
+            $this->redis->pipeline() :
+            $this->redis->multi($usePipelineForPhpRedis ? \Redis::PIPELINE : \Redis::MULTI);
     }
 
     public function rawCommand(string $command, array $arguments)
