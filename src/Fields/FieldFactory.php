@@ -17,6 +17,6 @@ class FieldFactory
         if ($value instanceof GeoLocation) {
             return new GeoField($name, $value);
         }
-        throw new InvalidArgumentException('There is no mapping field type between for the value. ' . $value);
+        throw new InvalidArgumentException('There is no mapping field type between for the value.');
     }
 }

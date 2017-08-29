@@ -14,7 +14,7 @@ use Ehann\Tests\Stubs\IndexWithoutFields;
 use Ehann\Tests\AbstractTestCase;
 use Predis\Client;
 
-class ClientAbstractTest extends AbstractTestCase
+class IndexTest extends AbstractTestCase
 {
     /** @var IndexInterface */
     private $subject;
