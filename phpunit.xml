@@ -23,9 +23,11 @@
         </whitelist>
     </filter>
     <php>
+        <!-- <env name="REDIS_LIBRARY" value="PhpRedis" /> -->
+        <env name="REDIS_LIBRARY" value="Predis" />
         <env name="REDIS_HOST" value="localhost" />
         <env name="REDIS_PORT" value="6379" />
-        <env name="REDIS_DB" value="15" />
+        <env name="REDIS_DB" value="0" />
     </php>
     <listeners>
         <listener class="Ehann\Tests\TestTimeListener" />
