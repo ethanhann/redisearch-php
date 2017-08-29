@@ -105,25 +105,26 @@ class Builder implements BuilderInterface
 
     public function search(string $query, bool $documentsAsArray = false): SearchResult
     {
-        $rawResult = $this->redis->rawCommand(
-            'FT.SEARCH',
-            array_merge(
-                [$this->indexName, $query],
-                [
-                    $this->limit,
-                    $this->slop,
-                    $this->verbatim,
-                    $this->withScores,
-                    $this->withPayloads,
-                    $this->noStopWords,
-                    $this->noContent,
-                    $this->inFields,
-                    $this->inKeys
-                ],
-                $this->numericFilters,
-                $this->geoFilters
-            )
-        );
+        $args = array_filter(array_merge(
+            [$this->indexName, $query],
+            [
+                $this->limit,
+                $this->slop,
+                $this->verbatim,
+                $this->withScores,
+                $this->withPayloads,
+                $this->noStopWords,
+                $this->noContent,
+                $this->inFields,
+                $this->inKeys
+            ],
+            $this->numericFilters,
+            explode(' ', array_reduce($this->geoFilters, function ($previous, $next) {
+                return $previous . $next;
+            }))
+        ));
+
+        $rawResult = $this->redis->rawCommand('FT.SEARCH', $args);
         if (is_string($rawResult)) {
             if ($rawResult === 'Unknown Index name') {
                 throw new UnknownIndexNameException();
