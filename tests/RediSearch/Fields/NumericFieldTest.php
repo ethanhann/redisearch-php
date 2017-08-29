@@ -1,6 +1,6 @@
 <?php
 
-namespace Ehann\Tests\RediSearch;
+namespace Ehann\Tests\RediSearch\Fields;
 
 use Ehann\RediSearch\Fields\NumericField;
 use PHPUnit\Framework\TestCase;

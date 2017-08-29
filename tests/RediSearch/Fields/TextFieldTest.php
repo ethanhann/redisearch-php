@@ -1,6 +1,6 @@
 <?php
 
-namespace Ehann\Tests\RediSearch;
+namespace Ehann\Tests\RediSearch\Fields;
 
 use Ehann\RediSearch\Fields\TextField;
 use PHPUnit\Framework\TestCase;
