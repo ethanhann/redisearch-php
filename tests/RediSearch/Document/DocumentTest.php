@@ -1,6 +1,6 @@
 <?php
 
-namespace Ehann\Tests\RediSearch\Exceptions;
+namespace Ehann\Tests\RediSearch\Document;
 
 use Ehann\RediSearch\Document\Document;
 use Ehann\RediSearch\Fields\FieldFactory;
