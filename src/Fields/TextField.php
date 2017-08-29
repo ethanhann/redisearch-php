@@ -22,11 +22,6 @@ class TextField extends AbstractField
         return $this;
     }
 
-    public function make(): FieldInterface
-    {
-        return (new TextField($this->getName()))->getValue();
-    }
-
     public function getTypeDefinition(): array
     {
         $properties = parent::getTypeDefinition();
