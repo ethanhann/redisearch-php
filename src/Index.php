@@ -57,6 +57,9 @@ class Index implements IndexInterface
             if ($field instanceof FieldInterface) {
                 $properties[] = $field->getName();
                 $properties[] = $field->getType();
+                if ($field->isSortable()) {
+                    $properties[] = 'SORTABLE';
+                }
                 $hasAtLeastOneField = true;
             }
         }
@@ -85,31 +88,34 @@ class Index implements IndexInterface
     /**
      * @param string $name
      * @param float $weight
+     * @param bool $sortable
      * @return IndexInterface
      */
-    public function addTextField(string $name, float $weight = 1.0): IndexInterface
+    public function addTextField(string $name, float $weight = 1.0, bool $sortable = false): IndexInterface
     {
-        $this->$name = (new TextField($name))->setWeight($weight);
+        $this->$name = (new TextField($name, null, $sortable))->setWeight($weight);
         return $this;
     }
 
     /**
      * @param string $name
+     * @param bool $sortable
      * @return IndexInterface
      */
-    public function addNumericField(string $name): IndexInterface
+    public function addNumericField(string $name, bool $sortable = false): IndexInterface
     {
-        $this->$name = new NumericField($name);
+        $this->$name = new NumericField($name, null, $sortable);
         return $this;
     }
 
     /**
      * @param string $name
+     * @param bool $sortable
      * @return IndexInterface
      */
-    public function addGeoField(string $name): IndexInterface
+    public function addGeoField(string $name, bool $sortable = false): IndexInterface
     {
-        $this->$name = new GeoField($name);
+        $this->$name = new GeoField($name, null, $sortable);
         return $this;
     }
 
