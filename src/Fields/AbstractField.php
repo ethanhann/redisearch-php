@@ -18,12 +18,6 @@ abstract class AbstractField implements FieldInterface
         return $this->name;
     }
 
-    public function setName(string $name)
-    {
-        $this->name = $name;
-        return $this;
-    }
-
     public function getValue()
     {
         return $this->value;
@@ -40,14 +34,6 @@ abstract class AbstractField implements FieldInterface
         return [
             $this->getName(),
             $this->getType(),
-        ];
-    }
-
-    public function getValueDefinition(): array
-    {
-        return [
-            $this->getName(),
-            $this->getValue(),
         ];
     }
 }
