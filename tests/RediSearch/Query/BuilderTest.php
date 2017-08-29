@@ -94,6 +94,6 @@ class BuilderTest extends AbstractTestCase
             ->search('Shoes');
 
         $this->assertEquals($expectedCount, $result->getCount());
-        $this->assertEquals($this->expectedResult1['author'], $result->getDocuments()[0]);
+        $this->assertEquals($this->expectedResult1['author'], $result->getDocuments()[0]->author);
     }
 }
