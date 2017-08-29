@@ -1,5 +1,5 @@
 {
-    "name": "ethanhann/redisearch-php",
+    "name": "DigitalTown/lib-redisearch-php",
     "type": "library",
     "autoload": {
         "psr-4": {
@@ -14,8 +14,8 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Ethan Hann",
-            "email": "ethanhann@gmail.com"
+            "name": "DigitalTown",
+            "email": "support@digitaltown.com"
         }
     ],
     "minimum-stability": "dev",
