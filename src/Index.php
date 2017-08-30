@@ -93,7 +93,7 @@ class Index implements IndexInterface
      */
     public function addTextField(string $name, float $weight = 1.0, bool $sortable = false): IndexInterface
     {
-        $this->$name = (new TextField($name, null, $sortable))->setWeight($weight);
+        $this->$name = (new TextField($name))->setSortable($sortable)->setWeight($weight);
         return $this;
     }
 
@@ -104,7 +104,7 @@ class Index implements IndexInterface
      */
     public function addNumericField(string $name, bool $sortable = false): IndexInterface
     {
-        $this->$name = new NumericField($name, null, $sortable);
+        $this->$name = (new NumericField($name))->setSortable($sortable);
         return $this;
     }
 
@@ -115,7 +115,7 @@ class Index implements IndexInterface
      */
     public function addGeoField(string $name, bool $sortable = false): IndexInterface
     {
-        $this->$name = new GeoField($name, null, $sortable);
+        $this->$name = (new GeoField($name))->setSortable($sortable);
         return $this;
     }
 

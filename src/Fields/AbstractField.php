@@ -8,11 +8,10 @@ abstract class AbstractField implements FieldInterface
     protected $value;
     protected $sortable;
 
-    public function __construct(string $name, $value = null, bool $sortable = false)
+    public function __construct(string $name, $value = null)
     {
         $this->name = $name;
         $this->value = $value;
-        $this->sortable = $sortable;
     }
 
     public function getName(): string
@@ -34,6 +33,12 @@ abstract class AbstractField implements FieldInterface
     public function isSortable(): bool
     {
         return $this->sortable;
+    }
+
+    public function setSortable(bool $sortable)
+    {
+        $this->sortable = $sortable;
+        return $this;
     }
 
     public function getTypeDefinition(): array
