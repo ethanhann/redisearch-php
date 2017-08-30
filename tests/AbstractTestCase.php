@@ -5,6 +5,7 @@ namespace Ehann\Tests;
 use Ehann\RediSearch\Redis\RedisClient;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
+use Redis;
 
 abstract class AbstractTestCase extends TestCase
 {
@@ -17,22 +18,31 @@ abstract class AbstractTestCase extends TestCase
     {
         parent::__construct($name, $data, $dataName);
 
-        if (getenv('REDIS_LIBRARY') == 'Predis') {
-            $redis = new Client([
-                'scheme' => 'tcp',
-                'host' => getenv('REDIS_HOST') ?? '127.0.0.1',
-                'port' => getenv('REDIS_PORT') ?? 6379,
-                'database' => getenv('REDIS_DB') ?? 0,
-            ]);
-            $redis->connect();
-            $this->redisClient = new RedisClient($redis);
-        } else {
-            $this->redisClient = new RedisClient(
-                \Redis::class,
-                getenv('REDIS_HOST') ?? '127.0.0.1',
-                getenv('REDIS_PORT') ?? 6379,
-                getenv('REDIS_DB') ?? 0
-            );
-        }
+        $this->redisClient = getenv('REDIS_LIBRARY') === 'Predis' ?
+            $this->makeRedisClientWithPredis() :
+            $this->makeRedisClientWithPhpRedis();
+    }
+
+    protected function makeRedisClientWithPhpRedis(): RedisClient
+    {
+        $client = new Redis();
+        $client->connect(
+            getenv('REDIS_HOST') ?? '127.0.0.1',
+            getenv('REDIS_PORT') ?? 6379
+        );
+        $client->select(getenv('REDIS_DB') ?? 0);
+        return new RedisClient($client);
+    }
+
+    protected function makeRedisClientWithPredis(): RedisClient
+    {
+        $redis = new Client([
+            'scheme' => 'tcp',
+            'host' => getenv('REDIS_HOST') ?? '127.0.0.1',
+            'port' => getenv('REDIS_PORT') ?? 6379,
+            'database' => getenv('REDIS_DB') ?? 0,
+        ]);
+        $redis->connect();
+        return new RedisClient($redis);
     }
 }
