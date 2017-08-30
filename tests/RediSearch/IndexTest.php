@@ -54,8 +54,10 @@ class IndexTest extends AbstractTestCase
             ->addTextField('author', true)
             ->addNumericField('price', true)
             ->addNumericField('stock', true);
+
         $result = $index->create();
-        $this->assertTrue($result);
+
+        $this->assertTrue($result || $result = 'OK');
     }
 
     public function testAddDocumentUsingArrayOfFields()
