@@ -10,4 +10,5 @@ interface FieldInterface
     public function getValue();
     public function isSortable(): bool;
     public function setValue($value);
+    public function setSortable(bool $sortable);
 }
