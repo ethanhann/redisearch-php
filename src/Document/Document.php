@@ -2,8 +2,6 @@
 
 namespace Ehann\RediSearch\Document;
 
-use Ehann\RediSearch\Exceptions\FieldNotInSchemaException;
-use Ehann\RediSearch\Fields\FieldFactory;
 use Ehann\RediSearch\Fields\FieldInterface;
 
 class Document
