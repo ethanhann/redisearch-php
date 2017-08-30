@@ -6,6 +6,7 @@ abstract class AbstractField implements FieldInterface
 {
     protected $name;
     protected $value;
+    protected $sortable;
 
     public function __construct(string $name, $value = null)
     {
@@ -26,6 +27,17 @@ abstract class AbstractField implements FieldInterface
     public function setValue($value)
     {
         $this->value = $value;
+        return $this;
+    }
+
+    public function isSortable(): bool
+    {
+        return $this->sortable;
+    }
+
+    public function setSortable(bool $sortable)
+    {
+        $this->sortable = $sortable;
         return $this;
     }
 

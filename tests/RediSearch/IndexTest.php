@@ -46,6 +46,18 @@ class IndexTest extends AbstractTestCase
         $this->assertTrue($result || $result = 'OK');
     }
 
+    public function testCreateIndexWithSortableFields()
+    {
+        $indexName = 'IndexWithSortableFieldsTest';
+        $index = (new TestIndex($this->redisClient, $indexName))
+            ->addTextField('title', true)
+            ->addTextField('author', true)
+            ->addNumericField('price', true)
+            ->addNumericField('stock', true);
+        $result = $index->create();
+        $this->assertTrue($result);
+    }
+
     public function testAddDocumentUsingArrayOfFields()
     {
         $this->subject->create();
@@ -165,7 +177,6 @@ class IndexTest extends AbstractTestCase
         ;
 
         $this->assertEquals(1, $result->getCount());
-
     }
 
     public function testAddDocumentWithCustomId()
