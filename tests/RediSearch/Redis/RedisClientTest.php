@@ -10,6 +10,9 @@ use Redis;
 
 class RedisClientTest extends AbstractTestCase
 {
+    /**
+     * @requires extension redis
+     */
     public function testShouldConnectUsingPhpRedisInstance()
     {
         $client = new Redis();
@@ -25,6 +28,9 @@ class RedisClientTest extends AbstractTestCase
         $this->assertFalse($redisClient->isPredisClient());
     }
 
+    /**
+     * @requires extension redis
+     */
     public function testShouldConnectUsingPhpRedisClassName()
     {
         $redisClient = new RedisClient(Redis::class);

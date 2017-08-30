@@ -7,12 +7,10 @@ use Ehann\RediSearch\Fields\GeoLocation;
 use Ehann\RediSearch\Fields\NumericField;
 use Ehann\RediSearch\Fields\TextField;
 use Ehann\RediSearch\IndexInterface;
-use Ehann\RediSearch\Redis\RedisClient;
 use Ehann\Tests\Stubs\TestDocument;
 use Ehann\Tests\Stubs\TestIndex;
 use Ehann\Tests\Stubs\IndexWithoutFields;
 use Ehann\Tests\AbstractTestCase;
-use Predis\Client;
 
 class IndexTest extends AbstractTestCase
 {
@@ -45,7 +43,7 @@ class IndexTest extends AbstractTestCase
     {
         $result = $this->subject->create();
 
-        $this->assertTrue($result);
+        $this->assertTrue($result || $result = 'OK');
     }
 
     public function testAddDocumentUsingArrayOfFields()
@@ -128,25 +126,6 @@ class IndexTest extends AbstractTestCase
         $this->assertEquals(2, $result->getCount());
     }
 
-    public function testSearchWithPredis()
-    {
-        $this->subject->setIndexName('PredisClientTest')
-            ->setRedisClient(new RedisClient($this->makePredisConnection()))
-            ->create();
-        $this->subject->add([
-            new TextField('title', 'How to be awesome: Part 1.'),
-            new TextField('author', 'Jack'),
-        ]);
-        $this->subject->add([
-            new TextField('title', 'How to be awesome: Part 2.'),
-            new TextField('author', 'Jack'),
-        ]);
-
-        $result = $this->subject->search('awesome');
-
-        $this->assertEquals(2, $result->getCount());
-    }
-
     public function testSearchForNumeric()
     {
         $this->subject->create();
@@ -166,7 +145,7 @@ class IndexTest extends AbstractTestCase
 
     public function testAddDocumentWithGeoField()
     {
-        $index = (new TestIndex())
+        $index = (new TestIndex($this->redisClient))
             ->setIndexName('GeoTest');
         $index
             ->addTextField('name')
@@ -208,7 +187,7 @@ class IndexTest extends AbstractTestCase
         $this->assertEquals($expectedId, $result->getDocuments()[0]->id);
     }
 
-    public function testBatchIndexWithAddUsingPhpRedis()
+    public function testBatchIndexWithAdd()
     {
         $this->subject->create();
         $expectedDocumentCount = 10;
@@ -226,7 +205,8 @@ class IndexTest extends AbstractTestCase
         $this->assertEquals($expectedDocumentCount, count($result->getDocuments()));
     }
 
-    public function testBatchIndexWithAddManyUsingPhpRedis()
+
+    public function testBatchIndexWithAddMany()
     {
         $this->subject->create();
         $expectedDocumentCount = 10;
@@ -242,49 +222,18 @@ class IndexTest extends AbstractTestCase
         $this->assertEquals($expectedDocumentCount, count($result->getDocuments()));
     }
 
+    /**
+     * @requires extension redis
+     */
     public function testBatchIndexWithAddManyUsingPhpRedisWithAtomicityDisabled()
     {
-        $this->subject->create();
+        $this->subject->setRedisClient($this->makeRedisClientWithPhpRedis())->create();
         $expectedDocumentCount = 10;
         $documents = $this->makeDocuments();
         $expectedCount = count($documents);
 
         $start = microtime(true);
         $this->subject->addMany($documents, true);
-        print 'Batch insert time: ' . round(microtime(true) - $start, 4) . PHP_EOL;
-        $result = $this->subject->search('How to be awesome.');
-
-        $this->assertEquals($expectedCount, $result->getCount());
-        $this->assertEquals($expectedDocumentCount, count($result->getDocuments()));
-    }
-
-    public function testBatchIndexWithAddUsingPredisClient()
-    {
-        $this->subject->setRedisClient(new RedisClient($this->makePredisConnection()))->create();
-        $expectedDocumentCount = 10;
-        $documents = $this->makeDocuments();
-        $expectedCount = count($documents);
-
-        $start = microtime(true);
-        foreach ($documents as $document) {
-            $this->subject->add($document);
-        }
-        print 'Batch insert time: ' . round(microtime(true) - $start, 4) . PHP_EOL;
-        $result = $this->subject->search('How to be awesome.');
-
-        $this->assertEquals($expectedCount, $result->getCount());
-        $this->assertEquals($expectedDocumentCount, count($result->getDocuments()));
-    }
-
-    public function testBatchIndexWithAddManyUsingPredisClient()
-    {
-        $this->subject->setRedisClient(new RedisClient($this->makePredisConnection()))->create();
-        $expectedDocumentCount = 10;
-        $documents = $this->makeDocuments();
-        $expectedCount = count($documents);
-
-        $start = microtime(true);
-        $this->subject->addMany($documents);
         print 'Batch insert time: ' . round(microtime(true) - $start, 4) . PHP_EOL;
         $result = $this->subject->search('How to be awesome.');
 
@@ -301,17 +250,5 @@ class IndexTest extends AbstractTestCase
             $documents[] = $document;
         }
         return $documents;
-    }
-
-    private function makePredisConnection()
-    {
-        $redis = new Client([
-            'scheme' => 'tcp',
-            'host' => getenv('REDIS_HOST') ?? '127.0.0.1',
-            'port' => getenv('REDIS_PORT') ?? 6379,
-            'database' => getenv('REDIS_DB') ?? 0,
-        ]);
-        $redis->connect();
-        return $redis;
     }
 }
