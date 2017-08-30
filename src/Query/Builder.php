@@ -12,7 +12,7 @@ class Builder implements BuilderInterface
     const GEO_FILTER_UNITS = ['m', 'km', 'mi', 'ft'];
 
     protected $limit = '';
-    protected $slop = '';
+    protected $slop = null;
     protected $verbatim = '';
     protected $withScores = '';
     protected $withPayloads = '';
@@ -105,24 +105,29 @@ class Builder implements BuilderInterface
 
     public function search(string $query, bool $documentsAsArray = false): SearchResult
     {
-        $args = array_filter(array_merge(
-            [$this->indexName, $query],
-            [
-                $this->limit,
-                $this->slop,
-                $this->verbatim,
-                $this->withScores,
-                $this->withPayloads,
-                $this->noStopWords,
-                $this->noContent,
-                $this->inFields,
-                $this->inKeys
-            ],
-            $this->numericFilters,
-            explode(' ', array_reduce($this->geoFilters, function ($previous, $next) {
-                return $previous . $next;
-            }))
-        ));
+        $args = array_filter(
+            array_merge(
+                [$this->indexName, $query],
+                explode(' ', $this->limit),
+                explode(' ', $this->slop),
+                [
+                    $this->verbatim,
+                    $this->withScores,
+                    $this->withPayloads,
+                    $this->noStopWords,
+                    $this->noContent,
+                ],
+                explode(' ', $this->inFields),
+                explode(' ', $this->inKeys),
+                $this->numericFilters,
+                explode(' ', array_reduce($this->geoFilters, function ($previous, $next) {
+                    return $previous . $next;
+                }))
+            ),
+            function ($item) {
+                return !is_null($item) && $item !== '';
+            }
+        );
 
         $rawResult = $this->redis->rawCommand('FT.SEARCH', $args);
         if (is_string($rawResult)) {
