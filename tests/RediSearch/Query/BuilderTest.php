@@ -127,7 +127,6 @@ class BuilderTest extends AbstractTestCase
     {
         $result = $this->subject->slop(0)->search('How appendix');
 
-        var_dump($result);
         $this->assertCount(0, $result->getDocuments());
     }
 
