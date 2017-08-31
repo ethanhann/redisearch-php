@@ -22,6 +22,7 @@ class Builder implements BuilderInterface
     protected $inKeys = '';
     protected $numericFilters = [];
     protected $geoFilters = [];
+    protected $sortBy = [];
     protected $redis;
     /** @var string */
     private $indexName;
@@ -103,6 +104,12 @@ class Builder implements BuilderInterface
         return $this;
     }
 
+    public function sortBy(string $fieldName, $order = 'ASC'): BuilderInterface
+    {
+        $this->sortBy[] = "SORTBY $fieldName $order";
+        return $this;
+    }
+
     public function search(string $query, bool $documentsAsArray = false): SearchResult
     {
         $args = array_filter(
@@ -122,7 +129,8 @@ class Builder implements BuilderInterface
                 $this->numericFilters,
                 explode(' ', array_reduce($this->geoFilters, function ($previous, $next) {
                     return $previous . $next;
-                }))
+                })),
+                $this->sortBy
             ),
             function ($item) {
                 return !is_null($item) && $item !== '';
