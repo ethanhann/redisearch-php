@@ -6,6 +6,7 @@ use Ehann\RediSearch\Document\Document;
 use Ehann\RediSearch\Document\Builder as DocumentBuilder;
 use Ehann\RediSearch\Document\BuilderInterface as DocumentBuilderInterface;
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
+use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
 use Ehann\RediSearch\Fields\FieldInterface;
 use Ehann\RediSearch\Fields\GeoField;
 use Ehann\RediSearch\Fields\NumericField;
@@ -25,8 +26,6 @@ class Index implements IndexInterface
     private $noOffsetsEnabled = false;
     /** @var bool */
     private $noFieldsEnabled = false;
-    /** @var bool */
-    private $noScoreIdxEnabled = false;
 
     public function __construct(RedisClient $redisClient = null, string $indexName = '')
     {
@@ -47,9 +46,6 @@ class Index implements IndexInterface
         if ($this->isNoFieldsEnabled()) {
             $properties[] = 'NOFIELDS';
         }
-        if ($this->isNoScoreIdxEnabled()) {
-            $properties[] = 'NOSCOREIDX';
-        }
 
         $properties[] = 'SCHEMA';
         $hasAtLeastOneField = false;
@@ -68,7 +64,7 @@ class Index implements IndexInterface
             throw new NoFieldsInIndexException();
         }
 
-        return $this->redisClient->rawCommand('FT.CREATE', $properties);
+        return $this->rawCommand('FT.CREATE', $properties);
     }
 
     /**
@@ -121,18 +117,20 @@ class Index implements IndexInterface
 
     /**
      * @return mixed
+     * @throws UnknownIndexNameException
      */
     public function drop()
     {
-        return $this->redisClient->rawCommand('FT.DROP', [$this->getIndexName()]);
+        return $this->rawCommand('FT.DROP', [$this->getIndexName()]);
     }
 
     /**
      * @return mixed
+     * @throws UnknownIndexNameException
      */
     public function info()
     {
-        return $this->redisClient->rawCommand('FT.INFO', [$this->getIndexName()]);
+        return $this->rawCommand('FT.INFO', [$this->getIndexName()]);
     }
 
     /**
@@ -141,15 +139,22 @@ class Index implements IndexInterface
      */
     public function delete($id)
     {
-        return $this->redisClient->rawCommand('FT.DEL', [$this->getIndexName(), $id]);
+        return boolval($this->rawCommand('FT.DEL', [$this->getIndexName(), $id]));
     }
 
     /**
-     * @return int
+     * @param string $command
+     * @param array $arguments
+     * @return mixed
+     * @throws UnknownIndexNameException
      */
-    public function optimize()
+    protected function rawCommand(string $command, array $arguments)
     {
-        return $this->redisClient->rawCommand('FT.OPTIMIZE', [$this->getIndexName()]);
+        $rawResult = $this->redisClient->rawCommand($command, $arguments);
+        if ($rawResult === 'Unknown Index name') {
+            throw new UnknownIndexNameException($this->getIndexName());
+        }
+        return $rawResult;
     }
 
     /**
@@ -232,24 +237,6 @@ class Index implements IndexInterface
     public function setNoFieldsEnabled(bool $noFieldsEnabled): IndexInterface
     {
         $this->noFieldsEnabled = $noFieldsEnabled;
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isNoScoreIdxEnabled(): bool
-    {
-        return $this->noScoreIdxEnabled;
-    }
-
-    /**
-     * @param bool $noScoreIdxEnabled
-     * @return IndexInterface
-     */
-    public function setNoScoreIdxEnabled(bool $noScoreIdxEnabled): IndexInterface
-    {
-        $this->noScoreIdxEnabled = $noScoreIdxEnabled;
         return $this;
     }
 
