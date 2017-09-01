@@ -3,6 +3,7 @@
 namespace Ehann\Tests\RediSearch;
 
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
+use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
 use Ehann\RediSearch\Fields\GeoLocation;
 use Ehann\RediSearch\Fields\NumericField;
 use Ehann\RediSearch\Fields\TextField;
@@ -44,6 +45,42 @@ class IndexTest extends AbstractTestCase
         $result = $this->subject->create();
 
         $this->assertTrue($result || $result = 'OK');
+    }
+
+    public function testShouldDropIndex()
+    {
+        $this->subject->create();
+
+        $result = $this->subject->drop();
+
+        $this->assertTrue($result || $result = 'OK');
+    }
+
+    public function testShouldGetInfo()
+    {
+        $this->subject->create();
+
+        $result = $this->subject->info();
+
+        $this->assertTrue(is_array($result));
+        $this->assertTrue(count($result) > 0);
+    }
+
+    public function testShouldDeleteDocumentById()
+    {
+        $this->subject->create();
+        $expectedId = 'kasdoi13hflkhfdls';
+        $document = $this->subject->makeDocument($expectedId);
+        $document->title->setValue('My New Book');
+        $document->author->setValue('Jack');
+        $document->price->setValue(123);
+        $document->stock->setValue(1123);
+        $this->subject->add($document);
+
+        $result = $this->subject->delete($expectedId);
+
+        $this->assertTrue($result);
+        $this->assertEmpty($this->subject->search('My New Book')->getDocuments());
     }
 
     public function testCreateIndexWithSortableFields()

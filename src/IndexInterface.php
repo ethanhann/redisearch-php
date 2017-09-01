@@ -12,6 +12,7 @@ interface IndexInterface extends DocumentBuilderInterface, QueryBuilderInterface
     public function create();
     public function drop();
     public function info();
+    public function delete($id);
     public function makeDocument($id = null): Document;
     public function getRedisClient(): RedisClient;
     public function setRedisClient(RedisClient $redisClient): IndexInterface;
@@ -21,8 +22,6 @@ interface IndexInterface extends DocumentBuilderInterface, QueryBuilderInterface
     public function setNoOffsetsEnabled(bool $noOffsetsEnabled): IndexInterface;
     public function isNoFieldsEnabled(): bool;
     public function setNoFieldsEnabled(bool $noFieldsEnabled): IndexInterface;
-    public function isNoScoreIdxEnabled(): bool;
-    public function setNoScoreIdxEnabled(bool $noScoreIdxEnabled): IndexInterface;
     public function addTextField(string $name, float $weight = 1.0): IndexInterface;
     public function addNumericField(string $name): IndexInterface;
     public function addGeoField(string $name): IndexInterface;

@@ -25,8 +25,6 @@ class Index implements IndexInterface
     private $noOffsetsEnabled = false;
     /** @var bool */
     private $noFieldsEnabled = false;
-    /** @var bool */
-    private $noScoreIdxEnabled = false;
 
     public function __construct(RedisClient $redisClient = null, string $indexName = '')
     {
@@ -47,9 +45,6 @@ class Index implements IndexInterface
         if ($this->isNoFieldsEnabled()) {
             $properties[] = 'NOFIELDS';
         }
-        if ($this->isNoScoreIdxEnabled()) {
-            $properties[] = 'NOSCOREIDX';
-        }
 
         $properties[] = 'SCHEMA';
         $hasAtLeastOneField = false;
@@ -68,7 +63,7 @@ class Index implements IndexInterface
             throw new NoFieldsInIndexException();
         }
 
-        return $this->redisClient->rawCommand('FT.CREATE', $properties);
+        return $this->rawCommand('FT.CREATE', $properties);
     }
 
     /**
@@ -124,7 +119,7 @@ class Index implements IndexInterface
      */
     public function drop()
     {
-        return $this->redisClient->rawCommand('FT.DROP', [$this->getIndexName()]);
+        return $this->rawCommand('FT.DROP', [$this->getIndexName()]);
     }
 
     /**
@@ -132,7 +127,7 @@ class Index implements IndexInterface
      */
     public function info()
     {
-        return $this->redisClient->rawCommand('FT.INFO', [$this->getIndexName()]);
+        return $this->rawCommand('FT.INFO', [$this->getIndexName()]);
     }
 
     /**
@@ -141,15 +136,17 @@ class Index implements IndexInterface
      */
     public function delete($id)
     {
-        return $this->redisClient->rawCommand('FT.DEL', [$this->getIndexName(), $id]);
+        return boolval($this->rawCommand('FT.DEL', [$this->getIndexName(), $id]));
     }
 
     /**
-     * @return int
+     * @param string $command
+     * @param array $arguments
+     * @return mixed
      */
-    public function optimize()
+    protected function rawCommand(string $command, array $arguments)
     {
-        return $this->redisClient->rawCommand('FT.OPTIMIZE', [$this->getIndexName()]);
+        return $this->redisClient->rawCommand($command, $arguments);
     }
 
     /**
@@ -236,24 +233,6 @@ class Index implements IndexInterface
     }
 
     /**
-     * @return bool
-     */
-    public function isNoScoreIdxEnabled(): bool
-    {
-        return $this->noScoreIdxEnabled;
-    }
-
-    /**
-     * @param bool $noScoreIdxEnabled
-     * @return IndexInterface
-     */
-    public function setNoScoreIdxEnabled(bool $noScoreIdxEnabled): IndexInterface
-    {
-        $this->noScoreIdxEnabled = $noScoreIdxEnabled;
-        return $this;
-    }
-
-    /**
      * @return QueryBuilder
      */
     protected function makeQueryBuilder(): QueryBuilder
@@ -294,6 +273,16 @@ class Index implements IndexInterface
     {
         return $this->makeQueryBuilder()->sortBy($fieldName, $order);
     }
+
+    /**
+     * @param string $query
+     * @return string
+     */
+    public function explain(string $query): string
+    {
+        return $this->makeQueryBuilder()->explain($query);
+    }
+
 
     /**
      * @param string $query

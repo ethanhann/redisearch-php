@@ -2,7 +2,6 @@
 
 namespace Ehann\RediSearch\Query;
 
-use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
 use Ehann\RediSearch\Redis\RedisClient;
 use Exception;
 use InvalidArgumentException;
@@ -110,9 +109,9 @@ class Builder implements BuilderInterface
         return $this;
     }
 
-    public function search(string $query, bool $documentsAsArray = false): SearchResult
+    public function makeSearchCommandArguments(string $query): array
     {
-        $args = array_filter(
+        return array_filter(
             array_merge(
                 [$this->indexName, $query],
                 explode(' ', $this->limit),
@@ -136,14 +135,16 @@ class Builder implements BuilderInterface
                 return !is_null($item) && $item !== '';
             }
         );
+    }
 
-        $rawResult = $this->redis->rawCommand('FT.SEARCH', $args);
+    public function search(string $query, bool $documentsAsArray = false): SearchResult
+    {
+        $rawResult = $this->redis->rawCommand(
+            'FT.SEARCH',
+            $this->makeSearchCommandArguments($query)
+        );
         if (is_string($rawResult)) {
-            if ($rawResult === 'Unknown Index name') {
-                throw new UnknownIndexNameException();
-            } else {
-                throw new Exception($rawResult);
-            }
+            throw new Exception($rawResult);
         }
 
         return $rawResult ? SearchResult::makeSearchResult(
@@ -153,5 +154,10 @@ class Builder implements BuilderInterface
             $this->withPayloads !== '',
             $this->noContent !== ''
         ) : new SearchResult(0, []);
+    }
+
+    public function explain(string $query): string
+    {
+        return $this->redis->rawCommand('FT.EXPLAIN', $this->makeSearchCommandArguments($query));
     }
 }
