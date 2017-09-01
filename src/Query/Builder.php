@@ -2,7 +2,6 @@
 
 namespace Ehann\RediSearch\Query;
 
-use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
 use Ehann\RediSearch\Redis\RedisClient;
 use Exception;
 use InvalidArgumentException;
@@ -137,11 +136,7 @@ class Builder implements BuilderInterface
             $this->makeSearchCommandArguments($query)
         );
         if (is_string($rawResult)) {
-            if ($rawResult === 'Unknown Index name') {
-                throw new UnknownIndexNameException();
-            } else {
-                throw new Exception($rawResult);
-            }
+            throw new Exception($rawResult);
         }
 
         return $rawResult ? SearchResult::makeSearchResult(

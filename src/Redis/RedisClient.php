@@ -3,6 +3,7 @@
 namespace Ehann\RediSearch\Redis;
 
 use Ehann\RediSearch\Exceptions\InvalidRedisClientClassException;
+use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
 
 class RedisClient
 {
@@ -62,8 +63,13 @@ class RedisClient
         }
         array_unshift($arguments, $command);
 //        print PHP_EOL . implode(' ', $arguments);
-        return $this->isPredisClient() ?
+        $rawResult = $this->isPredisClient() ?
             $this->redis->executeRaw($arguments) :
             call_user_func_array([$this->redis, 'rawCommand'], $arguments);
+
+        if ($rawResult === 'Unknown Index name') {
+            throw new UnknownIndexNameException();
+        }
+        return $rawResult;
     }
 }

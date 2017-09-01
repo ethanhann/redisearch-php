@@ -6,7 +6,6 @@ use Ehann\RediSearch\Document\Document;
 use Ehann\RediSearch\Document\Builder as DocumentBuilder;
 use Ehann\RediSearch\Document\BuilderInterface as DocumentBuilderInterface;
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
-use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
 use Ehann\RediSearch\Fields\FieldInterface;
 use Ehann\RediSearch\Fields\GeoField;
 use Ehann\RediSearch\Fields\NumericField;
@@ -117,7 +116,6 @@ class Index implements IndexInterface
 
     /**
      * @return mixed
-     * @throws UnknownIndexNameException
      */
     public function drop()
     {
@@ -126,7 +124,6 @@ class Index implements IndexInterface
 
     /**
      * @return mixed
-     * @throws UnknownIndexNameException
      */
     public function info()
     {
@@ -146,15 +143,10 @@ class Index implements IndexInterface
      * @param string $command
      * @param array $arguments
      * @return mixed
-     * @throws UnknownIndexNameException
      */
     protected function rawCommand(string $command, array $arguments)
     {
-        $rawResult = $this->redisClient->rawCommand($command, $arguments);
-        if ($rawResult === 'Unknown Index name') {
-            throw new UnknownIndexNameException($this->getIndexName());
-        }
-        return $rawResult;
+        return $this->redisClient->rawCommand($command, $arguments);
     }
 
     /**

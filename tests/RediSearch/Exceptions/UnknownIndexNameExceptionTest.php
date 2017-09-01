@@ -10,7 +10,7 @@ class UnknownIndexNameExceptionTest extends TestCase
     public function testShouldShowCustomMessage()
     {
         $indexName = 'MyIndex';
-        $expected = "Unknown index name: $indexName";
+        $expected = "Unknown index name. $indexName";
         $subject = new UnknownIndexNameException($indexName);
 
         $message = $subject->getMessage();

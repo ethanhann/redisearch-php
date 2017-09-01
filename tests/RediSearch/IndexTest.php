@@ -56,14 +56,6 @@ class IndexTest extends AbstractTestCase
         $this->assertTrue($result || $result = 'OK');
     }
 
-    public function testShouldThrowExceptionIfDroppingNonExistingIndex()
-    {
-        $this->redisClient->flushAll();
-        $this->expectException(UnknownIndexNameException::class);
-
-        $this->subject->drop();
-    }
-
     public function testShouldGetInfo()
     {
         $this->subject->create();
@@ -72,14 +64,6 @@ class IndexTest extends AbstractTestCase
 
         $this->assertTrue(is_array($result));
         $this->assertTrue(count($result) > 0);
-    }
-
-    public function testShouldThrowExceptionIfGettingInfoForNonExistingIndex()
-    {
-        $this->redisClient->flushAll();
-        $this->expectException(UnknownIndexNameException::class);
-
-        $this->subject->info();
     }
 
     public function testShouldDeleteDocumentById()
