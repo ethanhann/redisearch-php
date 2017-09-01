@@ -274,6 +274,16 @@ class Index implements IndexInterface
 
     /**
      * @param string $query
+     * @return string
+     */
+    public function explain(string $query): string
+    {
+        return $this->makeQueryBuilder()->explain($query);
+    }
+
+
+    /**
+     * @param string $query
      * @param bool $documentsAsArray
      * @return SearchResult
      */

@@ -136,4 +136,24 @@ class BuilderTest extends AbstractTestCase
 
         $this->assertCount(2, $result->getDocuments());
     }
+
+    public function testExplainSimpleSearchQuery()
+    {
+        $expectedInExplanation = 'INTERSECT';
+
+        $result = $this->subject->explain('How awesome');
+
+        $this->assertContains($expectedInExplanation, $result);
+    }
+
+    public function testExplainComplexSearchQuery()
+    {
+        $expectedInExplanation1 = 'INTERSECT';
+        $expectedInExplanation2 = 'UNION';
+
+        $result = $this->subject->explain('(How awesome)|(22st Century)');
+
+        $this->assertContains($expectedInExplanation1, $result);
+        $this->assertContains($expectedInExplanation2, $result);
+    }
 }
