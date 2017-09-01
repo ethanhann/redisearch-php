@@ -83,5 +83,4 @@ class RedisClientTest extends AbstractTestCase
 
         $this->redisClient->rawCommand('FT.INFO', ['DOES_NOT_EXIST']);
     }
-
 }

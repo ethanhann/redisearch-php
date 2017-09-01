@@ -3,6 +3,8 @@
 namespace Ehann\Tests;
 
 use Ehann\RediSearch\Redis\RedisClient;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
 use Redis;
@@ -21,6 +23,12 @@ abstract class AbstractTestCase extends TestCase
         $this->redisClient = getenv('REDIS_LIBRARY') === 'Predis' ?
             $this->makeRedisClientWithPredis() :
             $this->makeRedisClientWithPhpRedis();
+
+        if (getenv('IS_LOGGING_ENABLED')) {
+            $logger = new Logger('Ehann\RediSearch');
+            $logger->pushHandler(new StreamHandler(getenv('LOG_FILE'), Logger::DEBUG));
+            $this->redisClient->setLogger($logger);
+        }
     }
 
     protected function makeRedisClientWithPhpRedis(): RedisClient

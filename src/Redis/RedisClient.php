@@ -4,10 +4,13 @@ namespace Ehann\RediSearch\Redis;
 
 use Ehann\RediSearch\Exceptions\InvalidRedisClientClassException;
 use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
+use Psr\Log\LoggerInterface;
 
 class RedisClient
 {
     private $redis;
+    /** @var  LoggerInterface */
+    private $logger;
 
     public function __construct($redis = 'Redis', $hostname = '127.0.0.1', $port = 6379, $db = 0, $password = null)
     {
@@ -62,7 +65,9 @@ class RedisClient
             }
         }
         array_unshift($arguments, $command);
-//        print PHP_EOL . implode(' ', $arguments);
+        if ($this->logger) {
+            $this->logger->debug(implode(' ', $arguments));
+        }
         $rawResult = $this->isPredisClient() ?
             $this->redis->executeRaw($arguments) :
             call_user_func_array([$this->redis, 'rawCommand'], $arguments);
@@ -71,5 +76,11 @@ class RedisClient
             throw new UnknownIndexNameException();
         }
         return $rawResult;
+    }
+
+    public function setLogger(LoggerInterface $logger): RedisClient
+    {
+        $this->logger = $logger;
+        return $this;
     }
 }
