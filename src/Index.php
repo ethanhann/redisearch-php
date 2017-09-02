@@ -21,6 +21,8 @@ class Index extends AbstractIndex implements IndexInterface
     private $noOffsetsEnabled = false;
     /** @var bool */
     private $noFieldsEnabled = false;
+    /** @var array */
+    private $stopWords = null;
 
     /**
      * @return mixed
@@ -29,31 +31,32 @@ class Index extends AbstractIndex implements IndexInterface
     public function create()
     {
         $properties = [$this->getIndexName()];
+
         if ($this->isNoOffsetsEnabled()) {
             $properties[] = 'NOOFFSETS';
         }
         if ($this->isNoFieldsEnabled()) {
             $properties[] = 'NOFIELDS';
         }
-
+        if (!is_null($this->stopWords)) {
+            $properties[] = 'STOPWORDS';
+            $properties[] = count($this->stopWords);
+            $properties = array_merge($properties, $this->stopWords);
+        }
         $properties[] = 'SCHEMA';
-        $hasAtLeastOneField = false;
+
+        $fieldDefinitions = [];
         foreach (get_object_vars($this) as $field) {
             if ($field instanceof FieldInterface) {
-                $properties[] = $field->getName();
-                $properties[] = $field->getType();
-                if ($field->isSortable()) {
-                    $properties[] = 'SORTABLE';
-                }
-                $hasAtLeastOneField = true;
+                $fieldDefinitions = array_merge($fieldDefinitions, $field->getTypeDefinition());
             }
         }
 
-        if (!$hasAtLeastOneField) {
+        if (count($fieldDefinitions) === 0) {
             throw new NoFieldsInIndexException();
         }
 
-        return $this->rawCommand('FT.CREATE', $properties);
+        return $this->rawCommand('FT.CREATE', array_merge($properties, $fieldDefinitions));
     }
 
     /**
@@ -95,12 +98,11 @@ class Index extends AbstractIndex implements IndexInterface
 
     /**
      * @param string $name
-     * @param bool $sortable
      * @return IndexInterface
      */
-    public function addGeoField(string $name, bool $sortable = false): IndexInterface
+    public function addGeoField(string $name): IndexInterface
     {
-        $this->$name = (new GeoField($name))->setSortable($sortable);
+        $this->$name = (new GeoField($name));
         return $this;
     }
 
