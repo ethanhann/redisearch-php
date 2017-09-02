@@ -2,8 +2,8 @@
 
 namespace Ehann\RediSearch\Query;
 
+use Ehann\RediSearch\Exceptions\RedisRawCommandException;
 use Ehann\RediSearch\Redis\RedisClient;
-use Exception;
 use InvalidArgumentException;
 
 class Builder implements BuilderInterface
@@ -136,7 +136,7 @@ class Builder implements BuilderInterface
             $this->makeSearchCommandArguments($query)
         );
         if (is_string($rawResult)) {
-            throw new Exception($rawResult);
+            throw new RedisRawCommandException("Result: $rawResult, Query: $query");
         }
 
         return $rawResult ? SearchResult::makeSearchResult(
