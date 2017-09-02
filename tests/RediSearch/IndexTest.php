@@ -3,7 +3,6 @@
 namespace Ehann\Tests\RediSearch;
 
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
-use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
 use Ehann\RediSearch\Fields\GeoLocation;
 use Ehann\RediSearch\Fields\NumericField;
 use Ehann\RediSearch\Fields\TextField;

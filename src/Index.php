@@ -15,22 +15,12 @@ use Ehann\RediSearch\Query\BuilderInterface as QueryBuilderInterface;
 use Ehann\RediSearch\Query\SearchResult;
 use Ehann\RediSearch\Redis\RedisClient;
 
-class Index implements IndexInterface
+class Index extends AbstractIndex implements IndexInterface
 {
-    /** @var RedisClient */
-    private $redisClient;
-    /** @var string */
-    private $indexName;
     /** @var bool */
     private $noOffsetsEnabled = false;
     /** @var bool */
     private $noFieldsEnabled = false;
-
-    public function __construct(RedisClient $redisClient = null, string $indexName = '')
-    {
-        $this->redisClient = $redisClient ?? new RedisClient();
-        $this->indexName = $indexName;
-    }
 
     /**
      * @return mixed
