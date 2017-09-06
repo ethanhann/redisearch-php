@@ -1,5 +1,7 @@
 # Changelog
 
+## 0.8.0
+
 [Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.7.0...0.8.0)
 
 * Add [search result sorting](searching.md#sorting-results).
