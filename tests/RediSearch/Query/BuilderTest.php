@@ -160,7 +160,6 @@ class BuilderTest extends AbstractTestCase
     public function testSearchWithSortBy()
     {
         $indexName = 'QueryBuilderSortByTest';
-
         $index = (new TestIndex($this->redisClient, $indexName))
             ->addTextField('title')
             ->addTextField('author', true)
@@ -168,7 +167,6 @@ class BuilderTest extends AbstractTestCase
             ->addNumericField('stock')
             ->addGeoField('location');
         $index->create();
-
         $expectedResult1 = [
             'title' => 'Cheapest book ever.',
             'author' => 'Jane',
@@ -177,7 +175,6 @@ class BuilderTest extends AbstractTestCase
             'location' => new GeoLocation(10.9190500, 52.0504100),
         ];
         $index->add($expectedResult1);
-
         $expectedResult2 = [
             'title' => 'Ok book.',
             'author' => 'John',
@@ -186,7 +183,6 @@ class BuilderTest extends AbstractTestCase
             'location' => new GeoLocation(10.9190500, 52.0504100),
         ];
         $index->add($expectedResult2);
-
         $expectedResult3 = [
             'title' => 'Expensive book.',
             'author' => 'John',
