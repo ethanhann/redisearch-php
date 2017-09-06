@@ -170,7 +170,7 @@ class BuilderTest extends AbstractTestCase
         $expectedResult1 = [
             'title' => 'Cheapest book ever.',
             'author' => 'Jane',
-            'price' => 0.01,
+            'price' => 99.01,
             'stock' => 55,
             'location' => new GeoLocation(10.9190500, 52.0504100),
         ];
@@ -196,7 +196,8 @@ class BuilderTest extends AbstractTestCase
             ->sortBy('price')
             ->search('book');
 
-        $this->assertEquals($expectedResult1['title'], $result->getDocuments()[0]->title);
-        $this->assertEquals($expectedResult2['title'], $result->getDocuments()[1]->title);
+        $this->assertEquals($expectedResult1['title'], $result->getDocuments()[1]->title);
+        $this->assertEquals($expectedResult2['title'], $result->getDocuments()[0]->title);
+        $this->assertEquals($expectedResult3['title'], $result->getDocuments()[2]->title);
     }
 }
