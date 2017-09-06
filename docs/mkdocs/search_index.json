@@ -72,7 +72,7 @@
         }, 
         {
             "location": "/searching/", 
-            "text": "Searching\n\n\nSimple Text Search\n\n\nText fields can be filtered with the index's search method.\n\n\n?php\n\n$result = $bookIndex-\nsearch('two cities');\n\n$result-\ncount();     // Number of documents.\n$result-\ndocuments(); // Array of stdObjects.\n\n\n\n\nDocuments can also be returned as arrays instead of objects by passing true as the second parameter to the search method.\n\n\n?php\n\n$result = $bookIndex-\nsearch('two cities', true);\n\n$result-\ndocuments(); // Array of arrays.\n\n\n\n\nFiltering Numeric Fields\n\n\nNumeric fields can be filtered with the index's filter method.\n\n\n?php\n\n$result = $bookIndex\n    -\nfilter('price', 4.99, 19.99)\n    -\nsearch('two cities');\n\n\n\n\nFiltering Geo Fields\n\n\nNumeric fields can be filtered with the index's filter method.\n\n\n?php\n\n$result = $bookIndex\n    -\nfilter('price', 4.99, 19.99)\n    -\nsearch('two cities');", 
+            "text": "Searching\n\n\nSimple Text Search\n\n\nText fields can be filtered with the index's search method.\n\n\n?php\n\n$result = $bookIndex-\nsearch('two cities');\n\n$result-\ncount();     // Number of documents.\n$result-\ndocuments(); // Array of stdObjects.\n\n\n\n\nDocuments can also be returned as arrays instead of objects by passing true as the second parameter to the search method.\n\n\n?php\n\n$result = $bookIndex-\nsearch('two cities', true);\n\n$result-\ndocuments(); // Array of arrays.\n\n\n\n\nFiltering Numeric Fields\n\n\nNumeric fields can be filtered with the index's filter method.\n\n\n?php\n\n$result = $bookIndex\n    -\nfilter('price', 4.99, 19.99)\n    -\nsearch('two cities');\n\n\n\n\nFiltering Geo Fields\n\n\nNumeric fields can be filtered with the index's filter method.\n\n\n?php\n\n$result = $bookIndex\n    -\nfilter('price', 4.99, 19.99)\n    -\nsearch('two cities');\n\n\n\n\nSorting Results\n\n\nSearch results can be sorted with the index's sort method.\n\n\n?php\n\n$result = $bookIndex\n    -\nsortBy('price')\n    -\nsearch('two cities');\n\n\n\n\nExplaining a Query\n\n\nAn explanation for a query can be generated with the index's explain method.\n\n\nThis can be helpful for understanding why a query is returning a set of results.\n\n\n?php\n\n$result = $bookIndex\n    -\nfilter('price', 4.99, 19.99)\n    -\nsortBy('price')\n    -\nexplain('two cities');\n\n\n\n\nLogging Queries\n\n\nLogging is optional. It can be enabled by injecting a PSR compliant logger, such as Monolog, into a RedisClient instance.\n\n\nInstall Monolog...\n\n\ncomposer require monolog/monolog\n\n\n\n\nInject a logger instance (with a stream handler in this example)...\n\n\n?php\n$logger = new Logger('Ehann\\RediSearch');\n$logger-\npushHandler(new StreamHandler('MyLogFile.log', Logger::DEBUG));\n$this-\nredisClient-\nsetLogger($logger);", 
             "title": "Searching"
         }, 
         {
@@ -96,18 +96,38 @@
             "title": "Filtering Geo Fields"
         }, 
         {
+            "location": "/searching/#sorting-results", 
+            "text": "Search results can be sorted with the index's sort method.  ?php\n\n$result = $bookIndex\n    - sortBy('price')\n    - search('two cities');", 
+            "title": "Sorting Results"
+        }, 
+        {
+            "location": "/searching/#explaining-a-query", 
+            "text": "An explanation for a query can be generated with the index's explain method.  This can be helpful for understanding why a query is returning a set of results.  ?php\n\n$result = $bookIndex\n    - filter('price', 4.99, 19.99)\n    - sortBy('price')\n    - explain('two cities');", 
+            "title": "Explaining a Query"
+        }, 
+        {
+            "location": "/searching/#logging-queries", 
+            "text": "Logging is optional. It can be enabled by injecting a PSR compliant logger, such as Monolog, into a RedisClient instance.  Install Monolog...  composer require monolog/monolog  Inject a logger instance (with a stream handler in this example)...  ?php\n$logger = new Logger('Ehann\\RediSearch');\n$logger- pushHandler(new StreamHandler('MyLogFile.log', Logger::DEBUG));\n$this- redisClient- setLogger($logger);", 
+            "title": "Logging Queries"
+        }, 
+        {
             "location": "/changelog/", 
-            "text": "Changelog\n\n\n0.6.0\n\n\n\n\nAdd \nbatch indexing\n.\n\n\n\n\n0.5.0\n\n\n\n\nRename vendor namespace from \nEeh\n to \nEhann\n\n\nAbstractIndex\n was renamed to \nIndex\n and is no longer abstract.\n\n\nCustom document ID is now properly set when adding to an index.", 
+            "text": "Changelog\n\n\nChanges since last release\n\n\n\n\nAdd \nsearch result sorting\n.\n\n\nRemove NoScoreIdx and Optimize methods as they are deprecated and/or non-functional in RediSearch.\n\n\nAdd \nexplain method\n for explaining a query.\n\n\nAdd optional \nquery logging\n.\n\n\n\n\n0.7.0\n\n\nChanges since last release\n\n\n\n\nMany bug fixes and code quality improvements.\n\n\n\n\n0.6.0\n\n\nChanges since last release\n\n\n\n\nAdd \nbatch indexing\n.\n\n\n\n\n0.5.0\n\n\n\n\nRename vendor namespace from \nEeh\n to \nEhann\n\n\nAbstractIndex\n was renamed to \nIndex\n and is no longer abstract.\n\n\nCustom document ID is now properly set when adding to an index.", 
             "title": "Changelog"
         }, 
         {
             "location": "/changelog/#changelog", 
-            "text": "", 
+            "text": "Changes since last release   Add  search result sorting .  Remove NoScoreIdx and Optimize methods as they are deprecated and/or non-functional in RediSearch.  Add  explain method  for explaining a query.  Add optional  query logging .", 
             "title": "Changelog"
         }, 
         {
+            "location": "/changelog/#070", 
+            "text": "Changes since last release   Many bug fixes and code quality improvements.", 
+            "title": "0.7.0"
+        }, 
+        {
             "location": "/changelog/#060", 
-            "text": "Add  batch indexing .", 
+            "text": "Changes since last release   Add  batch indexing .", 
             "title": "0.6.0"
         }, 
         {

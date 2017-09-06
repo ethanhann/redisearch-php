@@ -93,6 +93,9 @@
             <li><a href="#simple-text-search">Simple Text Search</a></li>
             <li><a href="#filtering-numeric-fields">Filtering Numeric Fields</a></li>
             <li><a href="#filtering-geo-fields">Filtering Geo Fields</a></li>
+            <li><a href="#sorting-results">Sorting Results</a></li>
+            <li><a href="#explaining-a-query">Explaining a Query</a></li>
+            <li><a href="#logging-queries">Logging Queries</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
@@ -132,6 +135,39 @@ $result = $bookIndex
 $result = $bookIndex
     -&gt;filter('price', 4.99, 19.99)
     -&gt;search('two cities');
+</code></pre>
+
+<h2 id="sorting-results">Sorting Results</h2>
+<p>Search results can be sorted with the index's sort method.</p>
+<pre><code class="php">&lt;?php
+
+$result = $bookIndex
+    -&gt;sortBy('price')
+    -&gt;search('two cities');
+</code></pre>
+
+<h2 id="explaining-a-query">Explaining a Query</h2>
+<p>An explanation for a query can be generated with the index's explain method.</p>
+<p>This can be helpful for understanding why a query is returning a set of results.</p>
+<pre><code class="php">&lt;?php
+
+$result = $bookIndex
+    -&gt;filter('price', 4.99, 19.99)
+    -&gt;sortBy('price')
+    -&gt;explain('two cities');
+</code></pre>
+
+<h2 id="logging-queries">Logging Queries</h2>
+<p>Logging is optional. It can be enabled by injecting a PSR compliant logger, such as Monolog, into a RedisClient instance.</p>
+<p>Install Monolog...</p>
+<pre><code class="bash">composer require monolog/monolog
+</code></pre>
+
+<p>Inject a logger instance (with a stream handler in this example)...</p>
+<pre><code class="php">&lt;?php
+$logger = new Logger('Ehann\RediSearch');
+$logger-&gt;pushHandler(new StreamHandler('MyLogFile.log', Logger::DEBUG));
+$this-&gt;redisClient-&gt;setLogger($logger);
 </code></pre></div>
         </div>
 
