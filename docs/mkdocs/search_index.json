@@ -112,13 +112,18 @@
         }, 
         {
             "location": "/changelog/", 
-            "text": "Changelog\n\n\nChanges since last release\n\n\n\n\nAdd \nsearch result sorting\n.\n\n\nRemove NoScoreIdx and Optimize methods as they are deprecated and/or non-functional in RediSearch.\n\n\nAdd \nexplain method\n for explaining a query.\n\n\nAdd optional \nquery logging\n.\n\n\n\n\n0.7.0\n\n\nChanges since last release\n\n\n\n\nMany bug fixes and code quality improvements.\n\n\n\n\n0.6.0\n\n\nChanges since last release\n\n\n\n\nAdd \nbatch indexing\n.\n\n\n\n\n0.5.0\n\n\n\n\nRename vendor namespace from \nEeh\n to \nEhann\n\n\nAbstractIndex\n was renamed to \nIndex\n and is no longer abstract.\n\n\nCustom document ID is now properly set when adding to an index.", 
+            "text": "Changelog\n\n\n0.8.0\n\n\nChanges since last release\n\n\n\n\nAdd \nsearch result sorting\n.\n\n\nRemove NoScoreIdx and Optimize methods as they are deprecated and/or non-functional in RediSearch.\n\n\nAdd \nexplain method\n for explaining a query.\n\n\nAdd optional \nquery logging\n.\n\n\n\n\n0.7.0\n\n\nChanges since last release\n\n\n\n\nMany bug fixes and code quality improvements.\n\n\n\n\n0.6.0\n\n\nChanges since last release\n\n\n\n\nAdd \nbatch indexing\n.\n\n\n\n\n0.5.0\n\n\n\n\nRename vendor namespace from \nEeh\n to \nEhann\n\n\nAbstractIndex\n was renamed to \nIndex\n and is no longer abstract.\n\n\nCustom document ID is now properly set when adding to an index.", 
             "title": "Changelog"
         }, 
         {
             "location": "/changelog/#changelog", 
-            "text": "Changes since last release   Add  search result sorting .  Remove NoScoreIdx and Optimize methods as they are deprecated and/or non-functional in RediSearch.  Add  explain method  for explaining a query.  Add optional  query logging .", 
+            "text": "", 
             "title": "Changelog"
+        }, 
+        {
+            "location": "/changelog/#080", 
+            "text": "Changes since last release   Add  search result sorting .  Remove NoScoreIdx and Optimize methods as they are deprecated and/or non-functional in RediSearch.  Add  explain method  for explaining a query.  Add optional  query logging .", 
+            "title": "0.8.0"
         }, 
         {
             "location": "/changelog/#070", 
