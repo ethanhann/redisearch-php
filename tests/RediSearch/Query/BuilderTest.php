@@ -156,4 +156,51 @@ class BuilderTest extends AbstractTestCase
         $this->assertContains($expectedInExplanation1, $result);
         $this->assertContains($expectedInExplanation2, $result);
     }
+
+    public function testSearchWithSortBy()
+    {
+        $indexName = 'QueryBuilderSortByTest';
+
+        $index = (new TestIndex($this->redisClient, $indexName))
+            ->addTextField('title')
+            ->addTextField('author', true)
+            ->addNumericField('price', true)
+            ->addNumericField('stock')
+            ->addGeoField('location');
+        $index->create();
+
+        $expectedResult1 = [
+            'title' => 'Cheapest book ever.',
+            'author' => 'Jane',
+            'price' => 0.01,
+            'stock' => 55,
+            'location' => new GeoLocation(10.9190500, 52.0504100),
+        ];
+        $index->add($expectedResult1);
+
+        $expectedResult2 = [
+            'title' => 'Ok book.',
+            'author' => 'John',
+            'price' => 10.50,
+            'stock' => 66,
+            'location' => new GeoLocation(10.9190500, 52.0504100),
+        ];
+        $index->add($expectedResult2);
+
+        $expectedResult3 = [
+            'title' => 'Expensive book.',
+            'author' => 'John',
+            'price' => 1000,
+            'stock' => 77,
+            'location' => new GeoLocation(10.9190500, 52.0504100),
+        ];
+        $index->add($expectedResult3);
+
+        $result = (new Builder($this->redisClient, $indexName))
+            ->sortBy('price')
+            ->search('book');
+
+        $this->assertEquals($expectedResult1['title'], $result->getDocuments()[0]->title);
+        $this->assertEquals($expectedResult2['title'], $result->getDocuments()[1]->title);
+    }
 }

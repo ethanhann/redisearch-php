@@ -257,6 +257,16 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * @param string $fieldName
+     * @param $order
+     * @return QueryBuilderInterface
+     */
+    public function sortBy(string $fieldName, $order = 'ASC'): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->sortBy($fieldName, $order);
+    }
+
+    /**
      * @param string $query
      * @return string
      */
