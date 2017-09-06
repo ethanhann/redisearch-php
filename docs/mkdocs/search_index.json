@@ -2,7 +2,7 @@
     "docs": [
         {
             "location": "/", 
-            "text": "What is this?\n\n\nRediSearch-PHP is a PHP client library for the \nRediSearch\n module which adds Full-Text search to Redis.\n\n\nRequirements\n\n\n\n\nRedis running with the \nRediSearch module loaded\n.\n\n\nPHP \n=7\n\n\nPhpRedis\n OR \nPredis\n.\n\n\n\n\nInstall\n\n\ncomposer install ethanhann/redisearch-php\n\n\n\n\nLoad\n\n\n?php\n\nrequire_once 'vendor/autoload.php';\n\n\n\n\nCreate the Schema\n\n\n?php\n\n$bookIndex = new Index();\n\n$bookIndex-\naddTextField('title')\n    -\naddTextField('author')\n    -\naddNumericField('price')\n    -\naddNumericField('stock')\n    -\ncreate();\n\n\n\n\nAdd a Document\n\n\n?php\n\n$bookIndex-\nadd([\n    new TextField('title', 'Tale of Two Cities'),\n    new TextField('author', 'Charles Dickens'),\n    new NumericField('price', 9.99),\n    new NumericField('stock', 231),\n]);\n\n\n\n\nSearch the Index\n\n\n?php\n\n$result = $bookIndex-\nsearch('two cities');\n\n$result-\ncount();     // Number of documents.\n$result-\ndocuments(); // Array of matches.\n\n// Documents are returned as objects by default.\n$firstResult = $result-\ndocuments()[0];\n$firstResult-\ntitle;\n$firstResult-\nauthor;", 
+            "text": "What is this?\n\n\nRediSearch-PHP is a PHP client library for the \nRediSearch\n module which adds Full-Text search to Redis.\n\n\nRequirements\n\n\n\n\nRedis running with the \nRediSearch module loaded\n.\n\n\nPHP \n=7\n\n\nPhpRedis\n OR \nPredis\n.\n\n\n\n\nInstall\n\n\ncomposer install ethanhann/redisearch-php\n\n\n\n\nLoad\n\n\n?php\n\nrequire_once 'vendor/autoload.php';\n\n\n\n\nCreate the Schema\n\n\n?php\n\nuse Ehann\\RediSearch\\Index;\n\n$bookIndex = new Index();\n\n$bookIndex-\naddTextField('title')\n    -\naddTextField('author')\n    -\naddNumericField('price')\n    -\naddNumericField('stock')\n    -\ncreate();\n\n\n\n\nAdd a Document\n\n\n?php\n\n$bookIndex-\nadd([\n    new TextField('title', 'Tale of Two Cities'),\n    new TextField('author', 'Charles Dickens'),\n    new NumericField('price', 9.99),\n    new NumericField('stock', 231),\n]);\n\n\n\n\nSearch the Index\n\n\n?php\n\n$result = $bookIndex-\nsearch('two cities');\n\n$result-\ncount();     // Number of documents.\n$result-\ndocuments(); // Array of matches.\n\n// Documents are returned as objects by default.\n$firstResult = $result-\ndocuments()[0];\n$firstResult-\ntitle;\n$firstResult-\nauthor;", 
             "title": "Getting Started"
         }, 
         {
@@ -27,7 +27,7 @@
         }, 
         {
             "location": "/#create-the-schema", 
-            "text": "?php\n\n$bookIndex = new Index();\n\n$bookIndex- addTextField('title')\n    - addTextField('author')\n    - addNumericField('price')\n    - addNumericField('stock')\n    - create();", 
+            "text": "?php\n\nuse Ehann\\RediSearch\\Index;\n\n$bookIndex = new Index();\n\n$bookIndex- addTextField('title')\n    - addTextField('author')\n    - addNumericField('price')\n    - addNumericField('stock')\n    - create();", 
             "title": "Create the Schema"
         }, 
         {

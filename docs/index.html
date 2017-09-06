@@ -124,6 +124,8 @@ require_once 'vendor/autoload.php';
 <h2 id="create-the-schema">Create the Schema</h2>
 <pre><code class="php">&lt;?php
 
+use Ehann\RediSearch\Index;
+
 $bookIndex = new Index();
 
 $bookIndex-&gt;addTextField('title')
@@ -196,5 +198,5 @@ $firstResult-&gt;author;
 
 <!--
 MkDocs version : 0.16.3
-Build Date UTC : 2017-09-06 12:29:45
+Build Date UTC : 2017-09-06 12:49:30
 -->
