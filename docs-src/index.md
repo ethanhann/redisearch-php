@@ -27,6 +27,8 @@ require_once 'vendor/autoload.php';
 ```php
 <?php
 
+use Ehann\RediSearch\Index;
+
 $bookIndex = new Index();
 
 $bookIndex->addTextField('title')
