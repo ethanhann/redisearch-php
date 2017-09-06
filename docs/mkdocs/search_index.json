@@ -111,8 +111,43 @@
             "title": "Logging Queries"
         }, 
         {
+            "location": "/suggesting/", 
+            "text": "Suggesting\n\n\nCreating a Suggestion Index\n\n\nCreate a suggestion index called \"MySuggestions\"...\n\n\n?php\n\nuse Ehann\\RediSearch\\Suggestion;\n\n$suggestion = new Suggestion($redisClient, 'MySuggestions');\n\n\n\n\n\nAdding a Suggestion\n\n\nAdd a suggestion with a score...\n\n\n?php\n\n$suggestion-\nadd('Tale of Two Cities', 1.10);\n\n\n\n\nGetting a Suggestion\n\n\nPass a partial string to the get method... \n\n\n?php\n\n$result = $suggestion-\nget('Cities');\n\n\n\n\nGetting a Suggestion\n\n\nPass the entire suggestion string to the delete method... \n\n\n?php\n\n$result = $suggestion-\ndelete('Tale of Two Cities');\n\n\n\n\nGetting the Number of Possible Suggestions\n\n\nSimply use the suggestion index's length method... \n\n\n?php\n\n$numberOfPossibleSuggestions = $suggestion-\nlength();", 
+            "title": "Suggesting"
+        }, 
+        {
+            "location": "/suggesting/#suggesting", 
+            "text": "", 
+            "title": "Suggesting"
+        }, 
+        {
+            "location": "/suggesting/#creating-a-suggestion-index", 
+            "text": "Create a suggestion index called \"MySuggestions\"...  ?php\n\nuse Ehann\\RediSearch\\Suggestion;\n\n$suggestion = new Suggestion($redisClient, 'MySuggestions');", 
+            "title": "Creating a Suggestion Index"
+        }, 
+        {
+            "location": "/suggesting/#adding-a-suggestion", 
+            "text": "Add a suggestion with a score...  ?php\n\n$suggestion- add('Tale of Two Cities', 1.10);", 
+            "title": "Adding a Suggestion"
+        }, 
+        {
+            "location": "/suggesting/#getting-a-suggestion", 
+            "text": "Pass a partial string to the get method...   ?php\n\n$result = $suggestion- get('Cities');", 
+            "title": "Getting a Suggestion"
+        }, 
+        {
+            "location": "/suggesting/#getting-a-suggestion_1", 
+            "text": "Pass the entire suggestion string to the delete method...   ?php\n\n$result = $suggestion- delete('Tale of Two Cities');", 
+            "title": "Getting a Suggestion"
+        }, 
+        {
+            "location": "/suggesting/#getting-the-number-of-possible-suggestions", 
+            "text": "Simply use the suggestion index's length method...   ?php\n\n$numberOfPossibleSuggestions = $suggestion- length();", 
+            "title": "Getting the Number of Possible Suggestions"
+        }, 
+        {
             "location": "/changelog/", 
-            "text": "Changelog\n\n\n0.8.0\n\n\nChanges since last release\n\n\n\n\nAdd \nsearch result sorting\n.\n\n\nRemove NoScoreIdx and Optimize methods as they are deprecated and/or non-functional in RediSearch.\n\n\nAdd \nexplain method\n for explaining a query.\n\n\nAdd optional \nquery logging\n.\n\n\n\n\n0.7.0\n\n\nChanges since last release\n\n\n\n\nMany bug fixes and code quality improvements.\n\n\n\n\n0.6.0\n\n\nChanges since last release\n\n\n\n\nAdd \nbatch indexing\n.\n\n\n\n\n0.5.0\n\n\n\n\nRename vendor namespace from \nEeh\n to \nEhann\n\n\nAbstractIndex\n was renamed to \nIndex\n and is no longer abstract.\n\n\nCustom document ID is now properly set when adding to an index.", 
+            "text": "Changelog\n\n\n0.8.0\n\n\nChanges since last release\n\n\n\n\nAdd \nsearch result sorting\n.\n\n\nRemove NoScoreIdx and Optimize methods as they are deprecated and/or non-functional in RediSearch.\n\n\nAdd \nexplain method\n for explaining a query.\n\n\nAdd optional \nquery logging\n.\n\n\nAdd \nsuggestions\n.\n\n\n\n\n0.7.0\n\n\nChanges since last release\n\n\n\n\nMany bug fixes and code quality improvements.\n\n\n\n\n0.6.0\n\n\nChanges since last release\n\n\n\n\nAdd \nbatch indexing\n.\n\n\n\n\n0.5.0\n\n\n\n\nRename vendor namespace from \nEeh\n to \nEhann\n\n\nAbstractIndex\n was renamed to \nIndex\n and is no longer abstract.\n\n\nCustom document ID is now properly set when adding to an index.", 
             "title": "Changelog"
         }, 
         {
@@ -122,7 +157,7 @@
         }, 
         {
             "location": "/changelog/#080", 
-            "text": "Changes since last release   Add  search result sorting .  Remove NoScoreIdx and Optimize methods as they are deprecated and/or non-functional in RediSearch.  Add  explain method  for explaining a query.  Add optional  query logging .", 
+            "text": "Changes since last release   Add  search result sorting .  Remove NoScoreIdx and Optimize methods as they are deprecated and/or non-functional in RediSearch.  Add  explain method  for explaining a query.  Add optional  query logging .  Add  suggestions .", 
             "title": "0.8.0"
         }, 
         {

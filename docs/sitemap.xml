@@ -27,6 +27,14 @@
 
     
     <url>
+     <loc>/suggesting/</loc>
+     <lastmod>2017-09-06</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
      <loc>/changelog/</loc>
      <lastmod>2017-09-06</lastmod>
      <changefreq>daily</changefreq>

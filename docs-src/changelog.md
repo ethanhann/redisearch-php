@@ -8,6 +8,7 @@
 * Remove NoScoreIdx and Optimize methods as they are deprecated and/or non-functional in RediSearch.
 * Add [explain method](searching.md#explaining-a-query) for explaining a query.
 * Add optional [query logging](searching.md#logging-queries).
+* Add [suggestions](suggesting.md).
 
 ## 0.7.0
 
