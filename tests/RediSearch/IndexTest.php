@@ -2,7 +2,9 @@
 
 namespace Ehann\Tests\RediSearch;
 
+use Ehann\RediSearch\Document\AbstractDocumentFactory;
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
+use Ehann\RediSearch\Fields\FieldFactory;
 use Ehann\RediSearch\Fields\GeoLocation;
 use Ehann\RediSearch\Fields\NumericField;
 use Ehann\RediSearch\Fields\TextField;
@@ -94,6 +96,39 @@ class IndexTest extends AbstractTestCase
         $result = $index->create();
 
         $this->assertTrue($result || $result = 'OK');
+    }
+
+    public function testAddDocumentWithZeroScore()
+    {
+        $this->subject->create();
+        $document = $this->subject->makeDocument();
+        $expectedTitle = 'Tale of Two Cities';
+        $document->title = FieldFactory::make('title', $expectedTitle);
+        $expectedScore = 0.0;
+        $document->setScore($expectedScore);
+        $this->subject->add($document);
+
+        $result = $this->subject->withScores()->search($expectedTitle);
+
+        $firstDocument = $result->getDocuments()[0];
+        $this->assertEquals($expectedScore, $firstDocument->score);
+        $this->assertEquals($expectedTitle, $firstDocument->title);
+    }
+
+    public function testAddDocumentWithNonDefaultScore()
+    {
+        $this->subject->create();
+        $document = $this->subject->makeDocument();
+        $expectedTitle = 'Tale of Two Cities';
+        $document->title = FieldFactory::make('title', $expectedTitle);
+        $document->setScore(0.9);
+        $this->subject->add($document);
+
+        $result = $this->subject->withScores()->search($expectedTitle);
+
+        $firstDocument = $result->getDocuments()[0];
+        $this->assertNotEquals(2.0, $firstDocument->score);
+        $this->assertEquals($expectedTitle, $firstDocument->title);
     }
 
     public function testAddDocumentUsingArrayOfFields()

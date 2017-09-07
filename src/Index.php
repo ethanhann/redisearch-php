@@ -2,9 +2,8 @@
 
 namespace Ehann\RediSearch;
 
-use Ehann\RediSearch\Document\Document;
-use Ehann\RediSearch\Document\Builder as DocumentBuilder;
-use Ehann\RediSearch\Document\BuilderInterface as DocumentBuilderInterface;
+use Ehann\RediSearch\Document\AbstractDocumentFactory;
+use Ehann\RediSearch\Document\DocumentInterface;
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
 use Ehann\RediSearch\Fields\FieldInterface;
 use Ehann\RediSearch\Fields\GeoField;
@@ -143,12 +142,12 @@ class Index extends AbstractIndex implements IndexInterface
 
     /**
      * @param null $id
-     * @return Document
+     * @return DocumentInterface
      */
-    public function makeDocument($id = null): Document
+    public function makeDocument($id = null): DocumentInterface
     {
         $fields = $this->getFields();
-        $document = DocumentBuilder::makeFromArray($fields, $fields, $id);
+        $document = AbstractDocumentFactory::makeFromArray($fields, $fields, $id);
         return $document;
     }
 
@@ -366,11 +365,32 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
-     * @return DocumentBuilder
+     * @param array $documents
+     * @param bool $disableAtomicity
      */
-    protected function makeDocumentBuilder(): DocumentBuilder
+    public function addMany(array $documents, $disableAtomicity = false)
     {
-        return (new DocumentBuilder($this->redisClient, $this->getIndexName()));
+        $pipe = $this->redisClient->multi($disableAtomicity);
+        foreach ($documents as $document) {
+            $this->_add($document);
+        }
+        $pipe->exec();
+    }
+
+    /**
+     * @param DocumentInterface $document
+     * @return bool
+     */
+    protected function _add(DocumentInterface $document)
+    {
+        if (is_null($document->getId())) {
+            $document->setId(uniqid(true));
+        }
+
+        $properties = $document->getDefinition();
+        array_unshift($properties, $this->indexName);
+
+        return $this->rawCommand('FT.ADD', $properties);
     }
 
     /**
@@ -380,18 +400,9 @@ class Index extends AbstractIndex implements IndexInterface
     public function add($document): bool
     {
         if (is_array($document)) {
-            $document = DocumentBuilder::makeFromArray($document, $this->getFields());
+            $document = AbstractDocumentFactory::makeFromArray($document, $this->getFields());
         }
-        return $this->makeDocumentBuilder()->add($document);
-    }
-
-    /**
-     * @param array $documents
-     * @param bool $disableAtomicity
-     */
-    public function addMany(array $documents, $disableAtomicity = false)
-    {
-        $this->makeDocumentBuilder()->addMany($documents, $disableAtomicity);
+        return $this->_add($document);
     }
 
     /**
@@ -401,52 +412,9 @@ class Index extends AbstractIndex implements IndexInterface
     public function replace($document): bool
     {
         if (is_array($document)) {
-            $document = DocumentBuilder::makeFromArray($document, $this->getFields());
+            $document = AbstractDocumentFactory::makeFromArray($document, $this->getFields());
         }
-        return $this->makeDocumentBuilder()->replace($document);
-    }
-
-    /**
-     * @param string $id
-     * @return DocumentBuilderInterface
-     */
-    public function id(string $id): DocumentBuilderInterface
-    {
-        return $this->makeDocumentBuilder()->id($id);
-    }
-
-    /**
-     * @param $score
-     * @return DocumentBuilderInterface
-     */
-    public function score($score): DocumentBuilderInterface
-    {
-        return $this->makeDocumentBuilder()->score($score);
-    }
-
-    /**
-     * @return DocumentBuilderInterface
-     */
-    public function noSave(): DocumentBuilderInterface
-    {
-        return $this->makeDocumentBuilder()->noSave();
-    }
-
-    /**
-     * @param $payload
-     * @return DocumentBuilderInterface
-     */
-    public function payload($payload): DocumentBuilderInterface
-    {
-        return $this->makeDocumentBuilder()->payload($payload);
-    }
-
-    /**
-     * @param $language
-     * @return DocumentBuilderInterface
-     */
-    public function language($language): DocumentBuilderInterface
-    {
-        return $this->makeDocumentBuilder()->language($language);
+        $document->setReplace(true);
+        return $this->add($document);
     }
 }

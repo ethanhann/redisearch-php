@@ -3,6 +3,7 @@
 namespace Ehann\Tests\RediSearch\Document;
 
 use Ehann\RediSearch\Document\Document;
+use Ehann\RediSearch\Exceptions\OutOfRangeDocumentScoreException;
 use Ehann\RediSearch\Fields\FieldFactory;
 use PHPUnit\Framework\TestCase;
 
@@ -29,7 +30,7 @@ class DocumentTest extends TestCase
         $isNoSave = true;
         $shouldReplace = true;
         $expectedId = '9999';
-        $expectedScore = 1.2;
+        $expectedScore = 0.2;
         $expectedLanguage = 'EN';
         $expectedFieldName = 'field name';
         $expectedFieldValue = 'field value';
@@ -56,5 +57,21 @@ class DocumentTest extends TestCase
         $this->assertEquals('FIELDS', $definition[8]);
         $this->assertEquals($expectedFieldName, $definition[9]);
         $this->assertEquals($expectedFieldValue, $definition[10]);
+    }
+
+    public function testShouldThrowExceptionWhenScoreIsTooLow()
+    {
+        $this->expectException(OutOfRangeDocumentScoreException::class);
+        $subject = new Document();
+
+        $subject->setScore(-0.1);
+    }
+
+    public function testShouldThrowExceptionWhenScoreIsTooHigh()
+    {
+        $this->expectException(OutOfRangeDocumentScoreException::class);
+        $subject = new Document();
+
+        $subject->setScore(1.1);
     }
 }

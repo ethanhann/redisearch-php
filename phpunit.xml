@@ -28,7 +28,7 @@
         <env name="REDIS_PORT" value="6379" />
         <env name="REDIS_DB" value="15" />
         <env name="LOG_FILE" value="./tests.log" />
-        <env name="IS_LOGGING_ENABLED" value="false" />
+        <env name="IS_LOGGING_ENABLED" value="true" />
     </php>
     <listeners>
         <listener class="Ehann\Tests\TestTimeListener" />
