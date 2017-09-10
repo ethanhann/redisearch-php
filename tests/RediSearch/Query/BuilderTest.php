@@ -157,6 +157,13 @@ class BuilderTest extends AbstractTestCase
         $this->assertContains($expectedInExplanation2, $result);
     }
 
+    public function testSearchWithScorerFunction()
+    {
+        $result = $this->subject->scorer('DISMAX')->search('Shoes');
+
+        $this->assertTrue($result->getCount() === 1);
+    }
+
     public function testSearchWithSortBy()
     {
         $indexName = 'QueryBuilderSortByTest';

@@ -22,6 +22,7 @@ class Builder implements BuilderInterface
     protected $numericFilters = [];
     protected $geoFilters = [];
     protected $sortBy = '';
+    protected $scorer = '';
     protected $redis;
     /** @var string */
     private $indexName;
@@ -109,6 +110,12 @@ class Builder implements BuilderInterface
         return $this;
     }
 
+    public function scorer(string $scoringFunction): BuilderInterface
+    {
+        $this->scorer = "SCORER $scoringFunction";
+        return $this;
+    }
+
     public function makeSearchCommandArguments(string $query): array
     {
         return array_filter(
@@ -129,7 +136,8 @@ class Builder implements BuilderInterface
                 explode(' ', array_reduce($this->geoFilters, function ($previous, $next) {
                     return $previous . $next;
                 })),
-                explode(' ', $this->sortBy)
+                explode(' ', $this->sortBy),
+                explode(' ', $this->scorer)
             ),
             function ($item) {
                 return !is_null($item) && $item !== '';

@@ -266,6 +266,15 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * @param string $scoringFunction
+     * @return QueryBuilderInterface
+     */
+    public function scorer(string $scoringFunction): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->scorer($scoringFunction);
+    }
+
+    /**
      * @param string $query
      * @return string
      */
