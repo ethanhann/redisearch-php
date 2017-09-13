@@ -8,6 +8,7 @@ php:
   - '7.0'
   - '7.1'
 before_script:
+  - pecl install igbinary
   - printf "yes\n" | pecl upgrade redis
   - composer install
 script: vendor/bin/robo build
