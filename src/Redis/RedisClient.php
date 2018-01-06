@@ -4,6 +4,7 @@ namespace Ehann\RediSearch\Redis;
 
 use Ehann\RediSearch\Exceptions\InvalidRedisClientClassException;
 use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
+use Ehann\RediSearch\Exceptions\UnsupportedLanguageException;
 use Psr\Log\LoggerInterface;
 
 class RedisClient
@@ -75,6 +76,11 @@ class RedisClient
         if ($rawResult === 'Unknown Index name') {
             throw new UnknownIndexNameException();
         }
+        $unsupportedLanguageMessages = ['Unsupported Language', 'Unsupported Stemmer Language'];
+        if (in_array($rawResult, $unsupportedLanguageMessages)) {
+            throw new UnsupportedLanguageException();
+        }
+
         return $rawResult;
     }
 

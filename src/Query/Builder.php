@@ -23,6 +23,7 @@ class Builder implements BuilderInterface
     protected $geoFilters = [];
     protected $sortBy = '';
     protected $scorer = '';
+    protected $language = '';
     protected $redis;
     /** @var string */
     private $indexName;
@@ -116,6 +117,12 @@ class Builder implements BuilderInterface
         return $this;
     }
 
+    public function language(string $languageName): BuilderInterface
+    {
+        $this->language = "LANGUAGE $languageName";
+        return $this;
+    }
+
     public function makeSearchCommandArguments(string $query): array
     {
         return array_filter(
@@ -137,7 +144,8 @@ class Builder implements BuilderInterface
                     return $previous . $next;
                 })),
                 explode(' ', $this->sortBy),
-                explode(' ', $this->scorer)
+                explode(' ', $this->scorer),
+                explode(' ', $this->language)
             ),
             function ($item) {
                 return !is_null($item) && $item !== '';

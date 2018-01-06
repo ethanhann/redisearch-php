@@ -2,8 +2,8 @@
 
 namespace Ehann\Tests\RediSearch;
 
-use Ehann\RediSearch\Document\AbstractDocumentFactory;
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
+use Ehann\RediSearch\Exceptions\UnsupportedLanguageException;
 use Ehann\RediSearch\Fields\FieldFactory;
 use Ehann\RediSearch\Fields\GeoLocation;
 use Ehann\RediSearch\Fields\NumericField;
@@ -172,6 +172,25 @@ class IndexTest extends AbstractTestCase
         $result = $this->subject->add($document);
 
         $this->assertTrue($result);
+    }
+
+    public function testAddDocumentWithUnsupportedLanguage()
+    {
+        $this->subject->create();
+        $document = $this->subject->makeDocument();
+        $document->setLanguage('foo');
+        $document->title->setValue('How to be awesome.');
+        $this->expectException(UnsupportedLanguageException::class);
+
+        $this->subject->add($document);
+    }
+
+    public function testSearchWithUnsupportedLanguage()
+    {
+        $this->subject->create();
+        $this->expectException(UnsupportedLanguageException::class);
+
+        $this->subject->language('foo')->search('bar');
     }
 
     public function testReplaceDocument()

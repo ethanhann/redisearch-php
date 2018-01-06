@@ -17,6 +17,7 @@ interface BuilderInterface
     public function geoFilter(string $fieldName, float $longitude, float $latitude, float $radius, string $distanceUnit = 'km'): BuilderInterface;
     public function sortBy(string $fieldName, $order = 'ASC'): BuilderInterface;
     public function scorer(string $scoringFunction): BuilderInterface;
+    public function language(string $languageName): BuilderInterface;
     public function search(string $query, bool $documentsAsArray = false): SearchResult;
     public function explain(string $query): string;
 }

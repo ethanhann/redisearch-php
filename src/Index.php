@@ -275,6 +275,15 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * @param string $languageName
+     * @return QueryBuilderInterface
+     */
+    public function language(string $languageName): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->language($languageName);
+    }
+
+    /**
      * @param string $query
      * @return string
      */
@@ -399,7 +408,8 @@ class Index extends AbstractIndex implements IndexInterface
         $properties = $document->getDefinition();
         array_unshift($properties, $this->indexName);
 
-        return $this->rawCommand('FT.ADD', $properties);
+        $rawResult = $this->rawCommand('FT.ADD', $properties);
+        return $rawResult === 'OK' || $rawResult === true;
     }
 
     /**
