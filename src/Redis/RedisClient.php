@@ -4,6 +4,7 @@ namespace Ehann\RediSearch\Redis;
 
 use Ehann\RediSearch\Exceptions\InvalidRedisClientClassException;
 use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
+use Ehann\RediSearch\Exceptions\UnknownRediSearchCommandException;
 use Ehann\RediSearch\Exceptions\UnsupportedLanguageException;
 use Psr\Log\LoggerInterface;
 
@@ -72,16 +73,24 @@ class RedisClient
         $rawResult = $this->isPredisClient() ?
             $this->redis->executeRaw($arguments) :
             call_user_func_array([$this->redis, 'rawCommand'], $arguments);
+        $this->throwExceptionIfRawResultIndicatesAnError($rawResult);
+        return $rawResult;
+    }
 
+    public function throwExceptionIfRawResultIndicatesAnError($rawResult)
+    {
+        if (!is_string($rawResult)) {
+            return;
+        }
         if ($rawResult === 'Unknown Index name') {
             throw new UnknownIndexNameException();
         }
-        $unsupportedLanguageMessages = ['Unsupported Language', 'Unsupported Stemmer Language'];
-        if (in_array($rawResult, $unsupportedLanguageMessages)) {
+        if (in_array($rawResult, ['Unsupported Language', 'Unsupported Stemmer Language'])) {
             throw new UnsupportedLanguageException();
         }
-
-        return $rawResult;
+        if (strpos($rawResult, 'ERR unknown command \'FT.') !== false) {
+            throw new UnknownRediSearchCommandException($rawResult);
+        }
     }
 
     public function setLogger(LoggerInterface $logger): RedisClient
