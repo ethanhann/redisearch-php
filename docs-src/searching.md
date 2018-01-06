@@ -59,6 +59,19 @@ $result = $bookIndex
     ->search('two cities');
 ```
 
+## Setting a Language
+
+A supported language can be specified when running a query.
+Supported languages are represented as constants in the **Ehann\RediSearch\Language** class.  
+
+```php
+<?php
+
+$result = $bookIndex
+    ->language(Language::ITALIAN)
+    ->search('two cities');
+```
+
 ## Explaining a Query
 
 An explanation for a query can be generated with the index's explain method.

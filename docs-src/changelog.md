@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.0
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.8.0...0.9.0)
+
+* An exception is now thrown when the RediSearch module is not loaded in Redis.
+* Allow a [language to be specified](searching.md#setting-a-language) when searching.
+
 ## 0.8.0
 
 [Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.7.0...0.8.0)
