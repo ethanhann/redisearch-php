@@ -48,13 +48,13 @@ class Builder implements BuilderInterface
 
     public function inFields(int $number, array $fields): BuilderInterface
     {
-        $this->inFields = "INFIELDS $number {implode(' ', $fields)}";
+        $this->inFields = "INFIELDS $number " . implode(' ', $fields);
         return $this;
     }
 
     public function inKeys(int $number, array $keys): BuilderInterface
     {
-        $this->inKeys = "INKEYS $number {implode(' ', $keys)}";
+        $this->inKeys = "INKEYS $number " . implode(' ', $keys);
         return $this;
     }
 
