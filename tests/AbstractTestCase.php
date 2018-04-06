@@ -2,18 +2,18 @@
 
 namespace Ehann\Tests;
 
-use Ehann\RediSearch\Redis\RedisClient;
+use Ehann\RediSearch\Redis\PhpRedisAdapter;
+use Ehann\RediSearch\Redis\PredisAdapter;
+use Ehann\RediSearch\Redis\RedisClientInterface;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
-use Predis\Client;
-use Redis;
 
 abstract class AbstractTestCase extends TestCase
 {
     /** @var string */
     protected $indexName;
-    /** @var RedisClient */
+    /** @var RedisClientInterface */
     protected $redisClient;
 
     public function __construct($name = null, array $data = [], $dataName = '')
@@ -31,26 +31,21 @@ abstract class AbstractTestCase extends TestCase
         }
     }
 
-    protected function makeRedisClientWithPhpRedis(): RedisClient
+    protected function makeRedisClientWithPhpRedis(): RedisClientInterface
     {
-        $client = new Redis();
-        $client->connect(
+        return (new PhpRedisAdapter())->connect(
             getenv('REDIS_HOST') ?? '127.0.0.1',
-            getenv('REDIS_PORT') ?? 6379
+            getenv('REDIS_PORT') ?? 6379,
+            getenv('REDIS_DB') ?? 0
         );
-        $client->select(getenv('REDIS_DB') ?? 0);
-        return new RedisClient($client);
     }
 
-    protected function makeRedisClientWithPredis(): RedisClient
+    protected function makeRedisClientWithPredis(): RedisClientInterface
     {
-        $redis = new Client([
-            'scheme' => 'tcp',
-            'host' => getenv('REDIS_HOST') ?? '127.0.0.1',
-            'port' => getenv('REDIS_PORT') ?? 6379,
-            'database' => getenv('REDIS_DB') ?? 0,
-        ]);
-        $redis->connect();
-        return new RedisClient($redis);
+        return (new PredisAdapter())->connect(
+            getenv('REDIS_HOST') ?? '127.0.0.1',
+            getenv('REDIS_PORT') ?? 6379,
+            getenv('REDIS_DB') ?? 0
+        );
     }
 }

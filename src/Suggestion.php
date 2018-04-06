@@ -2,8 +2,6 @@
 
 namespace Ehann\RediSearch;
 
-use Ehann\RediSearch\Redis\RedisClient;
-
 class Suggestion extends AbstractIndex
 {
     /**
