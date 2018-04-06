@@ -12,7 +12,7 @@ use Ehann\RediSearch\Fields\TextField;
 use Ehann\RediSearch\Query\Builder as QueryBuilder;
 use Ehann\RediSearch\Query\BuilderInterface as QueryBuilderInterface;
 use Ehann\RediSearch\Query\SearchResult;
-use Ehann\RediSearch\Redis\RedisClient;
+use Ehann\RediSearch\Redis\RedisClientInterface;
 
 class Index extends AbstractIndex implements IndexInterface
 {
@@ -152,18 +152,18 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
-     * @return RedisClient
+     * @return RedisClientInterface
      */
-    public function getRedisClient(): RedisClient
+    public function getRedisClient(): RedisClientInterface
     {
         return $this->redisClient;
     }
 
     /**
-     * @param RedisClient $redisClient
+     * @param RedisClientInterface $redisClient
      * @return IndexInterface
      */
-    public function setRedisClient(RedisClient $redisClient): IndexInterface
+    public function setRedisClient(RedisClientInterface $redisClient): IndexInterface
     {
         $this->redisClient = $redisClient;
         return $this;
@@ -415,6 +415,7 @@ class Index extends AbstractIndex implements IndexInterface
     /**
      * @param $document
      * @return bool
+     * @throws Exceptions\FieldNotInSchemaException
      */
     public function add($document): bool
     {
@@ -427,6 +428,7 @@ class Index extends AbstractIndex implements IndexInterface
     /**
      * @param $document
      * @return bool
+     * @throws Exceptions\FieldNotInSchemaException
      */
     public function replace($document): bool
     {

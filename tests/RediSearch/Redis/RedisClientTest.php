@@ -4,7 +4,7 @@ namespace Ehann\Tests\RediSearch\Redis;
 
 use Ehann\RediSearch\Exceptions\InvalidRedisClientClassException;
 use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
-use Ehann\RediSearch\Redis\RedisClient;
+use Ehann\RediSearch\Redis\RedisClientInterface;
 use Ehann\Tests\AbstractTestCase;
 use Predis\Client;
 use Redis;
