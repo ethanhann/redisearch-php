@@ -27,10 +27,12 @@ abstract class AbstractRedisClient implements RedisClientInterface
     }
 
     public function multi(bool $usePipeline = false)
-    {}
+    {
+    }
 
     public function rawCommand(string $command, array $arguments)
-    {}
+    {
+    }
 
     public function prepareRawCommandArguments(string $command, array $arguments) : array
     {
