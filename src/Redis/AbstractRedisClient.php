@@ -12,7 +12,7 @@ use Psr\Log\LoggerInterface;
 
 abstract class AbstractRedisClient implements RedisClientInterface
 {
-    protected $redis;
+    public $redis;
     /** @var  LoggerInterface */
     protected $logger;
 
