@@ -4,8 +4,17 @@ namespace Ehann\RediSearch\Redis;
 
 use Predis\Client;
 
+/**
+ * Class PredisAdapter
+ * @package Ehann\RediSearch\Redis
+ *
+ * This class wraps the NRK client: https://github.com/nrk/predis
+ */
 class PredisAdapter extends AbstractRedisClient
 {
+    /** @var Client */
+    public $redis;
+
     public function connect($hostname = '127.0.0.1', $port = 6379, $db = 0, $password = null): RedisClientInterface
     {
         $this->redis = new Client([

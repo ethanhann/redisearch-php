@@ -334,7 +334,7 @@ class IndexTest extends AbstractTestCase
             $this->markTestSkipped('Skipping because test suite is not configured to use PhpRedis.');
         }
 
-        $this->subject->setRedisClient($this->makeRedisClientWithPhpRedis())->create();
+        $this->subject->setRedisClient($this->makePhpRedisAdapter())->create();
         $expectedDocumentCount = 10;
         $documents = $this->makeDocuments();
         $expectedCount = count($documents);
