@@ -29,6 +29,6 @@ class PredisAdapter extends AbstractRedisClient
         $preparedArguments = $this->prepareRawCommandArguments($command, $arguments);
         $rawResult = $this->redis->executeRaw($preparedArguments);
         $this->validateRawCommandResults($rawResult);
-        return $rawResult;
+        return $this->normalizeRawCommandResult($rawResult);
     }
 }
