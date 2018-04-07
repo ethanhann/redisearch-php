@@ -143,6 +143,7 @@ class Index extends AbstractIndex implements IndexInterface
     /**
      * @param null $id
      * @return DocumentInterface
+     * @throws Exceptions\FieldNotInSchemaException
      */
     public function makeDocument($id = null): DocumentInterface
     {
@@ -297,6 +298,7 @@ class Index extends AbstractIndex implements IndexInterface
      * @param string $query
      * @param bool $documentsAsArray
      * @return SearchResult
+     * @throws Exceptions\RedisRawCommandException
      */
     public function search(string $query, bool $documentsAsArray = false): SearchResult
     {

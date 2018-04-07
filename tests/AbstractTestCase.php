@@ -48,4 +48,14 @@ abstract class AbstractTestCase extends TestCase
             getenv('REDIS_DB') ?? 0
         );
     }
+
+    protected function isUsingPredis()
+    {
+        return getenv('REDIS_LIBRARY') === 'Predis';
+    }
+
+    protected function isUsingPhpRedis()
+    {
+        return getenv('REDIS_LIBRARY') === 'PhpRedis';
+    }
 }
