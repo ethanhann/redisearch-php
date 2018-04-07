@@ -2,10 +2,12 @@
 
 namespace Ehann\RediSearch\Redis;
 
+use Ehann\RediSearch\Exceptions\RawCommandErrorException;
 use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
 use Ehann\RediSearch\Exceptions\UnknownRediSearchCommandException;
 use Ehann\RediSearch\Exceptions\UnsupportedLanguageException;
 use Ehann\RediSearch\Exceptions\UnsupportedRedisDatabaseException;
+use Exception;
 use Psr\Log\LoggerInterface;
 
 abstract class AbstractRedisClient implements RedisClientInterface
@@ -45,42 +47,36 @@ abstract class AbstractRedisClient implements RedisClientInterface
     }
 
     /**
-     * @param $rawResult
+     * @param $payload
      * @return mixed
+     * @throws RawCommandErrorException
      * @throws UnknownIndexNameException
      * @throws UnknownRediSearchCommandException
      * @throws UnsupportedLanguageException
      * @throws UnsupportedRedisDatabaseException
      */
-    public function validateRawCommandResults($rawResult)
+    public function validateRawCommandResults($payload)
     {
-        $this->throwExceptionIfRawResultIndicatesAnError($rawResult);
-        return $rawResult;
-    }
+        $isPayloadException = $payload instanceof Exception;
+        $message = $isPayloadException ? $payload->getMessage() : $payload;
 
-    /**
-     * @param $rawResult
-     * @throws UnknownIndexNameException
-     * @throws UnknownRediSearchCommandException
-     * @throws UnsupportedLanguageException
-     * @throws UnsupportedRedisDatabaseException
-     */
-    public function throwExceptionIfRawResultIndicatesAnError($rawResult)
-    {
-        if (!is_string($rawResult)) {
+        if (!is_string($message)) {
             return;
         }
-        if ($rawResult === 'Cannot create index on db != 0') {
+        if ($message === 'Cannot create index on db != 0') {
             throw new UnsupportedRedisDatabaseException();
         }
-        if ($rawResult === 'Unknown Index name') {
+        if ($message === 'Unknown Index name') {
             throw new UnknownIndexNameException();
         }
-        if (in_array($rawResult, ['Unsupported Language', 'Unsupported Stemmer Language'])) {
+        if (in_array($message, ['Unsupported Language', 'Unsupported Stemmer Language'])) {
             throw new UnsupportedLanguageException();
         }
-        if (strpos($rawResult, 'ERR unknown command \'FT.') !== false) {
-            throw new UnknownRediSearchCommandException($rawResult);
+        if (strpos($message, 'ERR unknown command \'FT.') !== false) {
+            throw new UnknownRediSearchCommandException($message);
+        }
+        if ($isPayloadException) {
+            throw new RawCommandErrorException('', 0, $payload);
         }
     }
 
