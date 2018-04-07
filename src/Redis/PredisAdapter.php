@@ -21,7 +21,7 @@ class PredisAdapter extends AbstractRedisClient
 
     public function multi(bool $usePipeline = false)
     {
-        $this->redis->pipeline();
+        return $this->redis->pipeline();
     }
 
     public function rawCommand(string $command, array $arguments)

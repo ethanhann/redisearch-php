@@ -330,6 +330,10 @@ class IndexTest extends AbstractTestCase
      */
     public function testBatchIndexWithAddManyUsingPhpRedisWithAtomicityDisabled()
     {
+        if (!$this->isUsingPhpRedis()) {
+            $this->markTestSkipped('Skipping because test suite is not configured to use PhpRedis.');
+        }
+
         $this->subject->setRedisClient($this->makeRedisClientWithPhpRedis())->create();
         $expectedDocumentCount = 10;
         $documents = $this->makeDocuments();

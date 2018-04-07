@@ -5,6 +5,7 @@ namespace Ehann\RediSearch\Redis;
 use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
 use Ehann\RediSearch\Exceptions\UnknownRediSearchCommandException;
 use Ehann\RediSearch\Exceptions\UnsupportedLanguageException;
+use Ehann\RediSearch\Exceptions\UnsupportedRedisDatabaseException;
 use Psr\Log\LoggerInterface;
 
 abstract class AbstractRedisClient implements RedisClientInterface
@@ -13,8 +14,10 @@ abstract class AbstractRedisClient implements RedisClientInterface
     /** @var  LoggerInterface */
     protected $logger;
 
-    public function connect($hostname = '127.0.0.1', $port = 6379, $db = 0, $password = null)
-    {}
+    public function connect($hostname = '127.0.0.1', $port = 6379, $db = 0, $password = null): RedisClientInterface
+    {
+        return $this;
+    }
 
     public function flushAll()
     {
@@ -41,6 +44,14 @@ abstract class AbstractRedisClient implements RedisClientInterface
         return $arguments;
     }
 
+    /**
+     * @param $rawResult
+     * @return mixed
+     * @throws UnknownIndexNameException
+     * @throws UnknownRediSearchCommandException
+     * @throws UnsupportedLanguageException
+     * @throws UnsupportedRedisDatabaseException
+     */
     public function validateRawCommandResults($rawResult)
     {
         $this->throwExceptionIfRawResultIndicatesAnError($rawResult);
@@ -52,11 +63,15 @@ abstract class AbstractRedisClient implements RedisClientInterface
      * @throws UnknownIndexNameException
      * @throws UnknownRediSearchCommandException
      * @throws UnsupportedLanguageException
+     * @throws UnsupportedRedisDatabaseException
      */
     public function throwExceptionIfRawResultIndicatesAnError($rawResult)
     {
         if (!is_string($rawResult)) {
             return;
+        }
+        if ($rawResult === 'Cannot create index on db != 0') {
+            throw new UnsupportedRedisDatabaseException();
         }
         if ($rawResult === 'Unknown Index name') {
             throw new UnknownIndexNameException();
@@ -69,6 +84,10 @@ abstract class AbstractRedisClient implements RedisClientInterface
         }
     }
 
+    /**
+     * @param LoggerInterface $logger
+     * @return RedisClientInterface
+     */
     public function setLogger(LoggerInterface $logger): RedisClientInterface
     {
         $this->logger = $logger;

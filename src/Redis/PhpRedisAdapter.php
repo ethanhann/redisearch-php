@@ -15,7 +15,7 @@ class PhpRedisAdapter extends AbstractRedisClient
 
     public function multi(bool $usePipeline = false)
     {
-        $this->redis->multi($usePipeline ? \Redis::PIPELINE : \Redis::MULTI);
+        return $this->redis->multi($usePipeline ? \Redis::PIPELINE : \Redis::MULTI);
     }
 
     public function rawCommand(string $command, array $arguments)
