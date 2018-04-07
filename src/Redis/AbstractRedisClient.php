@@ -80,10 +80,11 @@ abstract class AbstractRedisClient implements RedisClientInterface
         }
     }
 
-    /**
-     * @param LoggerInterface $logger
-     * @return RedisClientInterface
-     */
+    public function normalizeRawCommandResult($rawResult)
+    {
+        return $rawResult === 'OK' ? true : $rawResult;
+    }
+
     public function setLogger(LoggerInterface $logger): RedisClientInterface
     {
         $this->logger = $logger;

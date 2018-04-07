@@ -30,6 +30,6 @@ class PhpRedisAdapter extends AbstractRedisClient
         } catch (RedisException $exception) {
             $this->validateRawCommandResults($exception);
         }
-        return $rawResult;
+        return $this->normalizeRawCommandResult($rawResult);
     }
 }

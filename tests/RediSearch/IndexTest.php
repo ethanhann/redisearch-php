@@ -45,7 +45,7 @@ class IndexTest extends AbstractTestCase
     {
         $result = $this->subject->create();
 
-        $this->assertTrue($result || $result = 'OK');
+        $this->assertTrue($result);
     }
 
     public function testShouldDropIndex()
@@ -54,7 +54,7 @@ class IndexTest extends AbstractTestCase
 
         $result = $this->subject->drop();
 
-        $this->assertTrue($result || $result = 'OK');
+        $this->assertTrue($result);
     }
 
     public function testShouldGetInfo()
@@ -95,7 +95,7 @@ class IndexTest extends AbstractTestCase
 
         $result = $index->create();
 
-        $this->assertTrue($result || $result = 'OK');
+        $this->assertTrue($result);
     }
 
     public function testAddDocumentWithZeroScore()
