@@ -2,7 +2,7 @@ sudo: required
 services: docker
 before_install:
   - phpenv config-add travis-php.ini
-  - docker run -d -p 6379:6379 redislabs/redisearch:latest --protected-mode no --loadmodule /var/lib/redis/modules/redisearch.so
+  - docker run -d -p 6379:6379 redislabs/redisearch:latest --protected-mode no --loadmodule /usr/lib/redis/modules/redisearch.so
 language: php
 php:
   - '7.0'
