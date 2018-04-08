@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.10.0
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.9.0...0.10.0)
+
+* Remove RedisClient class and add adapter functionality.
+* There are now adapters for Predis, PhpRedis, and the Cheprasov client. They all extend [AbstractRedisClient](https://github.com/ethanhann/redisearch-php/blob/master/src/Redis/AbstractRedisClient.php) which implements [RedisClientInterface](https://github.com/ethanhann/redisearch-php/blob/master/src/Redis/RedisClientInterface.php). An additional adapter can be created by extending AbstractRedisClient or by implementing RedisClientInterface if needed for some reason. 
+* Handle RediSearch module error when index is created on a Redis database other than 0.
+* Return boolean true instead of "OK" when using PredisAdapter.
+* A new index now requires that a redis client is passed into its constructor - removed the magic behavior where a default RedisClient instance was auto initialized.
+
 ## 0.9.0
 
 [Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.8.0...0.9.0)
