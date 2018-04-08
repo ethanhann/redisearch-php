@@ -45,7 +45,7 @@ class IndexTest extends AbstractTestCase
     {
         $result = $this->subject->create();
 
-        $this->assertTrue($result || $result = 'OK');
+        $this->assertTrue($result);
     }
 
     public function testShouldDropIndex()
@@ -54,7 +54,7 @@ class IndexTest extends AbstractTestCase
 
         $result = $this->subject->drop();
 
-        $this->assertTrue($result || $result = 'OK');
+        $this->assertTrue($result);
     }
 
     public function testShouldGetInfo()
@@ -95,7 +95,7 @@ class IndexTest extends AbstractTestCase
 
         $result = $index->create();
 
-        $this->assertTrue($result || $result = 'OK');
+        $this->assertTrue($result);
     }
 
     public function testAddDocumentWithZeroScore()
@@ -330,7 +330,11 @@ class IndexTest extends AbstractTestCase
      */
     public function testBatchIndexWithAddManyUsingPhpRedisWithAtomicityDisabled()
     {
-        $this->subject->setRedisClient($this->makeRedisClientWithPhpRedis())->create();
+        if (!$this->isUsingPhpRedis()) {
+            $this->markTestSkipped('Skipping because test suite is not configured to use PhpRedis.');
+        }
+
+        $this->subject->setRedisClient($this->makePhpRedisAdapter())->create();
         $expectedDocumentCount = 10;
         $documents = $this->makeDocuments();
         $expectedCount = count($documents);

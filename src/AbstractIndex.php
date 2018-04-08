@@ -2,18 +2,18 @@
 
 namespace Ehann\RediSearch;
 
-use Ehann\RediSearch\Redis\RedisClient;
+use Ehann\RediSearch\Redis\RedisClientInterface;
 
 abstract class AbstractIndex
 {
-    /** @var RedisClient */
+    /** @var RedisClientInterface */
     protected $redisClient;
     /** @var string */
     protected $indexName;
 
-    public function __construct(RedisClient $redisClient = null, string $indexName = '')
+    public function __construct(RedisClientInterface $redisClient = null, string $indexName = '')
     {
-        $this->redisClient = $redisClient ?? new RedisClient();
+        $this->redisClient = $redisClient;
         $this->indexName = $indexName;
     }
 }
