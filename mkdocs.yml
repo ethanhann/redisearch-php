@@ -14,3 +14,13 @@ pages:
 
 extra_css:
     - css/style.css
+
+theme:
+  name: 'material'
+  favicon: 'images/logo.png'
+  logo: 'images/logo.png'
+  palette:
+    primary: 'red'
+    accent: 'red'
+  feature:
+    tabs: false
