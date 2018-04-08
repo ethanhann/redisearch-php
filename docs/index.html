@@ -94,6 +94,7 @@
             <li><a href="#requirements">Requirements</a></li>
             <li><a href="#install">Install</a></li>
             <li><a href="#load">Load</a></li>
+            <li><a href="#create-a-redis-client">Create a Redis Client</a></li>
             <li><a href="#create-the-schema">Create the Schema</a></li>
             <li><a href="#add-a-document">Add a Document</a></li>
             <li><a href="#search-the-index">Search the Index</a></li>
@@ -107,7 +108,7 @@
 <ul>
 <li>Redis running with the <a href="http://redisearch.io/Quick_Start/">RediSearch module loaded</a>.</li>
 <li>PHP &gt;=7</li>
-<li><a href="https://github.com/phpredis/phpredis">PhpRedis</a> OR <a href="https://github.com/nrk/predis">Predis</a>.</li>
+<li><a href="https://github.com/phpredis/phpredis">PhpRedis</a>, <a href="https://github.com/nrk/predis">Predis</a>, or <a href="https://github.com/cheprasov/php-redis-client">php-redis-client</a>.</li>
 </ul>
 <h2 id="install">Install</h2>
 <pre><code class="bash">composer install ethanhann/redisearch-php
@@ -119,12 +120,27 @@
 require_once 'vendor/autoload.php';
 </code></pre>
 
+<h2 id="create-a-redis-client">Create a Redis Client</h2>
+<pre><code class="php">&lt;?php
+
+use Ehann\RediSearch\Redis\PredisAdapter;
+use Ehann\RediSearch\Redis\PhpRedisAdapter;
+use Ehann\RediSearch\Redis\RedisClientAdapter;
+
+$redis = (new PredisAdapter())-&gt;connect('127.0.0.1', 6379);
+// or
+$redis = (new PhpRedisAdapter())-&gt;connect('127.0.0.1', 6379);
+// or
+$redis = (new RedisClientAdapter())-&gt;connect('127.0.0.1', 6379);
+
+</code></pre>
+
 <h2 id="create-the-schema">Create the Schema</h2>
 <pre><code class="php">&lt;?php
 
 use Ehann\RediSearch\Index;
 
-$bookIndex = new Index();
+$bookIndex = new Index($redis);
 
 $bookIndex-&gt;addTextField('title')
     -&gt;addTextField('author')
@@ -239,5 +255,5 @@ $firstResult-&gt;author;
 
 <!--
 MkDocs version : 0.17.2
-Build Date UTC : 2018-01-06 22:39:18
+Build Date UTC : 2018-04-08 21:26:12
 -->
