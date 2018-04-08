@@ -6,7 +6,7 @@ RediSearch-PHP is a PHP client library for the [RediSearch](http://redisearch.io
 
 * Redis running with the [RediSearch module loaded](http://redisearch.io/Quick_Start/).
 * PHP >=7
-* [PhpRedis](https://github.com/phpredis/phpredis) OR [Predis](https://github.com/nrk/predis).
+* [PhpRedis](https://github.com/phpredis/phpredis), [Predis](https://github.com/nrk/predis), or [php-redis-client](https://github.com/cheprasov/php-redis-client).
 
 ## Install
 
@@ -22,6 +22,24 @@ composer install ethanhann/redisearch-php
 require_once 'vendor/autoload.php';
 ```
 
+
+## Create a Redis Client
+
+```php
+<?php
+
+use Ehann\RediSearch\Redis\PredisAdapter;
+use Ehann\RediSearch\Redis\PhpRedisAdapter;
+use Ehann\RediSearch\Redis\RedisClientAdapter;
+
+$redis = (new PredisAdapter())->connect('127.0.0.1', 6379);
+// or
+$redis = (new PhpRedisAdapter())->connect('127.0.0.1', 6379);
+// or
+$redis = (new RedisClientAdapter())->connect('127.0.0.1', 6379);
+
+```
+
 ## Create the Schema
 
 ```php
@@ -29,7 +47,7 @@ require_once 'vendor/autoload.php';
 
 use Ehann\RediSearch\Index;
 
-$bookIndex = new Index();
+$bookIndex = new Index($redis);
 
 $bookIndex->addTextField('title')
     ->addTextField('author')
