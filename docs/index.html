@@ -331,16 +331,35 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      Documentation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Documentation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
     <a href="indexing/" title="Indexing" class="md-nav__link">
       Indexing
     </a>
   </li>
 
-    
-      
-      
-      
+        
+          
+          
+          
 
 
   <li class="md-nav__item">
@@ -349,16 +368,21 @@
     </a>
   </li>
 
-    
-      
-      
-      
+        
+          
+          
+          
 
 
   <li class="md-nav__item">
     <a href="suggesting/" title="Suggesting" class="md-nav__link">
       Suggesting
     </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -474,23 +498,23 @@
                   <a href="https://github.com/ethanhann/redisearch-php/edit/master/docs/index.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="redisearch-php">RediSearch-PHP</h1>
+                <h1 id="redisearch-php">RediSearch-PHP<a class="headerlink" href="#redisearch-php" title="Permanent link">&para;</a></h1>
 <p>RediSearch-PHP is a PHP client library for the <a href="http://redisearch.io/">RediSearch</a> module which adds full-text search to Redis.</p>
-<h2 id="requirements">Requirements</h2>
+<h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Redis running with the <a href="http://redisearch.io/Quick_Start/">RediSearch module loaded</a>.</li>
 <li>PHP &gt;=7</li>
 <li><a href="https://github.com/phpredis/phpredis">PhpRedis</a>, <a href="https://github.com/nrk/predis">Predis</a>, or <a href="https://github.com/cheprasov/php-redis-client">php-redis-client</a>.</li>
 </ul>
-<h2 id="install">Install</h2>
+<h2 id="install">Install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h2>
 <div class="codehilite"><pre><span></span>composer install ethanhann/redisearch-php
 </pre></div>
 
-<h2 id="load">Load</h2>
+<h2 id="load">Load<a class="headerlink" href="#load" title="Permanent link">&para;</a></h2>
 <div class="codehilite"><pre><span></span><span class="k">require_once</span> <span class="s1">&#39;vendor/autoload.php&#39;</span><span class="p">;</span>
 </pre></div>
 
-<h2 id="create-a-redis-client">Create a Redis Client</h2>
+<h2 id="create-a-redis-client">Create a Redis Client<a class="headerlink" href="#create-a-redis-client" title="Permanent link">&para;</a></h2>
 <div class="codehilite"><pre><span></span><span class="k">use</span> <span class="nx">Ehann\RediSearch\Redis\PredisAdapter</span><span class="p">;</span>
 <span class="k">use</span> <span class="nx">Ehann\RediSearch\Redis\PhpRedisAdapter</span><span class="p">;</span>
 <span class="k">use</span> <span class="nx">Ehann\RediSearch\Redis\RedisClientAdapter</span><span class="p">;</span>
@@ -502,7 +526,7 @@
 <span class="nv">$redis</span> <span class="o">=</span> <span class="p">(</span><span class="k">new</span> <span class="nx">RedisClientAdapter</span><span class="p">())</span><span class="o">-&gt;</span><span class="na">connect</span><span class="p">(</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">6379</span><span class="p">);</span>
 </pre></div>
 
-<h2 id="create-the-schema">Create the Schema</h2>
+<h2 id="create-the-schema">Create the Schema<a class="headerlink" href="#create-the-schema" title="Permanent link">&para;</a></h2>
 <div class="codehilite"><pre><span></span><span class="k">use</span> <span class="nx">Ehann\RediSearch\Index</span><span class="p">;</span>
 
 <span class="nv">$bookIndex</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Index</span><span class="p">(</span><span class="nv">$redis</span><span class="p">);</span>
@@ -514,7 +538,7 @@
     <span class="o">-&gt;</span><span class="na">create</span><span class="p">();</span>
 </pre></div>
 
-<h2 id="add-a-document">Add a Document</h2>
+<h2 id="add-a-document">Add a Document<a class="headerlink" href="#add-a-document" title="Permanent link">&para;</a></h2>
 <div class="codehilite"><pre><span></span><span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">([</span>
     <span class="k">new</span> <span class="nx">TextField</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;Tale of Two Cities&#39;</span><span class="p">),</span>
     <span class="k">new</span> <span class="nx">TextField</span><span class="p">(</span><span class="s1">&#39;author&#39;</span><span class="p">,</span> <span class="s1">&#39;Charles Dickens&#39;</span><span class="p">),</span>
@@ -523,7 +547,7 @@
 <span class="p">]);</span>
 </pre></div>
 
-<h2 id="search-the-index">Search the Index</h2>
+<h2 id="search-the-index">Search the Index<a class="headerlink" href="#search-the-index" title="Permanent link">&para;</a></h2>
 <div class="codehilite"><pre><span></span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">search</span><span class="p">(</span><span class="s1">&#39;two cities&#39;</span><span class="p">);</span>
 
 <span class="nv">$result</span><span class="o">-&gt;</span><span class="na">count</span><span class="p">();</span>     <span class="c1">// Number of documents.</span>
@@ -577,7 +601,7 @@
       <div class="md-footer-copyright">
         
           <div class="md-footer-copyright__highlight">
-            © 2017 - Ethan Hann
+            © 2018 - Ethan Hann
           </div>
         
         powered by

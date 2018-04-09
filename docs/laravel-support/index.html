@@ -251,16 +251,35 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      Documentation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Documentation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
     <a href="../indexing/" title="Indexing" class="md-nav__link">
       Indexing
     </a>
   </li>
 
-    
-      
-      
-      
+        
+          
+          
+          
 
 
   <li class="md-nav__item">
@@ -269,16 +288,21 @@
     </a>
   </li>
 
-    
-      
-      
-      
+        
+          
+          
+          
 
 
   <li class="md-nav__item">
     <a href="../suggesting/" title="Suggesting" class="md-nav__link">
       Suggesting
     </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -472,25 +496,25 @@
                   <a href="https://github.com/ethanhann/redisearch-php/edit/master/docs/laravel-support.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="laravel-support">Laravel Support</h1>
+                <h1 id="laravel-support">Laravel Support<a class="headerlink" href="#laravel-support" title="Permanent link">&para;</a></h1>
 <p><a href="https://github.com/ethanhann/Laravel-RediSearch">Laravel-RediSearch</a> allows for indexing and searching Laravel models.
 It provides a <a href="https://laravel.com/docs/5.6/scout">Laravel Scout</a> driver.</p>
-<h2 id="getting-started">Getting Started</h2>
-<h3 id="install">Install</h3>
+<h2 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
+<h3 id="install">Install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h3>
 <div class="codehilite"><pre><span></span>composer install ethanhann/laravel-redisearch
 </pre></div>
 
-<h3 id="register-the-provider">Register the Provider</h3>
+<h3 id="register-the-provider">Register the Provider<a class="headerlink" href="#register-the-provider" title="Permanent link">&para;</a></h3>
 <p>Add this entry to the providers array in config/app.php.</p>
 <div class="codehilite"><pre><span></span><span class="nx">Ehann\LaravelRediSearch\RediSearchServiceProvider</span><span class="o">::</span><span class="na">class</span>
 </pre></div>
 
-<h3 id="configure-the-scout-driver">Configure the Scout Driver</h3>
+<h3 id="configure-the-scout-driver">Configure the Scout Driver<a class="headerlink" href="#configure-the-scout-driver" title="Permanent link">&para;</a></h3>
 <p>Update the Scout driver in config/scout.php.</p>
 <div class="codehilite"><pre><span></span><span class="s1">&#39;driver&#39;</span> <span class="o">=&gt;</span> <span class="nx">env</span><span class="p">(</span><span class="s1">&#39;SCOUT_DRIVER&#39;</span><span class="p">,</span> <span class="s1">&#39;ehann-redisearch&#39;</span><span class="p">),</span>
 </pre></div>
 
-<h3 id="import-a-model">Import a Model</h3>
+<h3 id="import-a-model">Import a Model<a class="headerlink" href="#import-a-model" title="Permanent link">&para;</a></h3>
 <p>Import a "Product" model that is <a href="https://laravel.com/docs/5.6/scout#configuration">configured to be searchable</a>:</p>
 <div class="codehilite"><pre><span></span>artisan ehann:redisearch:import App<span class="se">\\</span>Product
 </pre></div>
@@ -503,7 +527,7 @@ It provides a <a href="https://laravel.com/docs/5.6/scout">Laravel Scout</a> dri
 <div class="codehilite"><pre><span></span>artisan ehann:redisearch:import App<span class="se">\\</span>Product --no-id
 </pre></div>
 
-<h2 id="what-now">What now?</h2>
+<h2 id="what-now">What now?<a class="headerlink" href="#what-now" title="Permanent link">&para;</a></h2>
 <p>See the <a href="https://laravel.com/docs/5.6/scout">Laravel Scout</a> documentation for additional information. </p>
                 
                   
@@ -562,7 +586,7 @@ It provides a <a href="https://laravel.com/docs/5.6/scout">Laravel Scout</a> dri
       <div class="md-footer-copyright">
         
           <div class="md-footer-copyright__highlight">
-            © 2017 - Ethan Hann
+            © 2018 - Ethan Hann
           </div>
         
         powered by

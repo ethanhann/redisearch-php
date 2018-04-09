@@ -251,16 +251,35 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      Documentation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Documentation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
     <a href="../indexing/" title="Indexing" class="md-nav__link">
       Indexing
     </a>
   </li>
 
-    
-      
-      
-      
+        
+          
+          
+          
 
 
   <li class="md-nav__item">
@@ -269,16 +288,21 @@
     </a>
   </li>
 
-    
-      
-      
-      
+        
+          
+          
+          
 
 
   <li class="md-nav__item">
     <a href="../suggesting/" title="Suggesting" class="md-nav__link">
       Suggesting
     </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -460,8 +484,8 @@
                   <a href="https://github.com/ethanhann/redisearch-php/edit/master/docs/changelog.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="changelog">Changelog</h1>
-<h2 id="0100">0.10.0</h2>
+                <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h2 id="0100">0.10.0<a class="headerlink" href="#0100" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/ethanhann/redisearch-php/compare/0.9.0...0.10.0">Changes since last release</a></p>
 <ul>
 <li>Remove RedisClient class and add adapter functionality.</li>
@@ -470,13 +494,13 @@
 <li>Return boolean true instead of "OK" when using PredisAdapter.</li>
 <li>A new index now requires that a redis client is passed into its constructor - removed the magic behavior where a default RedisClient instance was auto initialized.</li>
 </ul>
-<h2 id="090">0.9.0</h2>
+<h2 id="090">0.9.0<a class="headerlink" href="#090" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/ethanhann/redisearch-php/compare/0.8.0...0.9.0">Changes since last release</a></p>
 <ul>
 <li>An exception is now thrown when the RediSearch module is not loaded in Redis.</li>
 <li>Allow a <a href="../searching/#setting-a-language">language to be specified</a> when searching.</li>
 </ul>
-<h2 id="080">0.8.0</h2>
+<h2 id="080">0.8.0<a class="headerlink" href="#080" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/ethanhann/redisearch-php/compare/0.7.0...0.8.0">Changes since last release</a></p>
 <ul>
 <li>Add <a href="../searching/#sorting-results">search result sorting</a>.</li>
@@ -485,17 +509,17 @@
 <li>Add optional <a href="../searching/#logging-queries">query logging</a>.</li>
 <li>Add <a href="../suggesting/">suggestions</a>.</li>
 </ul>
-<h2 id="070">0.7.0</h2>
+<h2 id="070">0.7.0<a class="headerlink" href="#070" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/ethanhann/redisearch-php/compare/0.6.0...0.7.0">Changes since last release</a></p>
 <ul>
 <li>Many bug fixes and code quality improvements.</li>
 </ul>
-<h2 id="060">0.6.0</h2>
+<h2 id="060">0.6.0<a class="headerlink" href="#060" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/ethanhann/redisearch-php/compare/0.5.0...0.6.0">Changes since last release</a></p>
 <ul>
 <li>Add <a href="../indexing/#batch-indexing">batch indexing</a>.</li>
 </ul>
-<h2 id="050">0.5.0</h2>
+<h2 id="050">0.5.0<a class="headerlink" href="#050" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Rename vendor namespace from <strong>Eeh</strong> to <strong>Ehann</strong></li>
 <li><strong>AbstractIndex</strong> was renamed to <strong>Index</strong> and is no longer abstract.</li>
@@ -544,7 +568,7 @@
       <div class="md-footer-copyright">
         
           <div class="md-footer-copyright__highlight">
-            © 2017 - Ethan Hann
+            © 2018 - Ethan Hann
           </div>
         
         powered by

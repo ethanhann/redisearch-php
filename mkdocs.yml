@@ -3,13 +3,14 @@ site_dir: docs
 site_name: RediSearch-PHP
 repo_url: https://github.com/ethanhann/redisearch-php
 site_author: Ethan Hann
-copyright: © 2017 - Ethan Hann
+copyright: © 2018 - Ethan Hann
 
 pages:
 - Getting Started: 'index.md'
-- 'indexing.md'
-- 'searching.md'
-- 'suggesting.md'
+- Documentation:
+  - 'indexing.md'
+  - 'searching.md'
+  - 'suggesting.md'
 - Laravel Support: 'laravel-support.md'
 - 'changelog.md'
 
@@ -27,6 +28,8 @@ theme:
     tabs: false
 
 markdown_extensions:
+  - toc:
+      permalink: true
   - pymdownx.superfences
   - pymdownx.inlinehilite:
       css_class: codehilite

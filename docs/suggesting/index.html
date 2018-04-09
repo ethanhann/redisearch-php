@@ -250,6 +250,27 @@
       
       
 
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+    <label class="md-nav__link" for="nav-2">
+      Documentation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Documentation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
 
   <li class="md-nav__item">
     <a href="../indexing/" title="Indexing" class="md-nav__link">
@@ -257,10 +278,10 @@
     </a>
   </li>
 
-    
-      
-      
-      
+        
+          
+          
+          
 
 
   <li class="md-nav__item">
@@ -269,10 +290,10 @@
     </a>
   </li>
 
-    
-      
-      
-      
+        
+          
+          
+          
 
   
 
@@ -345,6 +366,11 @@
   
 </nav>
     
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -446,30 +472,30 @@
                   <a href="https://github.com/ethanhann/redisearch-php/edit/master/docs/suggesting.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="suggesting">Suggesting</h1>
-<h2 id="creating-a-suggestion-index">Creating a Suggestion Index</h2>
+                <h1 id="suggesting">Suggesting<a class="headerlink" href="#suggesting" title="Permanent link">&para;</a></h1>
+<h2 id="creating-a-suggestion-index">Creating a Suggestion Index<a class="headerlink" href="#creating-a-suggestion-index" title="Permanent link">&para;</a></h2>
 <p>Create a suggestion index called "MySuggestions":</p>
 <div class="codehilite"><pre><span></span><span class="k">use</span> <span class="nx">Ehann\RediSearch\Suggestion</span><span class="p">;</span>
 
 <span class="nv">$suggestion</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Suggestion</span><span class="p">(</span><span class="nv">$redisClient</span><span class="p">,</span> <span class="s1">&#39;MySuggestions&#39;</span><span class="p">);</span>
 </pre></div>
 
-<h2 id="adding-a-suggestion">Adding a Suggestion</h2>
+<h2 id="adding-a-suggestion">Adding a Suggestion<a class="headerlink" href="#adding-a-suggestion" title="Permanent link">&para;</a></h2>
 <p>Add a suggestion with a score:</p>
 <div class="codehilite"><pre><span></span><span class="nv">$suggestion</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="s1">&#39;Tale of Two Cities&#39;</span><span class="p">,</span> <span class="mf">1.10</span><span class="p">);</span>
 </pre></div>
 
-<h2 id="getting-a-suggestion">Getting a Suggestion</h2>
+<h2 id="getting-a-suggestion">Getting a Suggestion<a class="headerlink" href="#getting-a-suggestion" title="Permanent link">&para;</a></h2>
 <p>Pass a partial string to the get method: </p>
 <div class="codehilite"><pre><span></span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$suggestion</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;Cities&#39;</span><span class="p">);</span>
 </pre></div>
 
-<h2 id="getting-a-suggestion_1">Getting a Suggestion</h2>
+<h2 id="getting-a-suggestion_1">Getting a Suggestion<a class="headerlink" href="#getting-a-suggestion_1" title="Permanent link">&para;</a></h2>
 <p>Pass the entire suggestion string to the delete method:</p>
 <div class="codehilite"><pre><span></span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$suggestion</span><span class="o">-&gt;</span><span class="na">delete</span><span class="p">(</span><span class="s1">&#39;Tale of Two Cities&#39;</span><span class="p">);</span>
 </pre></div>
 
-<h2 id="getting-the-number-of-possible-suggestions">Getting the Number of Possible Suggestions</h2>
+<h2 id="getting-the-number-of-possible-suggestions">Getting the Number of Possible Suggestions<a class="headerlink" href="#getting-the-number-of-possible-suggestions" title="Permanent link">&para;</a></h2>
 <p>Simply use the suggestion index's length method:</p>
 <div class="codehilite"><pre><span></span><span class="nv">$numberOfPossibleSuggestions</span> <span class="o">=</span> <span class="nv">$suggestion</span><span class="o">-&gt;</span><span class="na">length</span><span class="p">();</span>
 </pre></div>
@@ -530,7 +556,7 @@
       <div class="md-footer-copyright">
         
           <div class="md-footer-copyright__highlight">
-            © 2017 - Ethan Hann
+            © 2018 - Ethan Hann
           </div>
         
         powered by

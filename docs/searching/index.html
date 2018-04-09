@@ -250,6 +250,27 @@
       
       
 
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+    <label class="md-nav__link" for="nav-2">
+      Documentation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Documentation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
 
   <li class="md-nav__item">
     <a href="../indexing/" title="Indexing" class="md-nav__link">
@@ -257,10 +278,10 @@
     </a>
   </li>
 
-    
-      
-      
-      
+        
+          
+          
+          
 
   
 
@@ -349,16 +370,21 @@
     
   </li>
 
-    
-      
-      
-      
+        
+          
+          
+          
 
 
   <li class="md-nav__item">
     <a href="../suggesting/" title="Suggesting" class="md-nav__link">
       Suggesting
     </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -474,8 +500,8 @@
                   <a href="https://github.com/ethanhann/redisearch-php/edit/master/docs/searching.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="searching">Searching</h1>
-<h2 id="simple-text-search">Simple Text Search</h2>
+                <h1 id="searching">Searching<a class="headerlink" href="#searching" title="Permanent link">&para;</a></h1>
+<h2 id="simple-text-search">Simple Text Search<a class="headerlink" href="#simple-text-search" title="Permanent link">&para;</a></h2>
 <p>Text fields can be filtered with the index's search method.</p>
 <div class="codehilite"><pre><span></span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">search</span><span class="p">(</span><span class="s1">&#39;two cities&#39;</span><span class="p">);</span>
 
@@ -489,28 +515,28 @@
 <span class="nv">$result</span><span class="o">-&gt;</span><span class="na">documents</span><span class="p">();</span> <span class="c1">// Array of arrays.</span>
 </pre></div>
 
-<h2 id="filtering-numeric-fields">Filtering Numeric Fields</h2>
+<h2 id="filtering-numeric-fields">Filtering Numeric Fields<a class="headerlink" href="#filtering-numeric-fields" title="Permanent link">&para;</a></h2>
 <p>Numeric fields can be filtered with the index's filter method.</p>
 <div class="codehilite"><pre><span></span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$bookIndex</span>
     <span class="o">-&gt;</span><span class="na">filter</span><span class="p">(</span><span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="mf">4.99</span><span class="p">,</span> <span class="mf">19.99</span><span class="p">)</span>
     <span class="o">-&gt;</span><span class="na">search</span><span class="p">(</span><span class="s1">&#39;two cities&#39;</span><span class="p">);</span>
 </pre></div>
 
-<h2 id="filtering-geo-fields">Filtering Geo Fields</h2>
+<h2 id="filtering-geo-fields">Filtering Geo Fields<a class="headerlink" href="#filtering-geo-fields" title="Permanent link">&para;</a></h2>
 <p>Numeric fields can be filtered with the index's filter method.</p>
 <div class="codehilite"><pre><span></span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$bookIndex</span>
     <span class="o">-&gt;</span><span class="na">filter</span><span class="p">(</span><span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="mf">4.99</span><span class="p">,</span> <span class="mf">19.99</span><span class="p">)</span>
     <span class="o">-&gt;</span><span class="na">search</span><span class="p">(</span><span class="s1">&#39;two cities&#39;</span><span class="p">);</span>
 </pre></div>
 
-<h2 id="sorting-results">Sorting Results</h2>
+<h2 id="sorting-results">Sorting Results<a class="headerlink" href="#sorting-results" title="Permanent link">&para;</a></h2>
 <p>Search results can be sorted with the index's sort method.</p>
 <div class="codehilite"><pre><span></span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$bookIndex</span>
     <span class="o">-&gt;</span><span class="na">sortBy</span><span class="p">(</span><span class="s1">&#39;price&#39;</span><span class="p">)</span>
     <span class="o">-&gt;</span><span class="na">search</span><span class="p">(</span><span class="s1">&#39;two cities&#39;</span><span class="p">);</span>
 </pre></div>
 
-<h2 id="setting-a-language">Setting a Language</h2>
+<h2 id="setting-a-language">Setting a Language<a class="headerlink" href="#setting-a-language" title="Permanent link">&para;</a></h2>
 <p>A supported language can be specified when running a query.
 Supported languages are represented as constants in the <strong>Ehann\RediSearch\Language</strong> class.  </p>
 <div class="codehilite"><pre><span></span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$bookIndex</span>
@@ -518,7 +544,7 @@ Supported languages are represented as constants in the <strong>Ehann\RediSearch
     <span class="o">-&gt;</span><span class="na">search</span><span class="p">(</span><span class="s1">&#39;two cities&#39;</span><span class="p">);</span>
 </pre></div>
 
-<h2 id="explaining-a-query">Explaining a Query</h2>
+<h2 id="explaining-a-query">Explaining a Query<a class="headerlink" href="#explaining-a-query" title="Permanent link">&para;</a></h2>
 <p>An explanation for a query can be generated with the index's explain method.</p>
 <p>This can be helpful for understanding why a query is returning a set of results.</p>
 <div class="codehilite"><pre><span></span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$bookIndex</span>
@@ -527,7 +553,7 @@ Supported languages are represented as constants in the <strong>Ehann\RediSearch
     <span class="o">-&gt;</span><span class="na">explain</span><span class="p">(</span><span class="s1">&#39;two cities&#39;</span><span class="p">);</span>
 </pre></div>
 
-<h2 id="logging-queries">Logging Queries</h2>
+<h2 id="logging-queries">Logging Queries<a class="headerlink" href="#logging-queries" title="Permanent link">&para;</a></h2>
 <p>Logging is optional. It can be enabled by injecting a PSR compliant logger, such as Monolog, into a RedisClient instance.</p>
 <p>Install Monolog:</p>
 <div class="codehilite"><pre><span></span>composer require monolog/monolog
@@ -595,7 +621,7 @@ Supported languages are represented as constants in the <strong>Ehann\RediSearch
       <div class="md-footer-copyright">
         
           <div class="md-footer-copyright__highlight">
-            © 2017 - Ethan Hann
+            © 2018 - Ethan Hann
           </div>
         
         powered by
