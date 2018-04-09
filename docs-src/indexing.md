@@ -15,9 +15,14 @@ new GeoField('place', new GeoLocation(-77.0366, 38.8977));
 Fields can also be made with the FieldFactory class...
 
 ```php-inline
-FieldFactory::make('author', 'Charles Dickens');                 // equal to new TextField('author', 'Charles Dickens');
-FieldFactory::make('price', 9.99);                               // equal to new NumericField('price', 9.99);
-FieldFactory::make('place', new GeoLocation(-77.0366, 38.8977)); // equal to new GeoField('place', new GeoLocation(-77.0366, 38.8977));
+// Alternative syntax for: new TextField('author', 'Charles Dickens');
+FieldFactory::make('author', 'Charles Dickens');
+
+// Alternative syntax for: new NumericField('price', 9.99);
+FieldFactory::make('price', 9.99);
+
+// Alternative syntax for: new GeoField('place', new GeoLocation(-77.0366, 38.8977));
+FieldFactory::make('place', new GeoLocation(-77.0366, 38.8977));
 ```
 
 ## Adding Documents

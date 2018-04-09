@@ -442,9 +442,14 @@
 </pre></div>
 
 <p>Fields can also be made with the FieldFactory class...</p>
-<div class="codehilite"><pre><span></span><span class="nx">FieldFactory</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="s1">&#39;author&#39;</span><span class="p">,</span> <span class="s1">&#39;Charles Dickens&#39;</span><span class="p">);</span>                 <span class="c1">// equal to new TextField(&#39;author&#39;, &#39;Charles Dickens&#39;);</span>
-<span class="nx">FieldFactory</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="mf">9.99</span><span class="p">);</span>                               <span class="c1">// equal to new NumericField(&#39;price&#39;, 9.99);</span>
-<span class="nx">FieldFactory</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="s1">&#39;place&#39;</span><span class="p">,</span> <span class="k">new</span> <span class="nx">GeoLocation</span><span class="p">(</span><span class="o">-</span><span class="mf">77.0366</span><span class="p">,</span> <span class="mf">38.8977</span><span class="p">));</span> <span class="c1">// equal to new GeoField(&#39;place&#39;, new GeoLocation(-77.0366, 38.8977));</span>
+<div class="codehilite"><pre><span></span><span class="c1">// Alternative syntax for: new TextField(&#39;author&#39;, &#39;Charles Dickens&#39;);</span>
+<span class="nx">FieldFactory</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="s1">&#39;author&#39;</span><span class="p">,</span> <span class="s1">&#39;Charles Dickens&#39;</span><span class="p">);</span>
+
+<span class="c1">// Alternative syntax for: new NumericField(&#39;price&#39;, 9.99);</span>
+<span class="nx">FieldFactory</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="mf">9.99</span><span class="p">);</span>
+
+<span class="c1">// Alternative syntax for: new GeoField(&#39;place&#39;, new GeoLocation(-77.0366, 38.8977));</span>
+<span class="nx">FieldFactory</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="s1">&#39;place&#39;</span><span class="p">,</span> <span class="k">new</span> <span class="nx">GeoLocation</span><span class="p">(</span><span class="o">-</span><span class="mf">77.0366</span><span class="p">,</span> <span class="mf">38.8977</span><span class="p">));</span>
 </pre></div>
 
 <h2 id="adding-documents">Adding Documents</h2>
