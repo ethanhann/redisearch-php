@@ -77,13 +77,13 @@ $result = $bookIndex
 
 Logging is optional. It can be enabled by injecting a PSR compliant logger, such as Monolog, into a RedisClient instance.
 
-Install Monolog...
+Install Monolog:
 
 ```bash
 composer require monolog/monolog
 ```
 
-Inject a logger instance (with a stream handler in this example)...
+Inject a logger instance (with a stream handler in this example):
 
 ```php-inline
 $logger = new Logger('Ehann\RediSearch');

@@ -4,7 +4,7 @@
 
 There are three types of fields that can be added to a document: **TextField**, **NumericField**, and **GeoField**.
 
-They are instantiated like this...
+They are instantiated like this:
 
 ```php-inline
 new TextField('author', 'Charles Dickens');
@@ -12,7 +12,7 @@ new NumericField('price', 9.99);
 new GeoField('place', new GeoLocation(-77.0366, 38.8977));
 ```
 
-Fields can also be made with the FieldFactory class...
+Fields can also be made with the FieldFactory class:
 
 ```php-inline
 // Alternative syntax for: new TextField('author', 'Charles Dickens');
@@ -27,7 +27,7 @@ FieldFactory::make('place', new GeoLocation(-77.0366, 38.8977));
 
 ## Adding Documents
 
-Add an array of field objects...
+Add an array of field objects:
 
 ```php-inline
 $bookIndex->add([
@@ -38,7 +38,7 @@ $bookIndex->add([
 ]);
 ```
 
-Add an associative array...
+Add an associative array:
 
 ```php-inline
 $bookIndex->add([
@@ -49,7 +49,7 @@ $bookIndex->add([
 ]);
 ```
 
-Create a document with the index's makeDocument method, then set field values...
+Create a document with the index's makeDocument method, then set field values:
 
 ```php-inline
 $document = $bookIndex->makeDocument();
@@ -61,7 +61,7 @@ $document->place->setValue(new GeoLocation(-77.0366, 38.8977));
 $this->add($document);
 ```
 
-DocBlocks can (optionally) be used to type hint field property names... 
+DocBlocks can (optionally) be used to type hint field property names:
 
 ```php-inline
 /** @var BookDocument $document */
@@ -114,7 +114,7 @@ $document->price->setValue(19.99);
 $bookIndex->replace($document);
 ```
 
-A document can also be updating when its ID is specified...
+A document can also be updating when its ID is specified:
 
 ```php-inline
 // Make a document.
@@ -144,7 +144,7 @@ Batch indexing is possible with the **addMany** method.
 To index an external collection, make sure to set the document's ID to the ID of the record in the external collection.
 
 ```php-inline
-// Get a record set from your DB (or some other datastore)...
+// Get a record set from your DB (or some other datastore).
 $records = $someDatabase->findAll();
 
 $documents = [];

@@ -435,13 +435,13 @@
                 <h1 id="indexing">Indexing</h1>
 <h2 id="field-types">Field Types</h2>
 <p>There are three types of fields that can be added to a document: <strong>TextField</strong>, <strong>NumericField</strong>, and <strong>GeoField</strong>.</p>
-<p>They are instantiated like this...</p>
+<p>They are instantiated like this:</p>
 <div class="codehilite"><pre><span></span><span class="k">new</span> <span class="nx">TextField</span><span class="p">(</span><span class="s1">&#39;author&#39;</span><span class="p">,</span> <span class="s1">&#39;Charles Dickens&#39;</span><span class="p">);</span>
 <span class="k">new</span> <span class="nx">NumericField</span><span class="p">(</span><span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="mf">9.99</span><span class="p">);</span>
 <span class="k">new</span> <span class="nx">GeoField</span><span class="p">(</span><span class="s1">&#39;place&#39;</span><span class="p">,</span> <span class="k">new</span> <span class="nx">GeoLocation</span><span class="p">(</span><span class="o">-</span><span class="mf">77.0366</span><span class="p">,</span> <span class="mf">38.8977</span><span class="p">));</span>
 </pre></div>
 
-<p>Fields can also be made with the FieldFactory class...</p>
+<p>Fields can also be made with the FieldFactory class:</p>
 <div class="codehilite"><pre><span></span><span class="c1">// Alternative syntax for: new TextField(&#39;author&#39;, &#39;Charles Dickens&#39;);</span>
 <span class="nx">FieldFactory</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="s1">&#39;author&#39;</span><span class="p">,</span> <span class="s1">&#39;Charles Dickens&#39;</span><span class="p">);</span>
 
@@ -453,7 +453,7 @@
 </pre></div>
 
 <h2 id="adding-documents">Adding Documents</h2>
-<p>Add an array of field objects...</p>
+<p>Add an array of field objects:</p>
 <div class="codehilite"><pre><span></span><span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">([</span>
     <span class="k">new</span> <span class="nx">TextField</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;Tale of Two Cities&#39;</span><span class="p">),</span>
     <span class="k">new</span> <span class="nx">TextField</span><span class="p">(</span><span class="s1">&#39;author&#39;</span><span class="p">,</span> <span class="s1">&#39;Charles Dickens&#39;</span><span class="p">),</span>
@@ -462,7 +462,7 @@
 <span class="p">]);</span>
 </pre></div>
 
-<p>Add an associative array...</p>
+<p>Add an associative array:</p>
 <div class="codehilite"><pre><span></span><span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">([</span>
     <span class="s1">&#39;title&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Tale of Two Cities&#39;</span><span class="p">,</span>
     <span class="s1">&#39;author&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Charles Dickens&#39;</span><span class="p">,</span>
@@ -471,7 +471,7 @@
 <span class="p">]);</span>
 </pre></div>
 
-<p>Create a document with the index's makeDocument method, then set field values...</p>
+<p>Create a document with the index's makeDocument method, then set field values:</p>
 <div class="codehilite"><pre><span></span><span class="nv">$document</span> <span class="o">=</span> <span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">makeDocument</span><span class="p">();</span>
 <span class="nv">$document</span><span class="o">-&gt;</span><span class="na">title</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="s1">&#39;How to be awesome.&#39;</span><span class="p">);</span>
 <span class="nv">$document</span><span class="o">-&gt;</span><span class="na">author</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="s1">&#39;Jack&#39;</span><span class="p">);</span>
@@ -481,7 +481,7 @@
 <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="nv">$document</span><span class="p">);</span>
 </pre></div>
 
-<p>DocBlocks can (optionally) be used to type hint field property names... </p>
+<p>DocBlocks can (optionally) be used to type hint field property names:</p>
 <div class="codehilite"><pre><span></span><span class="sd">/** @var BookDocument $document */</span>
 <span class="nv">$document</span> <span class="o">=</span> <span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">makeDocument</span><span class="p">();</span>
 
@@ -528,7 +528,7 @@
 <span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">replace</span><span class="p">(</span><span class="nv">$document</span><span class="p">);</span>
 </pre></div>
 
-<p>A document can also be updating when its ID is specified...</p>
+<p>A document can also be updating when its ID is specified:</p>
 <div class="codehilite"><pre><span></span><span class="c1">// Make a document.</span>
 <span class="nv">$document</span> <span class="o">=</span> <span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">makeDocument</span><span class="p">();</span>
 <span class="nv">$document</span><span class="o">-&gt;</span><span class="na">title</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="s1">&#39;How to be awesome.&#39;</span><span class="p">);</span>
@@ -553,7 +553,7 @@
 <h2 id="batch-indexing">Batch Indexing</h2>
 <p>Batch indexing is possible with the <strong>addMany</strong> method.
 To index an external collection, make sure to set the document's ID to the ID of the record in the external collection.</p>
-<div class="codehilite"><pre><span></span><span class="c1">// Get a record set from your DB (or some other datastore)...</span>
+<div class="codehilite"><pre><span></span><span class="c1">// Get a record set from your DB (or some other datastore).</span>
 <span class="nv">$records</span> <span class="o">=</span> <span class="nv">$someDatabase</span><span class="o">-&gt;</span><span class="na">findAll</span><span class="p">();</span>
 
 <span class="nv">$documents</span> <span class="o">=</span> <span class="p">[];</span>

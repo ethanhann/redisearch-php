@@ -448,29 +448,29 @@
                 
                 <h1 id="suggesting">Suggesting</h1>
 <h2 id="creating-a-suggestion-index">Creating a Suggestion Index</h2>
-<p>Create a suggestion index called "MySuggestions"...</p>
+<p>Create a suggestion index called "MySuggestions":</p>
 <div class="codehilite"><pre><span></span><span class="k">use</span> <span class="nx">Ehann\RediSearch\Suggestion</span><span class="p">;</span>
 
 <span class="nv">$suggestion</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Suggestion</span><span class="p">(</span><span class="nv">$redisClient</span><span class="p">,</span> <span class="s1">&#39;MySuggestions&#39;</span><span class="p">);</span>
 </pre></div>
 
 <h2 id="adding-a-suggestion">Adding a Suggestion</h2>
-<p>Add a suggestion with a score...</p>
+<p>Add a suggestion with a score:</p>
 <div class="codehilite"><pre><span></span><span class="nv">$suggestion</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="s1">&#39;Tale of Two Cities&#39;</span><span class="p">,</span> <span class="mf">1.10</span><span class="p">);</span>
 </pre></div>
 
 <h2 id="getting-a-suggestion">Getting a Suggestion</h2>
-<p>Pass a partial string to the get method... </p>
+<p>Pass a partial string to the get method: </p>
 <div class="codehilite"><pre><span></span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$suggestion</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;Cities&#39;</span><span class="p">);</span>
 </pre></div>
 
 <h2 id="getting-a-suggestion_1">Getting a Suggestion</h2>
-<p>Pass the entire suggestion string to the delete method... </p>
+<p>Pass the entire suggestion string to the delete method:</p>
 <div class="codehilite"><pre><span></span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$suggestion</span><span class="o">-&gt;</span><span class="na">delete</span><span class="p">(</span><span class="s1">&#39;Tale of Two Cities&#39;</span><span class="p">);</span>
 </pre></div>
 
 <h2 id="getting-the-number-of-possible-suggestions">Getting the Number of Possible Suggestions</h2>
-<p>Simply use the suggestion index's length method... </p>
+<p>Simply use the suggestion index's length method:</p>
 <div class="codehilite"><pre><span></span><span class="nv">$numberOfPossibleSuggestions</span> <span class="o">=</span> <span class="nv">$suggestion</span><span class="o">-&gt;</span><span class="na">length</span><span class="p">();</span>
 </pre></div>
                 
