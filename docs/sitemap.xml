@@ -10,27 +10,25 @@
     
 
     
+        
     <url>
      <loc>/indexing/</loc>
      <lastmod>2018-04-09</lastmod>
      <changefreq>daily</changefreq>
     </url>
-    
-
-    
+        
     <url>
      <loc>/searching/</loc>
      <lastmod>2018-04-09</lastmod>
      <changefreq>daily</changefreq>
     </url>
-    
-
-    
+        
     <url>
      <loc>/suggesting/</loc>
      <lastmod>2018-04-09</lastmod>
      <changefreq>daily</changefreq>
     </url>
+        
     
 
     
