@@ -10,6 +10,7 @@ pages:
 - 'indexing.md'
 - 'searching.md'
 - 'suggesting.md'
+- Laravel Support: 'laravel-support.md'
 - 'changelog.md'
 
 extra_css:
@@ -24,3 +25,16 @@ theme:
     accent: 'red'
   feature:
     tabs: false
+
+markdown_extensions:
+  - pymdownx.superfences
+  - pymdownx.inlinehilite:
+      css_class: codehilite
+  - pymdownx.highlight:
+      css_class: codehilite
+      extend_pygments_lang:
+        - name: php-inline
+          lang: php
+          options:
+            startinline: true
+
