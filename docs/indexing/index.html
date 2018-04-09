@@ -21,6 +21,10 @@
       
         <meta name="lang:search.language" content="en">
       
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
         <meta name="lang:search.result.none" content="No matching documents">
       
         <meta name="lang:search.result.one" content="1 matching document">
@@ -30,7 +34,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../images/logo.png">
-      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.2.0">
+      <meta name="generator" content="mkdocs-0.17.3, mkdocs-material-2.7.2">
     
     
       
@@ -38,15 +42,16 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/application.5d3fffba.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.8d40d89b.css">
       
-        <link rel="stylesheet" href="../assets/stylesheets/application-palette.fbd935c7.css">
+        <link rel="stylesheet" href="../assets/stylesheets/application-palette.6079476c.css">
       
     
     
       <script src="../assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
+      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
       
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
@@ -61,21 +66,41 @@
   
     
     
-    
-      <body data-md-color-primary="red" data-md-color-accent="red">
-    
+    <body dir="ltr" data-md-color-primary="red" data-md-color-accent="red">
   
     <svg class="md-svg">
       <defs>
         
         
-          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448"
+    viewBox="0 0 416 448" id="github">
+  <path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19-18.125
+        8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19 18.125-8.5
+        18.125 8.5 10.75 19 3.125 20.5zM320 304q0 10-3.125 20.5t-10.75
+        19-18.125 8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19
+        18.125-8.5 18.125 8.5 10.75 19 3.125 20.5zM360
+        304q0-30-17.25-51t-46.75-21q-10.25 0-48.75 5.25-17.75 2.75-39.25
+        2.75t-39.25-2.75q-38-5.25-48.75-5.25-29.5 0-46.75 21t-17.25 51q0 22 8
+        38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0
+        37.25-1.75t35-7.375 30.5-15 20.25-25.75 8-38.375zM416 260q0 51.75-15.25
+        82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5-41.75
+        1.125q-19.5 0-35.5-0.75t-36.875-3.125-38.125-7.5-34.25-12.875-30.25-20.25-21.5-28.75q-15.5-30.75-15.5-82.75
+        0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25
+        30.875q36.75-8.75 77.25-8.75 37 0 70 8 26.25-20.5
+        46.75-30.25t47.25-9.75q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34
+        99.5z" />
+</svg>
         
       </defs>
     </svg>
-    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer">
-    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
+    
+      <a href="#indexing" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
     
       <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid">
@@ -111,11 +136,13 @@
             
 <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="search"></label>
-  <div class="md-search__inner">
+  <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" required placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
       <label class="md-icon md-search__icon" for="search"></label>
-      <button type="reset" class="md-icon md-search__icon" data-md-component="reset">&#xE5CD;</button>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
     </form>
     <div class="md-search__output">
       <div class="md-search__scrollwrap" data-md-scrollfix>
@@ -177,7 +204,7 @@
   <label class="md-nav__title md-nav__title--site" for="drawer">
     <span class="md-nav__button md-logo">
       
-        <img src="../images/logo.png" width="24" height="24">
+        <img src="../images/logo.png" width="48" height="48">
       
     </span>
     RediSearch-PHP
@@ -281,6 +308,8 @@
       
       
       
+      
+      
     </ul>
   
 </nav>
@@ -308,6 +337,18 @@
   <li class="md-nav__item">
     <a href="../suggesting/" title="Suggesting" class="md-nav__link">
       Suggesting
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../laravel-support/" title="Laravel Support" class="md-nav__link">
+      Laravel Support
     </a>
   </li>
 
@@ -374,6 +415,8 @@
       
       
       
+      
+      
     </ul>
   
 </nav>
@@ -393,157 +436,145 @@
 <h2 id="field-types">Field Types</h2>
 <p>There are three types of fields that can be added to a document: <strong>TextField</strong>, <strong>NumericField</strong>, and <strong>GeoField</strong>.</p>
 <p>They are instantiated like this...</p>
-<pre><code class="php">&lt;?php
-new TextField('author', 'Charles Dickens');
-new NumericField('price', 9.99);
-new GeoField('place', new GeoLocation(-77.0366, 38.8977));
-</code></pre>
+<div class="codehilite"><pre><span></span><span class="k">new</span> <span class="nx">TextField</span><span class="p">(</span><span class="s1">&#39;author&#39;</span><span class="p">,</span> <span class="s1">&#39;Charles Dickens&#39;</span><span class="p">);</span>
+<span class="k">new</span> <span class="nx">NumericField</span><span class="p">(</span><span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="mf">9.99</span><span class="p">);</span>
+<span class="k">new</span> <span class="nx">GeoField</span><span class="p">(</span><span class="s1">&#39;place&#39;</span><span class="p">,</span> <span class="k">new</span> <span class="nx">GeoLocation</span><span class="p">(</span><span class="o">-</span><span class="mf">77.0366</span><span class="p">,</span> <span class="mf">38.8977</span><span class="p">));</span>
+</pre></div>
 
 <p>Fields can also be made with the FieldFactory class...</p>
-<pre><code class="php">&lt;?php
-FieldFactory::make('author', 'Charles Dickens');                 // equal to new TextField('author', 'Charles Dickens');
-FieldFactory::make('price', 9.99);                               // equal to new NumericField('price', 9.99);
-FieldFactory::make('place', new GeoLocation(-77.0366, 38.8977)); // equal to new GeoField('place', new GeoLocation(-77.0366, 38.8977));
-</code></pre>
+<div class="codehilite"><pre><span></span><span class="nx">FieldFactory</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="s1">&#39;author&#39;</span><span class="p">,</span> <span class="s1">&#39;Charles Dickens&#39;</span><span class="p">);</span>                 <span class="c1">// equal to new TextField(&#39;author&#39;, &#39;Charles Dickens&#39;);</span>
+<span class="nx">FieldFactory</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="mf">9.99</span><span class="p">);</span>                               <span class="c1">// equal to new NumericField(&#39;price&#39;, 9.99);</span>
+<span class="nx">FieldFactory</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="s1">&#39;place&#39;</span><span class="p">,</span> <span class="k">new</span> <span class="nx">GeoLocation</span><span class="p">(</span><span class="o">-</span><span class="mf">77.0366</span><span class="p">,</span> <span class="mf">38.8977</span><span class="p">));</span> <span class="c1">// equal to new GeoField(&#39;place&#39;, new GeoLocation(-77.0366, 38.8977));</span>
+</pre></div>
 
 <h2 id="adding-documents">Adding Documents</h2>
 <p>Add an array of field objects...</p>
-<pre><code class="php">&lt;?php
-
-$bookIndex-&gt;add([
-    new TextField('title', 'Tale of Two Cities'),
-    new TextField('author', 'Charles Dickens'),
-    new NumericField('price', 9.99),
-    new GeoField('place', new GeoLocation(-77.0366, 38.8977)),
-]);
-</code></pre>
+<div class="codehilite"><pre><span></span><span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">([</span>
+    <span class="k">new</span> <span class="nx">TextField</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;Tale of Two Cities&#39;</span><span class="p">),</span>
+    <span class="k">new</span> <span class="nx">TextField</span><span class="p">(</span><span class="s1">&#39;author&#39;</span><span class="p">,</span> <span class="s1">&#39;Charles Dickens&#39;</span><span class="p">),</span>
+    <span class="k">new</span> <span class="nx">NumericField</span><span class="p">(</span><span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="mf">9.99</span><span class="p">),</span>
+    <span class="k">new</span> <span class="nx">GeoField</span><span class="p">(</span><span class="s1">&#39;place&#39;</span><span class="p">,</span> <span class="k">new</span> <span class="nx">GeoLocation</span><span class="p">(</span><span class="o">-</span><span class="mf">77.0366</span><span class="p">,</span> <span class="mf">38.8977</span><span class="p">)),</span>
+<span class="p">]);</span>
+</pre></div>
 
 <p>Add an associative array...</p>
-<pre><code class="php">&lt;?php
-
-$bookIndex-&gt;add([
-    'title' =&gt; 'Tale of Two Cities',
-    'author' =&gt; 'Charles Dickens',
-    'price' =&gt; 9.99,
-    'place' =&gt; new GeoLocation(-77.0366, 38.8977),
-]);
-</code></pre>
+<div class="codehilite"><pre><span></span><span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">([</span>
+    <span class="s1">&#39;title&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Tale of Two Cities&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;author&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Charles Dickens&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;price&#39;</span> <span class="o">=&gt;</span> <span class="mf">9.99</span><span class="p">,</span>
+    <span class="s1">&#39;place&#39;</span> <span class="o">=&gt;</span> <span class="k">new</span> <span class="nx">GeoLocation</span><span class="p">(</span><span class="o">-</span><span class="mf">77.0366</span><span class="p">,</span> <span class="mf">38.8977</span><span class="p">),</span>
+<span class="p">]);</span>
+</pre></div>
 
 <p>Create a document with the index's makeDocument method, then set field values...</p>
-<pre><code class="php">&lt;?php
+<div class="codehilite"><pre><span></span><span class="nv">$document</span> <span class="o">=</span> <span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">makeDocument</span><span class="p">();</span>
+<span class="nv">$document</span><span class="o">-&gt;</span><span class="na">title</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="s1">&#39;How to be awesome.&#39;</span><span class="p">);</span>
+<span class="nv">$document</span><span class="o">-&gt;</span><span class="na">author</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="s1">&#39;Jack&#39;</span><span class="p">);</span>
+<span class="nv">$document</span><span class="o">-&gt;</span><span class="na">price</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="mf">9.99</span><span class="p">);</span>
+<span class="nv">$document</span><span class="o">-&gt;</span><span class="na">place</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="k">new</span> <span class="nx">GeoLocation</span><span class="p">(</span><span class="o">-</span><span class="mf">77.0366</span><span class="p">,</span> <span class="mf">38.8977</span><span class="p">));</span>
 
-$document = $bookIndex-&gt;makeDocument();
-$document-&gt;title-&gt;setValue('How to be awesome.');
-$document-&gt;author-&gt;setValue('Jack');
-$document-&gt;price-&gt;setValue(9.99);
-$document-&gt;place-&gt;setValue(new GeoLocation(-77.0366, 38.8977));
-
-$this-&gt;add($document);
-</code></pre>
+<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="nv">$document</span><span class="p">);</span>
+</pre></div>
 
 <p>DocBlocks can (optionally) be used to type hint field property names... </p>
-<pre><code class="php">&lt;?php
+<div class="codehilite"><pre><span></span><span class="sd">/** @var BookDocument $document */</span>
+<span class="nv">$document</span> <span class="o">=</span> <span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">makeDocument</span><span class="p">();</span>
 
-/** @var BookDocument $document */
-$document = $bookIndex-&gt;makeDocument();
+<span class="c1">// &quot;title&quot; will auto-complete correctly in your IDE provided BookDocument has a &quot;title&quot; property or @property annotation.</span>
+<span class="nv">$document</span><span class="o">-&gt;</span><span class="na">title</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="s1">&#39;How to be awesome.&#39;</span><span class="p">);</span>
 
-// &quot;title&quot; will auto-complete correctly in your IDE provided BookDocument has a &quot;title&quot; property or @property annotation.
-$document-&gt;title-&gt;setValue('How to be awesome.');
+<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="nv">$document</span><span class="p">);</span>
+</pre></div>
 
-$this-&gt;add($document);
-</code></pre>
+<div class="codehilite"><pre><span></span><span class="cp">&lt;?php</span>
 
-<pre><code class="php">&lt;?php
+<span class="k">namespace</span> <span class="nx">Your\Documents</span><span class="p">;</span>
 
-namespace Your\Documents;
+<span class="k">use</span> <span class="nx">Ehann\RediSearch\Document\Document</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Ehann\RediSearch\Fields\NumericField</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Ehann\RediSearch\Fields\TextField</span><span class="p">;</span>
 
-use Ehann\RediSearch\Document\Document;
-use Ehann\RediSearch\Fields\NumericField;
-use Ehann\RediSearch\Fields\TextField;
-
-/**
- * @property TextField title
- * @property TextField author
- * @property NumericField price
- * @property GeoField place
- */
-class BookDocument extends Document
-{
-}
-</code></pre>
+<span class="sd">/**</span>
+<span class="sd"> * @property TextField title</span>
+<span class="sd"> * @property TextField author</span>
+<span class="sd"> * @property NumericField price</span>
+<span class="sd"> * @property GeoField place</span>
+<span class="sd"> */</span>
+<span class="k">class</span> <span class="nc">BookDocument</span> <span class="k">extends</span> <span class="nx">Document</span>
+<span class="p">{</span>
+<span class="p">}</span>
+</pre></div>
 
 <h2 id="updating-a-document">Updating a Document</h2>
 <p>Documents are updated with an index's replace method.</p>
-<pre><code class="php">&lt;?php
-// Make a document.
-$document = $bookIndex-&gt;makeDocument();
-$document-&gt;title-&gt;setValue('How to be awesome.');
-$document-&gt;author-&gt;setValue('Jack');
-$document-&gt;price-&gt;setValue(9.99);
-$document-&gt;place-&gt;setValue(new GeoLocation(-77.0366, 38.8977));
-$bookIndex-&gt;add($document);
+<div class="codehilite"><pre><span></span><span class="c1">// Make a document.</span>
+<span class="nv">$document</span> <span class="o">=</span> <span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">makeDocument</span><span class="p">();</span>
+<span class="nv">$document</span><span class="o">-&gt;</span><span class="na">title</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="s1">&#39;How to be awesome.&#39;</span><span class="p">);</span>
+<span class="nv">$document</span><span class="o">-&gt;</span><span class="na">author</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="s1">&#39;Jack&#39;</span><span class="p">);</span>
+<span class="nv">$document</span><span class="o">-&gt;</span><span class="na">price</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="mf">9.99</span><span class="p">);</span>
+<span class="nv">$document</span><span class="o">-&gt;</span><span class="na">place</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="k">new</span> <span class="nx">GeoLocation</span><span class="p">(</span><span class="o">-</span><span class="mf">77.0366</span><span class="p">,</span> <span class="mf">38.8977</span><span class="p">));</span>
+<span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="nv">$document</span><span class="p">);</span>
 
-// Update a couple fields
-$document-&gt;title-&gt;setValue('How to be awesome: Part 2.');
-$document-&gt;price-&gt;setValue(19.99);
+<span class="c1">// Update a couple fields</span>
+<span class="nv">$document</span><span class="o">-&gt;</span><span class="na">title</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="s1">&#39;How to be awesome: Part 2.&#39;</span><span class="p">);</span>
+<span class="nv">$document</span><span class="o">-&gt;</span><span class="na">price</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="mf">19.99</span><span class="p">);</span>
 
-// Update the document.
-$bookIndex-&gt;replace($document);
-</code></pre>
+<span class="c1">// Update the document.</span>
+<span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">replace</span><span class="p">(</span><span class="nv">$document</span><span class="p">);</span>
+</pre></div>
 
 <p>A document can also be updating when its ID is specified...</p>
-<pre><code class="php">&lt;?php
-// Make a document.
-$document = $bookIndex-&gt;makeDocument();
-$document-&gt;title-&gt;setValue('How to be awesome.');
-$document-&gt;author-&gt;setValue('Jack');
-$document-&gt;price-&gt;setValue(9.99);
-$document-&gt;place-&gt;setValue(new GeoLocation(-77.0366, 38.8977));
-$bookIndex-&gt;add($document);
+<div class="codehilite"><pre><span></span><span class="c1">// Make a document.</span>
+<span class="nv">$document</span> <span class="o">=</span> <span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">makeDocument</span><span class="p">();</span>
+<span class="nv">$document</span><span class="o">-&gt;</span><span class="na">title</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="s1">&#39;How to be awesome.&#39;</span><span class="p">);</span>
+<span class="nv">$document</span><span class="o">-&gt;</span><span class="na">author</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="s1">&#39;Jack&#39;</span><span class="p">);</span>
+<span class="nv">$document</span><span class="o">-&gt;</span><span class="na">price</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="mf">9.99</span><span class="p">);</span>
+<span class="nv">$document</span><span class="o">-&gt;</span><span class="na">place</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="k">new</span> <span class="nx">GeoLocation</span><span class="p">(</span><span class="o">-</span><span class="mf">77.0366</span><span class="p">,</span> <span class="mf">38.8977</span><span class="p">));</span>
+<span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">add</span><span class="p">(</span><span class="nv">$document</span><span class="p">);</span>
 
-// Create a new document and assign the old document's ID to it.
-$newDocument = $bookIndex-&gt;makeDocument($document-&gt;getId());
+<span class="c1">// Create a new document and assign the old document&#39;s ID to it.</span>
+<span class="nv">$newDocument</span> <span class="o">=</span> <span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">makeDocument</span><span class="p">(</span><span class="nv">$document</span><span class="o">-&gt;</span><span class="na">getId</span><span class="p">());</span>
 
-// Set a couple fields.
-$document-&gt;title-&gt;setValue('');
-$document-&gt;author-&gt;setValue('Jack');
-$newDocument-&gt;title-&gt;setValue('How to be awesome: Part 2.');
-$newDocument-&gt;price-&gt;setValue(19.99);
+<span class="c1">// Set a couple fields.</span>
+<span class="nv">$document</span><span class="o">-&gt;</span><span class="na">title</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
+<span class="nv">$document</span><span class="o">-&gt;</span><span class="na">author</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="s1">&#39;Jack&#39;</span><span class="p">);</span>
+<span class="nv">$newDocument</span><span class="o">-&gt;</span><span class="na">title</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="s1">&#39;How to be awesome: Part 2.&#39;</span><span class="p">);</span>
+<span class="nv">$newDocument</span><span class="o">-&gt;</span><span class="na">price</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="mf">19.99</span><span class="p">);</span>
 
-// Update the document.
-$bookIndex-&gt;replace($newDocument);
-</code></pre>
+<span class="c1">// Update the document.</span>
+<span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">replace</span><span class="p">(</span><span class="nv">$newDocument</span><span class="p">);</span>
+</pre></div>
 
 <h2 id="batch-indexing">Batch Indexing</h2>
 <p>Batch indexing is possible with the <strong>addMany</strong> method.
 To index an external collection, make sure to set the document's ID to the ID of the record in the external collection.</p>
-<pre><code class="php">&lt;?php
+<div class="codehilite"><pre><span></span><span class="c1">// Get a record set from your DB (or some other datastore)...</span>
+<span class="nv">$records</span> <span class="o">=</span> <span class="nv">$someDatabase</span><span class="o">-&gt;</span><span class="na">findAll</span><span class="p">();</span>
 
-// Get a record set from your DB (or some other datastore)...
-$records = $someDatabase-&gt;findAll();
+<span class="nv">$documents</span> <span class="o">=</span> <span class="p">[];</span>
+<span class="k">foreach</span> <span class="p">(</span><span class="nv">$records</span> <span class="k">as</span> <span class="nv">$record</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Make a new document with the external record&#39;s ID.</span>
+    <span class="nv">$newDocument</span> <span class="o">=</span> <span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">makeDocument</span><span class="p">(</span><span class="nv">$record</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">);</span>
+    <span class="nv">$newDocument</span><span class="o">-&gt;</span><span class="na">title</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="nv">$record</span><span class="o">-&gt;</span><span class="na">title</span><span class="p">);</span>
+    <span class="nv">$newDocument</span><span class="o">-&gt;</span><span class="na">author</span><span class="o">-&gt;</span><span class="na">setValue</span><span class="p">(</span><span class="nv">$record</span><span class="o">-&gt;</span><span class="na">author</span><span class="p">);</span>
+    <span class="nv">$documents</span><span class="p">[]</span> <span class="o">=</span> <span class="nv">$newDocument</span><span class="p">;</span> 
+<span class="p">}</span>
 
-$documents = [];
-foreach ($records as $record) {
-    // Make a new document with the external record's ID.
-    $newDocument = $bookIndex-&gt;makeDocument($record-&gt;id);
-    $newDocument-&gt;title-&gt;setValue($record-&gt;title);
-    $newDocument-&gt;author-&gt;setValue($record-&gt;author);
-    $documents[] = $newDocument; 
-}
+<span class="c1">// Add all the documents at once.</span>
+<span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">addMany</span><span class="p">(</span><span class="nv">$documents</span><span class="p">);</span>
 
-// Add all the documents at once.
-$bookIndex-&gt;addMany($documents);
-
-// It is possible to increase indexing speed by disabling atomicity by passing true as the second parameter.
-// Note that this is only possible when using the phpredis extension.
-$bookIndex-&gt;addMany($documents, true);
-</code></pre>
+<span class="c1">// It is possible to increase indexing speed by disabling atomicity by passing true as the second parameter.</span>
+<span class="c1">// Note that this is only possible when using the phpredis extension.</span>
+<span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">addMany</span><span class="p">(</span><span class="nv">$documents</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</pre></div>
                 
                   
                 
               
               
                 
+
+
               
             </article>
           </div>
@@ -611,9 +642,9 @@ $bookIndex-&gt;addMany($documents, true);
       
     </div>
     
-      <script src="../assets/javascripts/application.6cdc17f0.js"></script>
+      <script src="../assets/javascripts/application.b438e6c5.js"></script>
       
-      <script>app.initialize({version:"0.17.2",url:{base:".."}})</script>
+      <script>app.initialize({version:"0.17.3",url:{base:".."}})</script>
       
     
     
