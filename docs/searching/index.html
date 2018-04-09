@@ -529,11 +529,11 @@ Supported languages are represented as constants in the <strong>Ehann\RediSearch
 
 <h2 id="logging-queries">Logging Queries</h2>
 <p>Logging is optional. It can be enabled by injecting a PSR compliant logger, such as Monolog, into a RedisClient instance.</p>
-<p>Install Monolog...</p>
+<p>Install Monolog:</p>
 <div class="codehilite"><pre><span></span>composer require monolog/monolog
 </pre></div>
 
-<p>Inject a logger instance (with a stream handler in this example)...</p>
+<p>Inject a logger instance (with a stream handler in this example):</p>
 <div class="codehilite"><pre><span></span><span class="nv">$logger</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Logger</span><span class="p">(</span><span class="s1">&#39;Ehann\RediSearch&#39;</span><span class="p">);</span>
 <span class="nv">$logger</span><span class="o">-&gt;</span><span class="na">pushHandler</span><span class="p">(</span><span class="k">new</span> <span class="nx">StreamHandler</span><span class="p">(</span><span class="s1">&#39;MyLogFile.log&#39;</span><span class="p">,</span> <span class="nx">Logger</span><span class="o">::</span><span class="na">DEBUG</span><span class="p">));</span>
 <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">redisClient</span><span class="o">-&gt;</span><span class="na">setLogger</span><span class="p">(</span><span class="nv">$logger</span><span class="p">);</span>
