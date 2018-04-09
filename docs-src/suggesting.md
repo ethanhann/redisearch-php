@@ -4,9 +4,7 @@
 
 Create a suggestion index called "MySuggestions"...
 
-```php
-<?php
-
+```php-inline
 use Ehann\RediSearch\Suggestion;
 
 $suggestion = new Suggestion($redisClient, 'MySuggestions');
@@ -17,9 +15,7 @@ $suggestion = new Suggestion($redisClient, 'MySuggestions');
 
 Add a suggestion with a score...
 
-```php
-<?php
-
+```php-inline
 $suggestion->add('Tale of Two Cities', 1.10);
 ```
 
@@ -27,9 +23,7 @@ $suggestion->add('Tale of Two Cities', 1.10);
 
 Pass a partial string to the get method... 
 
-```php
-<?php
-
+```php-inline
 $result = $suggestion->get('Cities');
 ```
 
@@ -37,9 +31,7 @@ $result = $suggestion->get('Cities');
 
 Pass the entire suggestion string to the delete method... 
 
-```php
-<?php
-
+```php-inline
 $result = $suggestion->delete('Tale of Two Cities');
 ```
 
@@ -48,9 +40,7 @@ $result = $suggestion->delete('Tale of Two Cities');
 
 Simply use the suggestion index's length method... 
 
-```php
-<?php
-
+```php-inline
 $numberOfPossibleSuggestions = $suggestion->length();
 ```
 

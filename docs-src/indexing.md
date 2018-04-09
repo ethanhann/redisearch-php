@@ -6,8 +6,7 @@ There are three types of fields that can be added to a document: **TextField**, 
 
 They are instantiated like this...
 
-```php
-<?php
+```php-inline
 new TextField('author', 'Charles Dickens');
 new NumericField('price', 9.99);
 new GeoField('place', new GeoLocation(-77.0366, 38.8977));
@@ -15,8 +14,7 @@ new GeoField('place', new GeoLocation(-77.0366, 38.8977));
 
 Fields can also be made with the FieldFactory class...
 
-```php
-<?php
+```php-inline
 FieldFactory::make('author', 'Charles Dickens');                 // equal to new TextField('author', 'Charles Dickens');
 FieldFactory::make('price', 9.99);                               // equal to new NumericField('price', 9.99);
 FieldFactory::make('place', new GeoLocation(-77.0366, 38.8977)); // equal to new GeoField('place', new GeoLocation(-77.0366, 38.8977));
@@ -26,9 +24,7 @@ FieldFactory::make('place', new GeoLocation(-77.0366, 38.8977)); // equal to new
 
 Add an array of field objects...
 
-```php
-<?php
-
+```php-inline
 $bookIndex->add([
     new TextField('title', 'Tale of Two Cities'),
     new TextField('author', 'Charles Dickens'),
@@ -39,9 +35,7 @@ $bookIndex->add([
 
 Add an associative array...
 
-```php
-<?php
-
+```php-inline
 $bookIndex->add([
     'title' => 'Tale of Two Cities',
     'author' => 'Charles Dickens',
@@ -52,9 +46,7 @@ $bookIndex->add([
 
 Create a document with the index's makeDocument method, then set field values...
 
-```php
-<?php
-
+```php-inline
 $document = $bookIndex->makeDocument();
 $document->title->setValue('How to be awesome.');
 $document->author->setValue('Jack');
@@ -66,9 +58,7 @@ $this->add($document);
 
 DocBlocks can (optionally) be used to type hint field property names... 
 
-```php
-<?php
-
+```php-inline
 /** @var BookDocument $document */
 $document = $bookIndex->makeDocument();
 
@@ -102,8 +92,7 @@ class BookDocument extends Document
 
 Documents are updated with an index's replace method.
 
-```php
-<?php
+```php-inline
 // Make a document.
 $document = $bookIndex->makeDocument();
 $document->title->setValue('How to be awesome.');
@@ -122,8 +111,7 @@ $bookIndex->replace($document);
 
 A document can also be updating when its ID is specified...
 
-```php
-<?php
+```php-inline
 // Make a document.
 $document = $bookIndex->makeDocument();
 $document->title->setValue('How to be awesome.');
@@ -150,9 +138,7 @@ $bookIndex->replace($newDocument);
 Batch indexing is possible with the **addMany** method.
 To index an external collection, make sure to set the document's ID to the ID of the record in the external collection.
 
-```php
-<?php
-
+```php-inline
 // Get a record set from your DB (or some other datastore)...
 $records = $someDatabase->findAll();
 
