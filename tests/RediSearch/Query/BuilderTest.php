@@ -94,6 +94,18 @@ class BuilderTest extends AbstractTestCase
         $this->assertEquals(0, $result->getCount());
     }
 
+    public function testNumericRangeQuery()
+    {
+        $expectedCount = 1;
+
+        $result = $this->subject
+            ->numericFilter('price', 8, 10)
+            ->search();
+
+        $this->assertEquals($expectedCount, $result->getCount());
+        $this->assertEquals($this->expectedResult1['author'], $result->getDocuments()[0]->author);
+    }
+
     public function testGeoQuery()
     {
         $expectedCount = 1;
@@ -101,6 +113,18 @@ class BuilderTest extends AbstractTestCase
         $result = $this->subject
             ->geoFilter('location', '51.0544782', '3.7178716', '100', 'km')
             ->search('Shoes');
+
+        $this->assertEquals($expectedCount, $result->getCount());
+        $this->assertEquals($this->expectedResult2['author'], $result->getDocuments()[0]->author);
+    }
+
+    public function testGeoQueryWithoutSearchTerm()
+    {
+        $expectedCount = 1;
+
+        $result = $this->subject
+            ->geoFilter('location', '51.0544782', '3.7178716', '100', 'km')
+            ->search();
 
         $this->assertEquals($expectedCount, $result->getCount());
         $this->assertEquals($this->expectedResult2['author'], $result->getDocuments()[0]->author);
