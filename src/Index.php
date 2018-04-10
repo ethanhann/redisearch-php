@@ -293,14 +293,13 @@ class Index extends AbstractIndex implements IndexInterface
         return $this->makeQueryBuilder()->explain($query);
     }
 
-
     /**
      * @param string $query
      * @param bool $documentsAsArray
      * @return SearchResult
      * @throws Exceptions\RedisRawCommandException
      */
-    public function search(string $query, bool $documentsAsArray = false): SearchResult
+    public function search(string $query = '', bool $documentsAsArray = false): SearchResult
     {
         return $this->makeQueryBuilder()->search($query, $documentsAsArray);
     }

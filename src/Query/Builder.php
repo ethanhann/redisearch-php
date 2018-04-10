@@ -91,7 +91,7 @@ class Builder implements BuilderInterface
     public function numericFilter(string $fieldName, $min, $max = null): BuilderInterface
     {
         $max = $max ?? $min;
-        $this->numericFilters[] = "FILTER $fieldName $min $max";
+        $this->numericFilters[] = "@$fieldName:[$min $max]";
         return $this;
     }
 
@@ -101,7 +101,7 @@ class Builder implements BuilderInterface
             throw new InvalidArgumentException($distanceUnit);
         }
 
-        $this->geoFilters[] = "GEOFILTER $fieldName $longitude $latitude $radius $distanceUnit";
+        $this->geoFilters[] = "@$fieldName:[$longitude $latitude $radius $distanceUnit]";
         return $this;
     }
 
@@ -127,7 +127,7 @@ class Builder implements BuilderInterface
     {
         return array_filter(
             array_merge(
-                [$this->indexName, $query],
+                trim($query) === '' ? [$this->indexName] : [$this->indexName, $query],
                 explode(' ', $this->limit),
                 explode(' ', $this->slop),
                 [
@@ -140,9 +140,7 @@ class Builder implements BuilderInterface
                 explode(' ', $this->inFields),
                 explode(' ', $this->inKeys),
                 $this->numericFilters,
-                explode(' ', array_reduce($this->geoFilters, function ($previous, $next) {
-                    return $previous . $next;
-                })),
+                $this->geoFilters,
                 explode(' ', $this->sortBy),
                 explode(' ', $this->scorer),
                 explode(' ', $this->language)
@@ -153,7 +151,7 @@ class Builder implements BuilderInterface
         );
     }
 
-    public function search(string $query, bool $documentsAsArray = false): SearchResult
+    public function search(string $query = '', bool $documentsAsArray = false): SearchResult
     {
         $rawResult = $this->redis->rawCommand(
             'FT.SEARCH',
