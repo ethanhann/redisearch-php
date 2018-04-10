@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.10.1
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.10.0...0.11.0)
+
+* Polished docs
+* Made internal changes to how numeric and geo search queries are generated. 
+
+# Changelog
+
 ## 0.10.0
 
 [Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.9.0...0.10.0)
