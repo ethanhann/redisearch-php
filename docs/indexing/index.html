@@ -327,6 +327,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#indexing-from-a-hash" title="Indexing from a Hash" class="md-nav__link">
+    Indexing from a Hash
+  </a>
+  
+</li>
+      
       
       
       
@@ -435,6 +442,13 @@
         <li class="md-nav__item">
   <a href="#batch-indexing" title="Batch Indexing" class="md-nav__link">
     Batch Indexing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#indexing-from-a-hash" title="Indexing from a Hash" class="md-nav__link">
+    Indexing from a Hash
   </a>
   
 </li>
@@ -597,6 +611,21 @@ To index an external collection, make sure to set the document's ID to the ID of
 <span class="c1">// It is possible to increase indexing speed by disabling atomicity by passing true as the second parameter.</span>
 <span class="c1">// Note that this is only possible when using the phpredis extension.</span>
 <span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">addMany</span><span class="p">(</span><span class="nv">$documents</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</pre></div>
+
+<h2 id="indexing-from-a-hash">Indexing from a Hash<a class="headerlink" href="#indexing-from-a-hash" title="Permanent link">&para;</a></h2>
+<p>Redis hashes are key/value pairs referenced by a key. 
+It is possible to index an existing hash with the <strong>addHash</strong> method.
+The document's ID has to be the same as the hash's key.
+Attempting to index a hash that does not exist will result in an exception.</p>
+<p>Index a hash with the key "foo":</p>
+<div class="codehilite"><pre><span></span><span class="x">$document = $bookIndex-&gt;makeDocument(&#39;foo&#39;);</span>
+<span class="x">$bookIndex-&gt;addHash($document);</span>
+</pre></div>
+
+<p>Replace a document in the index from a hash:</p>
+<div class="codehilite"><pre><span></span><span class="x">$document = $bookIndex-&gt;makeDocument(&#39;foo&#39;);</span>
+<span class="x">$bookIndex-&gt;replaceHash($document);</span>
 </pre></div>
                 
                   

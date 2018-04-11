@@ -19,6 +19,25 @@ class Document implements DocumentInterface
         $this->id = $id ?? uniqid(true);
     }
 
+    public function getHashDefinition(): array
+    {
+        $properties = [
+            $this->getId(),
+            $this->getScore(),
+        ];
+
+        if (!is_null($this->getLanguage())) {
+            $properties[] = 'LANGUAGE';
+            $properties[] = $this->getLanguage();
+        }
+
+        if ($this->isReplace()) {
+            $properties[] = 'REPLACE';
+        }
+
+        return $properties;
+    }
+
     public function getDefinition(): array
     {
         $properties = [
