@@ -1,5 +1,6 @@
 docs_dir: docs-src
 site_dir: docs
+edit_uri: edit/master/docs-src/
 site_name: RediSearch-PHP
 repo_url: https://github.com/ethanhann/redisearch-php
 site_author: Ethan Hann
