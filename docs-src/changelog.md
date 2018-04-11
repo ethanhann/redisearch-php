@@ -4,7 +4,7 @@
 
 [Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.10.1...0.11.0)
 
-* Add [hash indexing](searching.md#explaining-a-query).
+* Add [hash indexing](indexing.md#indexing-from-a-hash).
 
 ## 0.10.1
 
