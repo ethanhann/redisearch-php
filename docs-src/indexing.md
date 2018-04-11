@@ -163,3 +163,24 @@ $bookIndex->addMany($documents);
 // Note that this is only possible when using the phpredis extension.
 $bookIndex->addMany($documents, true);
 ```
+
+## Indexing from a Hash
+
+Redis hashes are key/value pairs referenced by a key. 
+It is possible to index an existing hash with the **addHash** method.
+The document's ID has to be the same as the hash's key.
+Attempting to index a hash that does not exist will result in an exception.
+
+Index a hash with the key "foo":
+
+```php
+$document = $bookIndex->makeDocument('foo');
+$bookIndex->addHash($document);
+```
+
+Replace a document in the index from a hash:
+
+```php
+$document = $bookIndex->makeDocument('foo');
+$bookIndex->replaceHash($document);
+```

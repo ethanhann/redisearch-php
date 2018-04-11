@@ -398,19 +398,28 @@ class Index extends AbstractIndex implements IndexInterface
 
     /**
      * @param DocumentInterface $document
-     * @return bool
+     * @param bool $isFromHash
+     * @return mixed
      */
-    protected function _add(DocumentInterface $document)
+    protected function _add(DocumentInterface $document, bool $isFromHash = false)
     {
         if (is_null($document->getId())) {
             $document->setId(uniqid(true));
         }
 
-        $properties = $document->getDefinition();
+        $properties = $isFromHash ? $document->getHashDefinition() : $document->getDefinition();
         array_unshift($properties, $this->indexName);
+        return $this->rawCommand($isFromHash ? 'FT.ADDHASH' : 'FT.ADD', $properties);
+    }
 
-        $rawResult = $this->rawCommand('FT.ADD', $properties);
-        return $rawResult === 'OK' || $rawResult === true;
+    /**
+     * @param $document
+     * @return DocumentInterface
+     * @throws Exceptions\FieldNotInSchemaException
+     */
+    protected function arrayToDocument($document)
+    {
+        return is_array($document) ? AbstractDocumentFactory::makeFromArray($document, $this->getFields()) : $document;
     }
 
     /**
@@ -420,10 +429,7 @@ class Index extends AbstractIndex implements IndexInterface
      */
     public function add($document): bool
     {
-        if (is_array($document)) {
-            $document = AbstractDocumentFactory::makeFromArray($document, $this->getFields());
-        }
-        return $this->_add($document);
+        return $this->_add($this->arrayToDocument($document));
     }
 
     /**
@@ -433,10 +439,26 @@ class Index extends AbstractIndex implements IndexInterface
      */
     public function replace($document): bool
     {
-        if (is_array($document)) {
-            $document = AbstractDocumentFactory::makeFromArray($document, $this->getFields());
-        }
-        $document->setReplace(true);
-        return $this->add($document);
+        return $this->_add($this->arrayToDocument($document)->setReplace(true));
+    }
+
+    /**
+     * @param $document
+     * @return bool
+     * @throws Exceptions\FieldNotInSchemaException
+     */
+    public function addHash($document): bool
+    {
+        return $this->_add($this->arrayToDocument($document), true);
+    }
+
+    /**
+     * @param $document
+     * @return bool
+     * @throws Exceptions\FieldNotInSchemaException
+     */
+    public function replaceHash($document): bool
+    {
+        return $this->_add($this->arrayToDocument($document)->setReplace(true), true);
     }
 }

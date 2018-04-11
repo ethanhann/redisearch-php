@@ -3,6 +3,7 @@
 namespace Ehann\Tests\RediSearch;
 
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
+use Ehann\RediSearch\Exceptions\RawCommandErrorException;
 use Ehann\RediSearch\Exceptions\UnsupportedLanguageException;
 use Ehann\RediSearch\Fields\FieldFactory;
 use Ehann\RediSearch\Fields\GeoLocation;
@@ -213,6 +214,66 @@ class IndexTest extends AbstractTestCase
         $this->assertEquals(1, $result->getCount());
     }
 
+    public function testAddDocumentFromHash()
+    {
+        $this->subject->create();
+        $id = 'gooblegobble';
+        $this->redisClient->rawCommand('HSET', [
+            $id,
+            'title',
+            'How to be awesome',
+            'author',
+            'Jack',
+            'price',
+            9.99,
+            'stock',
+            231
+        ]);
+        $document = $this->subject->makeDocument($id);
+
+        $result = $this->subject->addHash($document);
+
+        $this->assertTrue($result);
+    }
+
+    public function testShouldThrowExceptionWhenAddingFromHashThatDoesNotExist()
+    {
+        $this->subject->create();
+        $document = $this->subject->makeDocument('does_not_exist');
+        $this->expectException(RawCommandErrorException::class);
+
+        $this->subject->addHash($document);
+    }
+
+    public function testReplaceDocumentFromHash()
+    {
+        $this->subject->create();
+        $id = 'gooblegobble';
+        /** @var TestDocument $expectedDocument */
+        $expectedDocument = $this->subject->makeDocument($id);
+        $expectedDocument->title->setValue('How to be awesome.');
+        $expectedDocument->author->setValue('Jack');
+        $expectedDocument->price->setValue(9.99);
+        $expectedDocument->stock->setValue(231);
+        $this->subject->add($expectedDocument);
+        $this->redisClient->rawCommand('HSET', [
+            $id,
+            'title',
+            'How to be awesome, Part 2',
+            'author',
+            'Jack',
+            'price',
+            9.99,
+            'stock',
+            231
+        ]);
+        $document = $this->subject->makeDocument($id);
+
+        $result = $this->subject->replaceHash($document);
+
+        $this->assertTrue($result);
+    }
+
     public function testSearch()
     {
         $this->subject->create();
@@ -265,8 +326,7 @@ class IndexTest extends AbstractTestCase
         $result = $index
             ->geoFilter('place', -77.0366, 38.897, 100)
             ->numericFilter('population', 1, 500)
-            ->search('Foo')
-        ;
+            ->search('Foo');
 
         $this->assertEquals(1, $result->getCount());
     }

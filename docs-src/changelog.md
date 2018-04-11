@@ -1,8 +1,14 @@
 # Changelog
 
+## 0.11.0
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.10.1...0.11.0)
+
+* Add [hash indexing](searching.md#explaining-a-query).
+
 ## 0.10.1
 
-[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.10.0...0.11.0)
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.10.0...0.10.1)
 
 * Polished docs, and added a section on the Laravel RediSearch package.
 * Made internal changes to how numeric and geo search queries are generated. 
