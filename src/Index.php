@@ -461,4 +461,54 @@ class Index extends AbstractIndex implements IndexInterface
     {
         return $this->_add($this->arrayToDocument($document)->setReplace(true), true);
     }
+
+    /**
+     * @param array $fields
+     * @return QueryBuilderInterface
+     */
+    public function return(array $fields): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->return($fields);
+    }
+
+    /**
+     * @param array $fields
+     * @param int $fragmentCount
+     * @param int $fragmentLength
+     * @param string $separator
+     * @return QueryBuilderInterface
+     */
+    public function summarize(array $fields, int $fragmentCount = 3, int $fragmentLength = 50, string $separator = '...'): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->summarize($fields, $fragmentCount, $fragmentLength, $separator);
+    }
+
+    /**
+     * @param array $fields
+     * @param string $openTag
+     * @param string $closeTag
+     * @return QueryBuilderInterface
+     */
+    public function highlight(array $fields, string $openTag = '<strong>', string $closeTag = '</strong>'): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->highlight($fields, $openTag, $closeTag);
+    }
+
+    /**
+     * @param string $expander
+     * @return QueryBuilderInterface
+     */
+    public function expander(string $expander): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->expander($expander);
+    }
+
+    /**
+     * @param string $payload
+     * @return QueryBuilderInterface
+     */
+    public function payload(string $payload): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->payload($payload);
+    }
 }

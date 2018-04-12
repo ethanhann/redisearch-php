@@ -69,10 +69,12 @@ class SearchResult
             }
             if (!$noContent) {
                 $fields = $rawRediSearchResult[$i + ($documentWidth - 1)];
-                for ($j = 0; $j < count($fields); $j += 2) {
-                    $documentsAsArray ?
-                        $document[$fields[$j]] = $fields[$j + 1] :
-                        $document->{$fields[$j]} = $fields[$j + 1];
+                if (is_array($fields)) {
+                    for ($j = 0; $j < count($fields); $j += 2) {
+                        $documentsAsArray ?
+                            $document[$fields[$j]] = $fields[$j + 1] :
+                            $document->{$fields[$j]} = $fields[$j + 1];
+                    }
                 }
             }
             $documents[] = $document;

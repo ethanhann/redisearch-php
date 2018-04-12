@@ -10,6 +10,11 @@ class Builder implements BuilderInterface
 {
     const GEO_FILTER_UNITS = ['m', 'km', 'mi', 'ft'];
 
+    protected $return = '';
+    protected $summarize = '';
+    protected $highlight = '';
+    protected $expander = '';
+    protected $payload = '';
     protected $limit = '';
     protected $slop = null;
     protected $verbatim = '';
@@ -37,6 +42,42 @@ class Builder implements BuilderInterface
     public function noContent(): BuilderInterface
     {
         $this->noContent = 'NOCONTENT';
+        return $this;
+    }
+
+    public function return(array $fields): BuilderInterface
+    {
+        $count = empty($fields) ? 0 : count($fields);
+        $field = implode(' ', $fields);
+        $this->return = "RETURN $count $field";
+        return $this;
+    }
+
+    public function summarize(array $fields, int $fragmentCount = 3, int $fragmentLength = 50, string $separator = '...'): BuilderInterface
+    {
+        $count = empty($fields) ? 0 : count($fields);
+        $field = implode(' ', $fields);
+        $this->summarize = "SUMMARIZE FIELDS $count $field FRAGS $fragmentCount LEN $fragmentLength SEPARATOR $separator";
+        return $this;
+    }
+
+    public function highlight(array $fields, string $openTag = '<strong>', string $closeTag = '</strong>'): BuilderInterface
+    {
+        $count = empty($fields) ? 0 : count($fields);
+        $field = implode(' ', $fields);
+        $this->highlight = "HIGHLIGHT FIELDS $count $field TAGS $openTag $closeTag";
+        return $this;
+    }
+
+    public function expander(string $expander): BuilderInterface
+    {
+        $this->expander = "EXPANDER $expander";
+        return $this;
+    }
+
+    public function payload(string $payload): BuilderInterface
+    {
+        $this->payload = "PAYLOAD $payload";
         return $this;
     }
 
@@ -139,11 +180,16 @@ class Builder implements BuilderInterface
                 ],
                 explode(' ', $this->inFields),
                 explode(' ', $this->inKeys),
+                explode(' ', $this->return),
+                explode(' ', $this->summarize),
+                explode(' ', $this->highlight),
                 $this->numericFilters,
                 $this->geoFilters,
                 explode(' ', $this->sortBy),
                 explode(' ', $this->scorer),
-                explode(' ', $this->language)
+                explode(' ', $this->language),
+                explode(' ', $this->expander),
+                explode(' ', $this->payload)
             ),
             function ($item) {
                 return !is_null($item) && $item !== '';
