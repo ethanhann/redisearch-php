@@ -34,7 +34,7 @@ class BuilderTest extends AbstractTestCase
         ];
         $index->add($this->expectedResult1);
         $this->expectedResult2 = [
-            'title' => 'Shoes in the 22st Century',
+            'title' => 'Shoes in the 22nd Century',
             'author' => 'Jessica',
             'price' => 18.85,
             'stock' => 32,
@@ -64,6 +64,38 @@ class BuilderTest extends AbstractTestCase
         $this->assertTrue($result->getCount() === 1);
     }
 
+    public function testSearchWithReturn()
+    {
+        $expectedAuthor = 'Jessica';
+
+        $result = $this->subject->return(['author'])->search('Shoes');
+
+        $firstResult = $result->getDocuments()[0];
+        $this->assertEquals($expectedAuthor, $firstResult->author);
+        $this->assertTrue(property_exists($firstResult, 'author'));
+        $this->assertFalse(property_exists($firstResult, 'title'));
+    }
+
+    public function testSearchWithSummarize()
+    {
+        $expectedTitle = 'Shoes in the 22nd...';
+
+        $result = $this->subject->summarize(['title', 'author'])->search('Shoes');
+
+        $firstResult = $result->getDocuments()[0];
+        $this->assertEquals($expectedTitle, $firstResult->title);
+    }
+
+    public function testSearchWithHighlight()
+    {
+        $expectedTitle = '<strong>Shoes</strong> in the 22nd Century';
+
+        $result = $this->subject->highlight(['title', 'author'])->search('Shoes');
+
+        $firstResult = $result->getDocuments()[0];
+        $this->assertEquals($expectedTitle, $firstResult->title);
+    }
+
     public function testSearchWithScores()
     {
         $result = $this->subject->withScores()->search('Shoes');
@@ -82,7 +114,7 @@ class BuilderTest extends AbstractTestCase
 
     public function testVerbatimSearch()
     {
-        $result = $this->subject->verbatim()->search('Shoes in the 22st Century');
+        $result = $this->subject->verbatim()->search('Shoes in the 22nd Century');
 
         $this->assertEquals(1, $result->getCount());
     }
