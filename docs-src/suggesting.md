@@ -27,14 +27,13 @@ Pass a partial string to the get method:
 $result = $suggestion->get('Cities');
 ```
 
-## Getting a Suggestion
+## Deleting a Suggestion
 
 Pass the entire suggestion string to the delete method:
 
 ```php-inline
 $result = $suggestion->delete('Tale of Two Cities');
 ```
-
 
 ## Getting the Number of Possible Suggestions
 
