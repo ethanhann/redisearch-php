@@ -19,8 +19,6 @@
 * Polished docs, and added a section on the Laravel RediSearch package.
 * Made internal changes to how numeric and geo search queries are generated. 
 
-# Changelog
-
 ## 0.10.0
 
 [Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.9.0...0.10.0)
