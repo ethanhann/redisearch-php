@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.11.0...1.0.0)
+
+* Support complete RediSearch API, now including RETURN, SUMMARIZE, HIGHLIGHT, EXPANDER, and PAYLOAD in search queries.
+
 ## 0.11.0
 
 [Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.10.1...0.11.0)
