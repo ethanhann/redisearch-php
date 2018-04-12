@@ -1,10 +1,10 @@
 # Status
 
-## Travis
+**Travis**
 
 [![Build Status](https://travis-ci.org/ethanhann/redisearch-php.svg?branch=master)](https://travis-ci.org/ethanhann/redisearch-php)
 
-## Packagist
+**Packagist**
 
 [![Latest Stable Version](https://poser.pugx.org/ethanhann/redisearch-php/v/stable)](https://packagist.org/packages/ethanhann/redisearch-php)
 [![Total Downloads](https://poser.pugx.org/ethanhann/redisearch-php/downloads)](https://packagist.org/packages/ethanhann/redisearch-php)
