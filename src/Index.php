@@ -2,6 +2,8 @@
 
 namespace Ehann\RediSearch;
 
+use Ehann\RediSearch\Aggregate\Builder as AggregateBuilder;
+use Ehann\RediSearch\Aggregate\BuilderInterface as AggregateBuilderInterface;
 use Ehann\RediSearch\Document\AbstractDocumentFactory;
 use Ehann\RediSearch\Document\DocumentInterface;
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
@@ -150,6 +152,14 @@ class Index extends AbstractIndex implements IndexInterface
         $fields = $this->getFields();
         $document = AbstractDocumentFactory::makeFromArray($fields, $fields, $id);
         return $document;
+    }
+
+    /**
+     * @return AggregateBuilderInterface
+     */
+    public function makeAggregateBuilder(): AggregateBuilderInterface
+    {
+        return new AggregateBuilder($this->getRedisClient(), $this->getIndexName());
     }
 
     /**

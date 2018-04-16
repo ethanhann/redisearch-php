@@ -30,7 +30,6 @@ class Builder implements BuilderInterface
     protected $scorer = '';
     protected $language = '';
     protected $redis;
-    /** @var string */
     private $indexName;
 
     public function __construct(RedisClientInterface $redis, string $indexName)
