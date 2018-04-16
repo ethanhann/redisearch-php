@@ -2,15 +2,8 @@
 
 namespace Ehann\RediSearch\Aggregate\Reducers;
 
-class CountDistinctApproximate implements ReducerInterface
+class CountDistinctApproximate extends AbstractReducer
 {
-    private $property;
-
-    public function __construct(string $property)
-    {
-        $this->property = $property;
-    }
-
     public function getDefinition(): string
     {
         return "COUNT_DISTINCTISH 1 {$this->property}";

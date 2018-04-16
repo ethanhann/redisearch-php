@@ -2,14 +2,13 @@
 
 namespace Ehann\RediSearch\Aggregate\Reducers;
 
-class Quantile implements ReducerInterface
+class Quantile extends AbstractReducer
 {
-    private $property;
-    private $quantile;
+    public $quantile;
 
     public function __construct(string $property, string $quantile)
     {
-        $this->property = $property;
+        parent::__construct($property);
         $this->quantile = $quantile;
     }
 

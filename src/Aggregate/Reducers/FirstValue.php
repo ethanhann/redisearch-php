@@ -2,15 +2,14 @@
 
 namespace Ehann\RediSearch\Aggregate\Reducers;
 
-class FirstValue implements ReducerInterface
+class FirstValue extends AbstractReducer
 {
-    private $property;
-    private $byProperty;
-    private $isAscending;
+    public $byProperty;
+    public $isAscending;
 
     public function __construct(string $property, string $byProperty = null, bool $isAscending = true)
     {
-        $this->property = $property;
+        parent::__construct($property);
         $this->byProperty = $byProperty;
         $this->isAscending = $isAscending;
     }

@@ -2,15 +2,8 @@
 
 namespace Ehann\RediSearch\Aggregate\Reducers;
 
-class Sum implements ReducerInterface
+class Sum extends AbstractReducer
 {
-    private $property;
-
-    public function __construct(string $property)
-    {
-        $this->property = $property;
-    }
-
     public function getDefinition(): string
     {
         return "SUM 1 {$this->property}";
