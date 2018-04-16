@@ -2,7 +2,14 @@
 
 namespace Ehann\RediSearch\Aggregate;
 
+use Ehann\RediSearch\Aggregate\Reducers\FirstValue;
+use Ehann\RediSearch\Aggregate\Reducers\Maximum;
+use Ehann\RediSearch\Aggregate\Reducers\Minimum;
+use Ehann\RediSearch\Aggregate\Reducers\Quantile;
+use Ehann\RediSearch\Aggregate\Reducers\StandardDeviation;
 use Ehann\RediSearch\Aggregate\Reducers\Sum;
+use Ehann\RediSearch\Aggregate\Reducers\ToList;
+use Ehann\RediSearch\Exceptions\RedisRawCommandException;
 use Ehann\RediSearch\Redis\RedisClientInterface;
 use Ehann\RediSearch\Aggregate\Reducers\Average;
 use Ehann\RediSearch\Aggregate\Reducers\Count;
@@ -40,7 +47,8 @@ class Builder implements BuilderInterface
 
     public function groupBy(string $fieldName, ReducerInterface $reducer = null): BuilderInterface
     {
-        $this->groupBy[] = $fieldName . (is_null($reducer) ? '' : " REDUCE " . $reducer->getDefinition());
+        $reduce = (is_null($reducer) ? '' : " REDUCE " . $reducer->getDefinition());
+        $this->groupBy[] = trim("GROUPBY $fieldName $reduce");
         return $this;
     }
 
@@ -54,38 +62,63 @@ class Builder implements BuilderInterface
                 }
             }
         }
-        $this->groupBy[] = $fieldName . $reduce;
-        return $this;
-    }
-
-    public function count(string $fieldName, int $group): BuilderInterface
-    {
-        $this->groupBy($fieldName, new Count($group));
-        return $this;
-    }
-
-    public function countDistinct(string $fieldName): BuilderInterface
-    {
-        $this->groupBy($fieldName, new CountDistinct($fieldName));
-        return $this;
-    }
-
-    public function countDistinctApproximate(string $fieldName): BuilderInterface
-    {
-        $this->groupBy($fieldName, new Average($fieldName));
-        return $this;
-    }
-
-    public function sum(string $fieldName): BuilderInterface
-    {
-        $this->groupBy($fieldName, new Sum($fieldName));
+        $this->groupBy[] = trim("GROUPBY $fieldName $reduce");
         return $this;
     }
 
     public function average(string $fieldName): BuilderInterface
     {
-        $this->groupBy($fieldName, new Average($fieldName));
-        return $this;
+        return $this->groupBy($fieldName, new Average($fieldName));
+    }
+
+    public function count(string $fieldName, int $group): BuilderInterface
+    {
+        return $this->groupBy($fieldName, new Count($group));
+    }
+
+    public function countDistinct(string $fieldName): BuilderInterface
+    {
+        return $this->groupBy($fieldName, new CountDistinct($fieldName));
+    }
+
+    public function countDistinctApproximate(string $fieldName): BuilderInterface
+    {
+        return $this->groupBy($fieldName, new Average($fieldName));
+    }
+
+    public function firstValue(string $fieldName, string $byFieldName = null, bool $isAscending = true): BuilderInterface
+    {
+        return $this->groupBy($fieldName, new FirstValue($fieldName, $byFieldName, $isAscending));
+    }
+
+    public function sum(string $fieldName): BuilderInterface
+    {
+        return $this->groupBy($fieldName, new Sum($fieldName));
+    }
+
+    public function max(string $fieldName): BuilderInterface
+    {
+        return $this->groupBy($fieldName, new Maximum($fieldName));
+    }
+
+    public function min(string $fieldName): BuilderInterface
+    {
+        return $this->groupBy($fieldName, new Minimum($fieldName));
+    }
+
+    public function quantile(string $fieldName, string $quantile): BuilderInterface
+    {
+        return $this->groupBy($fieldName, new Quantile($fieldName, $quantile));
+    }
+
+    public function standardDeviation(string $fieldName): BuilderInterface
+    {
+        return $this->groupBy($fieldName, new StandardDeviation($fieldName));
+    }
+
+    public function toList(string $fieldName): BuilderInterface
+    {
+        return $this->groupBy($fieldName, new ToList($fieldName));
     }
 
     public function sortBy(array $properties, integer $max = -1): BuilderInterface
@@ -113,8 +146,41 @@ class Builder implements BuilderInterface
         return $this;
     }
 
+    public function makeAggregateCommandArguments(string $query): array
+    {
+        return array_filter(
+            array_merge(
+                trim($query) === '' ? [$this->indexName] : [$this->indexName, $query],
+                explode(' ', $this->load),
+                $this->groupBy,
+                $this->sortBy,
+                $this->apply,
+                $this->limit
+            ),
+            function ($item) {
+                return !is_null($item) && $item !== '';
+            }
+        );
+    }
+
     public function search(string $query = '', bool $documentsAsArray = false): AggregationResult
     {
+        $args = $this->makeAggregateCommandArguments($query);
+        $rawResult = $this->redis->rawCommand(
+            'FT.AGGREGATE',
+            $args
+        );
+        if (is_string($rawResult)) {
+            throw new RedisRawCommandException("Result: $rawResult, Query: $query");
+        }
+
+//        return $rawResult ? SearchResult::makeSearchResult(
+//            $rawResult,
+//            $documentsAsArray,
+//            $this->withScores !== '',
+//            $this->withPayloads !== '',
+//            $this->noContent !== ''
+//        ) : new SearchResult(0, []);
         return new AggregationResult();
     }
 }
