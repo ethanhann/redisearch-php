@@ -4,23 +4,23 @@ namespace Ehann\RediSearch\Aggregate\Reducers;
 
 class FirstValue extends AbstractReducer
 {
-    public $byfieldName;
+    public $byFieldName;
     public $isAscending;
 
-    public function __construct(string $fieldName, string $byfieldName = null, bool $isAscending = true)
+    public function __construct(string $fieldName, string $byFieldName = null, bool $isAscending = true)
     {
         parent::__construct($fieldName);
-        $this->byfieldName = $byfieldName;
+        $this->byFieldName = $byFieldName;
         $this->isAscending = $isAscending;
     }
 
     public function getDefinition(): string
     {
-        if (is_null($this->byfieldName)) {
+        if (is_null($this->byFieldName)) {
             return "TOLIST 1 {$this->fieldName}";
         }
 
         $sortOrder = $this->isAscending ? 'ASC' : 'DESC';
-        return "TOLIST 4 {$this->fieldName} BY {$this->fieldName} $sortOrder";
+        return "TOLIST 4 {$this->fieldName} BY {$this->byFieldName} $sortOrder";
     }
 }
