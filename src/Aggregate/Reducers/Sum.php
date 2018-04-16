@@ -6,6 +6,6 @@ class Sum extends AbstractReducer
 {
     public function getDefinition(): string
     {
-        return "SUM 1 {$this->property}";
+        return "SUM 1 {$this->fieldName}";
     }
 }

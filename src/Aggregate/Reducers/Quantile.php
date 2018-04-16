@@ -6,14 +6,14 @@ class Quantile extends AbstractReducer
 {
     public $quantile;
 
-    public function __construct(string $property, string $quantile)
+    public function __construct(string $fieldName, string $quantile)
     {
-        parent::__construct($property);
+        parent::__construct($fieldName);
         $this->quantile = $quantile;
     }
 
     public function getDefinition(): string
     {
-        return "QUANTILE 2 {$this->property} {$this->quantile}";
+        return "QUANTILE 2 {$this->fieldName} {$this->quantile}";
     }
 }

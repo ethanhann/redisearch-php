@@ -3,15 +3,11 @@
 namespace Ehann\RediSearch\Aggregate;
 
 use Ehann\RediSearch\Aggregate\Reducers\Sum;
-use Ehann\RediSearch\Exceptions\RedisRawCommandException;
 use Ehann\RediSearch\Redis\RedisClientInterface;
-use Ehann\RediSearch\Aggregate\AggregationResult;
-use Ehann\RediSearch\Aggregate\Reducers\AbstractReducer;
 use Ehann\RediSearch\Aggregate\Reducers\Average;
 use Ehann\RediSearch\Aggregate\Reducers\Count;
 use Ehann\RediSearch\Aggregate\Reducers\CountDistinct;
 use Ehann\RediSearch\Aggregate\Reducers\ReducerInterface;
-use InvalidArgumentException;
 
 class Builder implements BuilderInterface
 {
@@ -42,13 +38,13 @@ class Builder implements BuilderInterface
         return $this;
     }
 
-    public function groupBy(string $property, ReducerInterface $reducer = null): BuilderInterface
+    public function groupBy(string $fieldName, ReducerInterface $reducer = null): BuilderInterface
     {
-        $this->groupBy[] = $property . (is_null($reducer) ? '' : " REDUCE " . $reducer->getDefinition());
+        $this->groupBy[] = $fieldName . (is_null($reducer) ? '' : " REDUCE " . $reducer->getDefinition());
         return $this;
     }
 
-    public function groupByWithManyReducers(string $property, array $reducers = null): BuilderInterface
+    public function groupByWithManyReducers(string $fieldName, array $reducers = null): BuilderInterface
     {
         $reduce = '';
         if (!is_null($reducers)) {
@@ -58,37 +54,37 @@ class Builder implements BuilderInterface
                 }
             }
         }
-        $this->groupBy[] = $property . $reduce;
+        $this->groupBy[] = $fieldName . $reduce;
         return $this;
     }
 
-    public function count(string $property, int $group): BuilderInterface
+    public function count(string $fieldName, int $group): BuilderInterface
     {
-        $this->groupBy($property, new Count($group));
+        $this->groupBy($fieldName, new Count($group));
         return $this;
     }
 
-    public function countDistinct(string $property): BuilderInterface
+    public function countDistinct(string $fieldName): BuilderInterface
     {
-        $this->groupBy($property, new CountDistinct($property));
+        $this->groupBy($fieldName, new CountDistinct($fieldName));
         return $this;
     }
 
-    public function countDistinctApproximate(string $property): BuilderInterface
+    public function countDistinctApproximate(string $fieldName): BuilderInterface
     {
-        $this->groupBy($property, new Average($property));
+        $this->groupBy($fieldName, new Average($fieldName));
         return $this;
     }
 
-    public function sum(string $property): BuilderInterface
+    public function sum(string $fieldName): BuilderInterface
     {
-        $this->groupBy($property, new Sum($property));
+        $this->groupBy($fieldName, new Sum($fieldName));
         return $this;
     }
 
-    public function average(string $property): BuilderInterface
+    public function average(string $fieldName): BuilderInterface
     {
-        $this->groupBy($property, new Average($property));
+        $this->groupBy($fieldName, new Average($fieldName));
         return $this;
     }
 
@@ -102,7 +98,7 @@ class Builder implements BuilderInterface
 
     /**
      * @param string $expression An expression that can be used to perform arithmetic operations on numeric properties.
-     * @param string $name The name of the property to add or replace.
+     * @param string $name The name of the fieldName to add or replace.
      * @return BuilderInterface
      */
     public function apply(string $expression, string $name): BuilderInterface

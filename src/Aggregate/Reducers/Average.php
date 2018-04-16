@@ -6,6 +6,6 @@ class Average extends AbstractReducer
 {
     public function getDefinition(): string
     {
-        return "AVG 1 {$this->property}";
+        return "AVG 1 {$this->fieldName}";
     }
 }

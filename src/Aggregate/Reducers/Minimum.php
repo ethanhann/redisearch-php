@@ -6,6 +6,6 @@ class Minimum extends AbstractReducer
 {
     public function getDefinition(): string
     {
-        return "MIN 1 {$this->property}";
+        return "MIN 1 {$this->fieldName}";
     }
 }

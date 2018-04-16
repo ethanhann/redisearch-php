@@ -4,11 +4,11 @@ namespace Ehann\RediSearch\Aggregate\Reducers;
 
 class AbstractReducer implements ReducerInterface
 {
-    public $property;
+    public $fieldName;
 
-    public function __construct(string $property)
+    public function __construct(string $fieldName)
     {
-        $this->property = $property;
+        $this->fieldName = $fieldName;
     }
 
     public function getDefinition(): string

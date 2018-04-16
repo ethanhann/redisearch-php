@@ -6,6 +6,6 @@ class ToList extends AbstractReducer
 {
     public function getDefinition(): string
     {
-        return "TOLIST 1 {$this->property}";
+        return "TOLIST 1 {$this->fieldName}";
     }
 }

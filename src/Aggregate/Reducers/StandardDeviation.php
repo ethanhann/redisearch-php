@@ -6,6 +6,6 @@ class StandardDeviation extends AbstractReducer
 {
     public function getDefinition(): string
     {
-        return "STDDEV 1 {$this->property}";
+        return "STDDEV 1 {$this->fieldName}";
     }
 }
