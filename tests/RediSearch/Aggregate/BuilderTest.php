@@ -3,9 +3,6 @@
 namespace Ehann\Tests\RediSearch\Aggregate;
 
 use Ehann\RediSearch\Aggregate\Builder;
-use Ehann\RediSearch\Aggregate\Reducers\Count;
-use Ehann\RediSearch\Aggregate\Reducers\CountDistinct;
-use Ehann\RediSearch\Fields\GeoLocation;
 use Ehann\Tests\Stubs\TestIndex;
 use Ehann\Tests\AbstractTestCase;
 
@@ -64,13 +61,15 @@ class BuilderTest extends AbstractTestCase
         $this->redisClient->flushAll();
     }
 
-    public function testAggregateByFieldName()
+    public function testGetAverageOfNumeric()
     {
-//        $result = $this->subject->groupBy('title', new CountDistinct('title'))->search('awesome');
-//        $result = $this->subject->groupBy('author', new Count('author'))->search('awesome');
-        $result = $this->subject->avg(['title', 'price'], 'price')->search();
+        $expectedCount = 3;
+        $expectedAveragePrice = 14.99;
 
-        $this->assertTrue($result === 1);
+        $result = $this->subject->avg(['title'], 'price')->search();
+
+        $this->assertEquals($expectedCount, $result->getCount());
+        $this->assertEquals($expectedAveragePrice, $result->getDocuments()[0]->avg_price);
     }
 
 }
