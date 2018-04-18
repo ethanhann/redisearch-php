@@ -14,13 +14,10 @@ class FirstValue extends AbstractReducer
         $this->isAscending = $isAscending;
     }
 
-    public function getDefinition(): string
+    public function toArray(): array
     {
-        if (is_null($this->byFieldName)) {
-            return "TOLIST 1 {$this->fieldName}";
-        }
-
-        $sortOrder = $this->isAscending ? 'ASC' : 'DESC';
-        return "TOLIST 4 {$this->fieldName} BY {$this->byFieldName} $sortOrder";
+        return is_null($this->byFieldName) ?
+            ['FIRST_VALUE', '1', $this->fieldName] :
+            ['FIRST_VALUE', '4', $this->fieldName, 'BY', $this->byFieldName, $this->isAscending ? 'ASC' : 'DESC'];
     }
 }

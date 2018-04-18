@@ -4,8 +4,8 @@ namespace Ehann\RediSearch\Aggregate\Reducers;
 
 class CountDistinctApproximate extends AbstractReducer
 {
-    public function getDefinition(): string
+    public function toArray(): array
     {
-        return "COUNT_DISTINCTISH 1 {$this->fieldName}";
+        return ['COUNT_DISTINCTISH', '1', $this->fieldName];
     }
 }

@@ -4,5 +4,5 @@ namespace Ehann\RediSearch\Aggregate\Reducers;
 
 interface ReducerInterface
 {
-    public function getDefinition(): string;
+    public function toArray(): array;
 }

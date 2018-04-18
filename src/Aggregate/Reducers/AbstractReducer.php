@@ -11,8 +11,8 @@ class AbstractReducer implements ReducerInterface
         $this->fieldName = $fieldName;
     }
 
-    public function getDefinition(): string
+    public function toArray(): array
     {
-        return '';
+        return [];
     }
 }

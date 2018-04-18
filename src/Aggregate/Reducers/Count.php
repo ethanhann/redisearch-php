@@ -11,8 +11,8 @@ class Count implements ReducerInterface
         $this->group = $group;
     }
 
-    public function getDefinition(): string
+    public function toArray(): array
     {
-        return "COUNT {$this->group}";
+        return ['COUNT', $this->group];
     }
 }

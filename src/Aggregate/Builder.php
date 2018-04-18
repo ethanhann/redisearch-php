@@ -2,16 +2,24 @@
 
 namespace Ehann\RediSearch\Aggregate;
 
+use Ehann\RediSearch\Aggregate\Operations\Apply;
+use Ehann\RediSearch\Aggregate\Operations\GroupBy;
+use Ehann\RediSearch\Aggregate\Operations\Limit;
+use Ehann\RediSearch\Aggregate\Operations\Load;
+use Ehann\RediSearch\Aggregate\Operations\OperationInterface;
+use Ehann\RediSearch\Aggregate\Operations\Reduce;
+use Ehann\RediSearch\Aggregate\Operations\SortBy;
+use Ehann\RediSearch\Aggregate\Reducers\CountDistinctApproximate;
 use Ehann\RediSearch\Aggregate\Reducers\FirstValue;
-use Ehann\RediSearch\Aggregate\Reducers\Maximum;
-use Ehann\RediSearch\Aggregate\Reducers\Minimum;
+use Ehann\RediSearch\Aggregate\Reducers\Max;
+use Ehann\RediSearch\Aggregate\Reducers\Min;
 use Ehann\RediSearch\Aggregate\Reducers\Quantile;
 use Ehann\RediSearch\Aggregate\Reducers\StandardDeviation;
 use Ehann\RediSearch\Aggregate\Reducers\Sum;
 use Ehann\RediSearch\Aggregate\Reducers\ToList;
 use Ehann\RediSearch\Exceptions\RedisRawCommandException;
 use Ehann\RediSearch\Redis\RedisClientInterface;
-use Ehann\RediSearch\Aggregate\Reducers\Average;
+use Ehann\RediSearch\Aggregate\Reducers\Avg;
 use Ehann\RediSearch\Aggregate\Reducers\Count;
 use Ehann\RediSearch\Aggregate\Reducers\CountDistinct;
 use Ehann\RediSearch\Aggregate\Reducers\ReducerInterface;
@@ -19,12 +27,10 @@ use Ehann\RediSearch\Aggregate\Reducers\ReducerInterface;
 class Builder implements BuilderInterface
 {
     protected $redis;
-    private $indexName;
-    private $load;
-    private $groupBy;
-    private $sortBy;
-    private $apply;
-    private $limit;
+    private $indexName = '';
+    protected $pipeline = [];
+    private $load = [];
+
 
     public function __construct(RedisClientInterface $redis, string $indexName)
     {
@@ -33,129 +39,210 @@ class Builder implements BuilderInterface
     }
 
     /**
+     * Delete all operations from the aggregation pipeline.
+     */
+    public function clear()
+    {
+        $this->pipeline = [];
+    }
+
+    /**
      * Only use this method if absolutely necessary. It has a detrimental impact on performance.
-     * @param array $properties
+     * @param array $fieldNames
      * @return BuilderInterface
      */
-    public function load(array $properties): BuilderInterface
+    public function load(array $fieldNames): BuilderInterface
     {
-        $count = count($properties);
-        $implodedProperties = implode(' ', $properties);
-        $this->load[] = "LOAD $count $implodedProperties";
+        $this->pipeline[] = new Load($fieldNames);
         return $this;
     }
 
-    public function groupBy(string $fieldName, ReducerInterface $reducer = null): BuilderInterface
+    /**
+     * @param string|array $fieldName
+     * @param ReducerInterface|array $reducer
+     * @return BuilderInterface
+     */
+    public function groupBy($fieldName, ReducerInterface $reducer = null): BuilderInterface
     {
-        $reduce = (is_null($reducer) ? '' : " REDUCE " . $reducer->getDefinition());
-        $this->groupBy[] = trim("GROUPBY $fieldName $reduce");
-        return $this;
-    }
-
-    public function groupByWithManyReducers(string $fieldName, array $reducers = null): BuilderInterface
-    {
-        $reduce = '';
-        if (!is_null($reducers)) {
-            foreach ($reducers as $reducer) {
-                if ($reducer instanceof ReducerInterface) {
-                    $reduce .= " REDUCE " . $reducer->getDefinition();
-                }
-            }
+        $this->pipeline[] = new GroupBy(is_array($fieldName) ? $fieldName : [$fieldName]);
+        if (!is_null($reducer)) {
+            $this->reduce($reducer);
         }
-        $this->groupBy[] = trim("GROUPBY $fieldName $reduce");
         return $this;
     }
 
-    public function average(string $fieldName): BuilderInterface
+    /**
+     * @param ReducerInterface $reducer
+     * @return BuilderInterface
+     */
+    public function reduce(ReducerInterface $reducer): BuilderInterface
     {
-        return $this->groupBy($fieldName, new Average($fieldName));
+        $this->pipeline[] = new Reduce($reducer);
+        return $this;
     }
 
+    /**
+     * @param array|string $fieldName
+     * @param string|null $reduceByFieldName
+     * @return BuilderInterface
+     */
+    public function avg($fieldName, string $reduceByFieldName = null): BuilderInterface
+    {
+        return $this->groupBy($fieldName, new Avg(is_null($reduceByFieldName) ? $fieldName : $reduceByFieldName));
+    }
+
+    /**
+     * @param string $fieldName
+     * @param int $group
+     * @return BuilderInterface
+     */
     public function count(string $fieldName, int $group): BuilderInterface
     {
         return $this->groupBy($fieldName, new Count($group));
     }
 
-    public function countDistinct(string $fieldName): BuilderInterface
+    /**
+     * @param array|string $fieldName
+     * @param string|null $reduceByFieldName
+     * @return BuilderInterface
+     */
+    public function countDistinct($fieldName, string $reduceByFieldName = null): BuilderInterface
     {
-        return $this->groupBy($fieldName, new CountDistinct($fieldName));
+        return $this->groupBy($fieldName, new CountDistinct(is_null($reduceByFieldName) ? $fieldName : $reduceByFieldName));
     }
 
-    public function countDistinctApproximate(string $fieldName): BuilderInterface
+    /**
+     * @param array|string $fieldName
+     * @param string|null $reduceByFieldName
+     * @return BuilderInterface
+     */
+    public function countDistinctApproximate($fieldName, string $reduceByFieldName = null): BuilderInterface
     {
-        return $this->groupBy($fieldName, new Average($fieldName));
+        return $this->groupBy($fieldName, new CountDistinctApproximate(is_null($reduceByFieldName) ? $fieldName : $reduceByFieldName));
     }
 
-    public function firstValue(string $fieldName, string $byFieldName = null, bool $isAscending = true): BuilderInterface
+    /**
+     * @param string $fieldName
+     * @param string|null $reduceByFieldName
+     * @return BuilderInterface
+     */
+    public function sum($fieldName, string $reduceByFieldName = null): BuilderInterface
     {
-        return $this->groupBy($fieldName, new FirstValue($fieldName, $byFieldName, $isAscending));
+        return $this->groupBy($fieldName, new Sum(is_null($reduceByFieldName) ? $fieldName : $reduceByFieldName));
     }
 
-    public function sum(string $fieldName): BuilderInterface
+    /**
+     * @param string $fieldName
+     * @param string|null $reduceByFieldName
+     * @return BuilderInterface
+     */
+    public function max($fieldName, string $reduceByFieldName = null): BuilderInterface
     {
-        return $this->groupBy($fieldName, new Sum($fieldName));
+        return $this->groupBy($fieldName, new Max(is_null($reduceByFieldName) ? $fieldName : $reduceByFieldName));
     }
 
-    public function max(string $fieldName): BuilderInterface
+    /**
+     * @param string $fieldName
+     * @param string|null $reduceByFieldName
+     * @return BuilderInterface
+     */
+    public function min($fieldName, string $reduceByFieldName = null): BuilderInterface
     {
-        return $this->groupBy($fieldName, new Maximum($fieldName));
+        return $this->groupBy($fieldName, new Min(is_null($reduceByFieldName) ? $fieldName : $reduceByFieldName));
     }
 
-    public function min(string $fieldName): BuilderInterface
-    {
-        return $this->groupBy($fieldName, new Minimum($fieldName));
-    }
-
+    /**
+     * @param string $fieldName
+     * @param string $quantile
+     * @return BuilderInterface
+     */
     public function quantile(string $fieldName, string $quantile): BuilderInterface
     {
         return $this->groupBy($fieldName, new Quantile($fieldName, $quantile));
     }
 
-    public function standardDeviation(string $fieldName): BuilderInterface
+    /**
+     * @param string $fieldName
+     * @param string|null $reduceByFieldName
+     * @return BuilderInterface
+     */
+    public function standardDeviation($fieldName, string $reduceByFieldName = null): BuilderInterface
     {
-        return $this->groupBy($fieldName, new StandardDeviation($fieldName));
+        return $this->groupBy($fieldName, new StandardDeviation(is_null($reduceByFieldName) ? $fieldName : $reduceByFieldName));
     }
 
+    /**
+     * @param string $fieldName
+     * @param string|null $byFieldName
+     * @param bool $isAscending
+     * @return BuilderInterface
+     */
+    public function firstValue(string $fieldName, string $byFieldName = null, bool $isAscending = true): BuilderInterface
+    {
+        return $this->groupBy($fieldName, new FirstValue($fieldName, $byFieldName, $isAscending));
+    }
+
+    /**
+     * @param string $fieldName
+     * @return BuilderInterface
+     */
     public function toList(string $fieldName): BuilderInterface
     {
         return $this->groupBy($fieldName, new ToList($fieldName));
     }
 
-    public function sortBy(array $properties, integer $max = -1): BuilderInterface
+    /**
+     * @param array|string $fieldName
+     * @param int $max
+     * @return BuilderInterface
+     */
+    public function sortBy($fieldName, int $max = -1): BuilderInterface
     {
-        $count = count($properties);
-        $implodedProperties = implode(' ', $properties);
-        $this->sortBy[] = "SORTBY $count $implodedProperties";
+        $this->pipeline[] = new SortBy(is_array($fieldName) ? $fieldName : [$fieldName]);
         return $this;
     }
 
     /**
      * @param string $expression An expression that can be used to perform arithmetic operations on numeric properties.
-     * @param string $name The name of the fieldName to add or replace.
+     * @param string $asFieldName The name of the fieldName to add or replace.
      * @return BuilderInterface
      */
-    public function apply(string $expression, string $name): BuilderInterface
+    public function apply(string $expression, string $asFieldName): BuilderInterface
     {
-        $this->apply[] = "APPLY $expression as $name";
+        $this->pipeline[] = new Apply($expression, $asFieldName);
         return $this;
     }
 
+    /**
+     * @param int $offset
+     * @param int $pageSize
+     * @return BuilderInterface
+     */
     public function limit(int $offset, int $pageSize = 10): BuilderInterface
     {
-        $this->limit[] = "LIMIT $offset $pageSize";
+        $this->pipeline[] = new Limit($offset, $pageSize);
         return $this;
     }
 
+    /**
+     * @param string $query
+     * @return array
+     */
     public function makeAggregateCommandArguments(string $query): array
     {
+        $pipelineOperations = array_map(function (OperationInterface $operation) {
+            return $operation->toArray();
+        }, $this->pipeline);
+
+        $pipelineOperations = array_reduce($pipelineOperations, function ($prev, $next) {
+            return is_null($prev) ? $next : array_merge($prev, $next);
+        });
+
         return array_filter(
             array_merge(
                 trim($query) === '' ? [$this->indexName] : [$this->indexName, $query],
-                explode(' ', $this->load),
-                $this->groupBy,
-                $this->sortBy,
-                $this->apply,
-                $this->limit
+                $this->load,
+                $pipelineOperations
             ),
             function ($item) {
                 return !is_null($item) && $item !== '';
@@ -163,9 +250,16 @@ class Builder implements BuilderInterface
         );
     }
 
+    /**
+     * @param string $query
+     * @param bool $documentsAsArray
+     * @return AggregationResult
+     * @throws RedisRawCommandException
+     */
     public function search(string $query = '', bool $documentsAsArray = false): AggregationResult
     {
-        $args = $this->makeAggregateCommandArguments($query);
+        $args = $this->makeAggregateCommandArguments($query === '' ? '*' : $query);
+
         $rawResult = $this->redis->rawCommand(
             'FT.AGGREGATE',
             $args
@@ -174,13 +268,9 @@ class Builder implements BuilderInterface
             throw new RedisRawCommandException("Result: $rawResult, Query: $query");
         }
 
-//        return $rawResult ? SearchResult::makeSearchResult(
-//            $rawResult,
-//            $documentsAsArray,
-//            $this->withScores !== '',
-//            $this->withPayloads !== '',
-//            $this->noContent !== ''
-//        ) : new SearchResult(0, []);
-        return new AggregationResult();
+        return $rawResult ? AggregationResult::makeAggregationResult(
+            $rawResult,
+            $documentsAsArray
+        ) : new AggregationResult(0, []);
     }
 }

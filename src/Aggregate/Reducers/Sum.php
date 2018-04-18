@@ -4,8 +4,8 @@ namespace Ehann\RediSearch\Aggregate\Reducers;
 
 class Sum extends AbstractReducer
 {
-    public function getDefinition(): string
+    public function toArray(): array
     {
-        return "SUM 1 {$this->fieldName}";
+        return ['SUM', '1', $this->fieldName];
     }
 }

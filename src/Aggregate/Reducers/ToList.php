@@ -4,8 +4,8 @@ namespace Ehann\RediSearch\Aggregate\Reducers;
 
 class ToList extends AbstractReducer
 {
-    public function getDefinition(): string
+    public function toArray(): array
     {
-        return "TOLIST 1 {$this->fieldName}";
+        return ['TOLIST', '1', $this->fieldName];
     }
 }

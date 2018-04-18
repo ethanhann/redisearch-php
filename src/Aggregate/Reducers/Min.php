@@ -2,10 +2,10 @@
 
 namespace Ehann\RediSearch\Aggregate\Reducers;
 
-class StandardDeviation extends AbstractReducer
+class Min extends AbstractReducer
 {
     public function toArray(): array
     {
-        return ['STDDEV', '1', $this->fieldName];
+        return ['MIN', '1', $this->fieldName];
     }
 }

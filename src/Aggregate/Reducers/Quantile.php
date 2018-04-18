@@ -12,8 +12,8 @@ class Quantile extends AbstractReducer
         $this->quantile = $quantile;
     }
 
-    public function getDefinition(): string
+    public function toArray(): array
     {
-        return "QUANTILE 2 {$this->fieldName} {$this->quantile}";
+        return ['QUANTILE', '2', $this->fieldName, $this->quantile];
     }
 }
