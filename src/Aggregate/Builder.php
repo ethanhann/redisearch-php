@@ -39,6 +39,14 @@ class Builder implements BuilderInterface
     }
 
     /**
+     * Get pipeline.
+     */
+    public function getPipeline(): array
+    {
+        return $this->pipeline;
+    }
+
+    /**
      * Delete all operations from the aggregation pipeline.
      */
     public function clear()
@@ -153,12 +161,13 @@ class Builder implements BuilderInterface
 
     /**
      * @param string $fieldName
-     * @param string $quantile
+     * @param string $reduceByFieldName
+     * @param float $quantile
      * @return BuilderInterface
      */
-    public function quantile(string $fieldName, string $quantile): BuilderInterface
+    public function quantile(string $fieldName, string $reduceByFieldName, float $quantile): BuilderInterface
     {
-        return $this->groupBy($fieldName, new Quantile($fieldName, $quantile));
+        return $this->groupBy($fieldName, new Quantile(is_null($reduceByFieldName) ? $fieldName : $reduceByFieldName, $quantile));
     }
 
     /**
@@ -193,12 +202,13 @@ class Builder implements BuilderInterface
 
     /**
      * @param array|string $fieldName
+     * @param bool $isAscending
      * @param int $max
      * @return BuilderInterface
      */
-    public function sortBy($fieldName, int $max = -1): BuilderInterface
+    public function sortBy($fieldName, $isAscending = true, int $max = -1): BuilderInterface
     {
-        $this->pipeline[] = new SortBy(is_array($fieldName) ? $fieldName : [$fieldName]);
+        $this->pipeline[] = new SortBy(is_array($fieldName) ? $fieldName : [$fieldName], $isAscending, $max);
         return $this;
     }
 
@@ -259,11 +269,11 @@ class Builder implements BuilderInterface
     public function search(string $query = '', bool $documentsAsArray = false): AggregationResult
     {
         $args = $this->makeAggregateCommandArguments($query === '' ? '*' : $query);
-
         $rawResult = $this->redis->rawCommand(
             'FT.AGGREGATE',
             $args
         );
+
         if (is_string($rawResult)) {
             throw new RedisRawCommandException("Result: $rawResult, Query: $query");
         }

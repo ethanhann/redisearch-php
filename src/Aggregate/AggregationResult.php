@@ -30,7 +30,7 @@ class AggregationResult
         }
 
         $documentWidth = 1;
-        $count = array_shift($rawRediSearchResult);
+        array_shift($rawRediSearchResult);
         $documents = [];
         for ($i = 0; $i < count($rawRediSearchResult); $i += $documentWidth) {
             $document = $documentsAsArray ? [] : new \stdClass();
@@ -45,6 +45,6 @@ class AggregationResult
             }
             $documents[] = $document;
         }
-        return new AggregationResult($count, $documents);
+        return new AggregationResult(count($documents), $documents);
     }
 }

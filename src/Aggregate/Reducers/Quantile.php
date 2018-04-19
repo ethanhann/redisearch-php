@@ -6,7 +6,7 @@ class Quantile extends AbstractReducer
 {
     public $quantile;
 
-    public function __construct(string $fieldName, string $quantile)
+    public function __construct(string $fieldName, float $quantile)
     {
         parent::__construct($fieldName);
         $this->quantile = $quantile;

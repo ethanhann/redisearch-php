@@ -9,7 +9,7 @@ interface BuilderInterface
     public function load(array $fieldNames): BuilderInterface;
     public function groupBy($fieldName, ReducerInterface $reducer = null): BuilderInterface;
     public function reduce(ReducerInterface $reducer): BuilderInterface;
-    public function sortBy($fieldName, int $max = -1): BuilderInterface;
+    public function sortBy($fieldName, $isAscending = true, int $max = -1): BuilderInterface;
     public function apply(string $expression, string $asName): BuilderInterface;
     public function limit(int $offset, int $pageSize = 10): BuilderInterface;
     public function search(string $query = '', bool $documentsAsArray = false): AggregationResult;
@@ -22,6 +22,6 @@ interface BuilderInterface
     public function min($fieldName, string $reduceByFieldName = null): BuilderInterface;
     public function standardDeviation($fieldName, string $reduceByFieldName = null): BuilderInterface;
     public function firstValue(string $fieldName, string $byFieldName = null, bool $isAscending = true): BuilderInterface;
-    public function quantile(string $fieldName, string $quantile): BuilderInterface;
+    public function quantile(string $fieldName, string $reduceByFieldName, float $quantile): BuilderInterface;
     public function toList(string $fieldName): BuilderInterface;
 }

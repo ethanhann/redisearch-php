@@ -4,8 +4,8 @@ namespace Ehann\RediSearch\Aggregate\Operations;
 
 abstract class AbstractFieldNameOperation implements OperationInterface
 {
-    private $operationName;
-    private $fieldNames;
+    protected $operationName;
+    protected $fieldNames;
 
     public function __construct(string $operationName, array $fieldNames)
     {
