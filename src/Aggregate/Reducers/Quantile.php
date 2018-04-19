@@ -2,7 +2,7 @@
 
 namespace Ehann\RediSearch\Aggregate\Reducers;
 
-class Quantile extends AbstractReducer
+class Quantile extends AbstractFieldNameReducer
 {
     public $quantile;
 

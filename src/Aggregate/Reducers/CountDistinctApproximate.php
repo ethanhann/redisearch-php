@@ -2,7 +2,7 @@
 
 namespace Ehann\RediSearch\Aggregate\Reducers;
 
-class CountDistinctApproximate extends AbstractReducer
+class CountDistinctApproximate extends AbstractFieldNameReducer
 {
     public function toArray(): array
     {

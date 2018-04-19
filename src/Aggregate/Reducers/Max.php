@@ -2,7 +2,7 @@
 
 namespace Ehann\RediSearch\Aggregate\Reducers;
 
-class Max extends AbstractReducer
+class Max extends AbstractFieldNameReducer
 {
     public function toArray(): array
     {

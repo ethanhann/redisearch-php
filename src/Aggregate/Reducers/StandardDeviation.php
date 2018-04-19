@@ -2,7 +2,7 @@
 
 namespace Ehann\RediSearch\Aggregate\Reducers;
 
-class StandardDeviation extends AbstractReducer
+class StandardDeviation extends AbstractFieldNameReducer
 {
     public function toArray(): array
     {

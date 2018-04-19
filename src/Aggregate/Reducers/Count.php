@@ -2,7 +2,9 @@
 
 namespace Ehann\RediSearch\Aggregate\Reducers;
 
-class Count implements ReducerInterface
+use Ehann\RediSearch\CanBecomeArrayInterface;
+
+class Count implements CanBecomeArrayInterface
 {
     private $group;
 

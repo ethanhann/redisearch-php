@@ -2,7 +2,9 @@
 
 namespace Ehann\RediSearch\Aggregate\Reducers;
 
-class AbstractReducer implements ReducerInterface
+use Ehann\RediSearch\CanBecomeArrayInterface;
+
+abstract class AbstractFieldNameReducer implements CanBecomeArrayInterface
 {
     public $fieldName;
 

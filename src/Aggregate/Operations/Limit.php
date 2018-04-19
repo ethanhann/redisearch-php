@@ -2,7 +2,9 @@
 
 namespace Ehann\RediSearch\Aggregate\Operations;
 
-class Limit implements OperationInterface
+use Ehann\RediSearch\CanBecomeArrayInterface;
+
+class Limit implements CanBecomeArrayInterface
 {
     private $offset;
     private $pageSize;

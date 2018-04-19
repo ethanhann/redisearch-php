@@ -2,7 +2,7 @@
 
 namespace Ehann\RediSearch\Aggregate\Reducers;
 
-class ToList extends AbstractReducer
+class ToList extends AbstractFieldNameReducer
 {
     public function toArray(): array
     {

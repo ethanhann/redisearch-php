@@ -2,7 +2,7 @@
 
 namespace Ehann\RediSearch\Aggregate\Reducers;
 
-class FirstValue extends AbstractReducer
+class FirstValue extends AbstractFieldNameReducer
 {
     public $byFieldName;
     public $isAscending;

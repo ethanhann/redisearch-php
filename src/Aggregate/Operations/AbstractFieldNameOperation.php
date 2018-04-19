@@ -2,7 +2,9 @@
 
 namespace Ehann\RediSearch\Aggregate\Operations;
 
-abstract class AbstractFieldNameOperation implements OperationInterface
+use Ehann\RediSearch\CanBecomeArrayInterface;
+
+abstract class AbstractFieldNameOperation implements CanBecomeArrayInterface
 {
     protected $operationName;
     protected $fieldNames;

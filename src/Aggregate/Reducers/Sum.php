@@ -2,7 +2,7 @@
 
 namespace Ehann\RediSearch\Aggregate\Reducers;
 
-class Sum extends AbstractReducer
+class Sum extends AbstractFieldNameReducer
 {
     public function toArray(): array
     {

@@ -2,7 +2,9 @@
 
 namespace Ehann\RediSearch\Aggregate\Operations;
 
-class Apply implements OperationInterface
+use Ehann\RediSearch\CanBecomeArrayInterface;
+
+class Apply implements CanBecomeArrayInterface
 {
     public $expression;
     public $asFieldName;

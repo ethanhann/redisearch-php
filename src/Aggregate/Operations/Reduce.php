@@ -2,13 +2,13 @@
 
 namespace Ehann\RediSearch\Aggregate\Operations;
 
-use Ehann\RediSearch\Aggregate\Reducers\ReducerInterface;
+use Ehann\RediSearch\CanBecomeArrayInterface;
 
-class Reduce implements OperationInterface
+class Reduce implements CanBecomeArrayInterface
 {
     public $reducer;
 
-    public function __construct(ReducerInterface $reducer)
+    public function __construct(CanBecomeArrayInterface $reducer)
     {
         $this->reducer = $reducer;
     }
