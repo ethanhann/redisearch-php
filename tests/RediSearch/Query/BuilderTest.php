@@ -22,7 +22,8 @@ class BuilderTest extends AbstractTestCase
             ->addTextField('author')
             ->addNumericField('price')
             ->addNumericField('stock')
-            ->addGeoField('location');
+            ->addGeoField('location')
+            ->addTextField('private', 1.0, false, true);
         $index->create();
         $index->makeDocument();
         $this->expectedResult1 = [
@@ -47,6 +48,7 @@ class BuilderTest extends AbstractTestCase
             'price' => 18.95,
             'stock' => 11,
             'location' => new GeoLocation(10.9190500, 52.0504100),
+            'private' => 'classified'
         ];
         $index->add($this->expectedResult3);
         $this->subject = (new Builder($this->redisClient, $this->indexName));
@@ -62,6 +64,12 @@ class BuilderTest extends AbstractTestCase
         $result = $this->subject->search('Shoes');
 
         $this->assertTrue($result->getCount() === 1);
+    }
+
+    /* This should not be indexed and should therefore return zero results */
+    public function testUnindexed() {
+        $result = $this->subject->search('classified');
+        $this->assertTrue($result->getCount() === 0);
     }
 
     public function testSearchWithReturn()

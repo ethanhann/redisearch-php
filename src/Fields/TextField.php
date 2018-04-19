@@ -5,6 +5,7 @@ namespace Ehann\RediSearch\Fields;
 class TextField extends AbstractField
 {
     use Sortable;
+    use Noindex;
 
     protected $weight = 1.0;
     protected $noStem = false;
@@ -46,6 +47,9 @@ class TextField extends AbstractField
         $properties[] = $this->getWeight();
         if ($this->isSortable()) {
             $properties[] = 'SORTABLE';
+        }
+        if ($this->isNoindex()) {
+            $properties[] = 'NOINDEX';
         }
         return $properties;
     }

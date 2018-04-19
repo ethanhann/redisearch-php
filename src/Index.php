@@ -78,22 +78,24 @@ class Index extends AbstractIndex implements IndexInterface
      * @param string $name
      * @param float $weight
      * @param bool $sortable
+     * @param bool $noindex
      * @return IndexInterface
      */
-    public function addTextField(string $name, float $weight = 1.0, bool $sortable = false): IndexInterface
+    public function addTextField(string $name, float $weight = 1.0, bool $sortable = false, bool $noindex = false): IndexInterface
     {
-        $this->$name = (new TextField($name))->setSortable($sortable)->setWeight($weight);
+        $this->$name = (new TextField($name))->setSortable($sortable)->setNoindex($noindex)->setWeight($weight);
         return $this;
     }
 
     /**
      * @param string $name
      * @param bool $sortable
+     * @param bool $noindex
      * @return IndexInterface
      */
-    public function addNumericField(string $name, bool $sortable = false): IndexInterface
+    public function addNumericField(string $name, bool $sortable = false, bool $noindex = false): IndexInterface
     {
-        $this->$name = (new NumericField($name))->setSortable($sortable);
+        $this->$name = (new NumericField($name))->setSortable($sortable)->setNoindex($noindex);
         return $this;
     }
 
@@ -101,9 +103,9 @@ class Index extends AbstractIndex implements IndexInterface
      * @param string $name
      * @return IndexInterface
      */
-    public function addGeoField(string $name): IndexInterface
+    public function addGeoField(string $name, bool $noindex = false): IndexInterface
     {
-        $this->$name = (new GeoField($name));
+        $this->$name = (new GeoField($name))->setNoindex($noindex);
         return $this;
     }
 

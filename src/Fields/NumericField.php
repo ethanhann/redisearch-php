@@ -5,6 +5,7 @@ namespace Ehann\RediSearch\Fields;
 class NumericField extends AbstractField
 {
     use Sortable;
+    use Noindex;
 
     public function getType(): string
     {
@@ -16,6 +17,9 @@ class NumericField extends AbstractField
         $properties = parent::getTypeDefinition();
         if ($this->isSortable()) {
             $properties[] = 'SORTABLE';
+        }
+        if ($this->isNoindex()) {
+            $properties[] = 'NOINDEX';
         }
         return $properties;
     }
