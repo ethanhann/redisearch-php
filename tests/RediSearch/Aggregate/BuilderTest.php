@@ -78,7 +78,8 @@ class BuilderTest extends AbstractTestCase
         $expectedAveragePrice = 14.99;
 
         $result = $this->subject
-            ->avg(['title'], 'price')
+            ->groupBy('title')
+            ->avg('price')
             ->search();
 
         $this->assertEquals($expectedCount, $result->getCount());
@@ -91,7 +92,8 @@ class BuilderTest extends AbstractTestCase
         $expectedAveragePrice = 14.99;
 
         $result = $this->subject
-            ->avg(['title'], 'price')
+            ->groupBy('title')
+            ->avg('price')
             ->search('*', true);
 
         $this->assertEquals($expectedCount, $result->getCount());
@@ -114,7 +116,9 @@ class BuilderTest extends AbstractTestCase
 
     public function testPipelineHasCommands()
     {
-        $this->subject->avg(['title'], 'price');
+        $this->subject
+            ->groupBy('title')
+            ->avg('price');
         $this->subject->limit(0, 10);
 
         $result = $this->subject->getPipeline();
@@ -124,7 +128,9 @@ class BuilderTest extends AbstractTestCase
 
     public function testClearPipeline()
     {
-        $this->subject->avg(['title'], 'price');
+        $this->subject
+            ->groupBy('title')
+            ->avg('price');
 
         $this->subject->clear();
 
@@ -138,7 +144,8 @@ class BuilderTest extends AbstractTestCase
         $expected3 = 1;
 
         $result = $this->subject
-            ->count('title', 0)
+            ->groupBy('title')
+            ->count(0)
             ->search();
 
         $this->assertEquals($expected1, $result->getDocuments()[0]->count);
@@ -153,6 +160,7 @@ class BuilderTest extends AbstractTestCase
         $expected3 = 1;
 
         $result = $this->subject
+            ->groupBy('title')
             ->countDistinct('title')
             ->search();
 
@@ -167,7 +175,8 @@ class BuilderTest extends AbstractTestCase
         $expected2 = 1;
 
         $result = $this->subject
-            ->countDistinct('stock', 'title')
+            ->groupBy('stock')
+            ->countDistinct('title')
             ->search();
 
         $this->assertEquals($expected1, $result->getDocuments()[0]->count_distinct_title);
@@ -181,6 +190,7 @@ class BuilderTest extends AbstractTestCase
         $expected3 = 1;
 
         $result = $this->subject
+            ->groupBy('title')
             ->countDistinctApproximate('title')
             ->search();
 
@@ -196,7 +206,8 @@ class BuilderTest extends AbstractTestCase
         $expected3 = 32;
 
         $result = $this->subject
-            ->sum('title', 'stock')
+            ->groupBy('title')
+            ->sum('stock')
             ->search();
 
         $this->assertEquals($expected1, $result->getDocuments()[0]->sum_stock);
@@ -209,7 +220,8 @@ class BuilderTest extends AbstractTestCase
         $expected1 = 19.99;
 
         $result = $this->subject
-            ->max('title', 'price')
+            ->groupBy('title')
+            ->max('price')
             ->search();
 
         $this->assertEquals($expected1, $result->getDocuments()[0]->max_price);
@@ -220,7 +232,8 @@ class BuilderTest extends AbstractTestCase
         $expected1 = 9.99;
 
         $result = $this->subject
-            ->min('title', 'price')
+            ->groupBy('title')
+            ->min('price')
             ->search();
 
         $this->assertEquals($expected1, $result->getDocuments()[0]->min_price);
@@ -231,7 +244,8 @@ class BuilderTest extends AbstractTestCase
         $expected = 9.99;
 
         $result = $this->subject
-            ->min('_', 'price')
+            ->groupBy('_')
+            ->min('price')
             ->search();
 
         $this->assertEquals($expected, $result->getDocuments()[0]->min_price);
@@ -242,7 +256,8 @@ class BuilderTest extends AbstractTestCase
         $expected = 38.85;
 
         $result = $this->subject
-            ->max('_', 'price')
+            ->groupBy('_')
+            ->max('price')
             ->search();
 
         $this->assertEquals($expected, $result->getDocuments()[0]->max_price);
@@ -255,7 +270,8 @@ class BuilderTest extends AbstractTestCase
         $expected3 = 38.85;
 
         $result = $this->subject
-            ->quantile('title', 'price', 0.5)
+            ->groupBy('title')
+            ->quantile('price', 0.5)
             ->search();
 
         $this->assertEquals($expected1, $result->getDocuments()[0]->quantile_price);
@@ -268,7 +284,8 @@ class BuilderTest extends AbstractTestCase
         $expected = 38.85;
 
         $result = $this->subject
-            ->quantile('_', 'price', 0.5)
+            ->groupBy('_')
+            ->quantile('price', 0.5)
             ->search();
 
         $this->assertEquals($expected, $result->getDocuments()[0]->quantile_price);
@@ -279,7 +296,8 @@ class BuilderTest extends AbstractTestCase
         $expected = 5;
 
         $result = $this->subject
-            ->standardDeviation('title', 'price')
+            ->groupBy('title')
+            ->standardDeviation('price')
             ->search();
 
         $this->assertEquals($expected, $result->getDocuments()[0]->stddev_price);

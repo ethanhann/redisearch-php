@@ -6,6 +6,6 @@ class Max extends AbstractFieldNameReducer
 {
     public function toArray(): array
     {
-        return ['MAX', '1', $this->fieldName];
+        return ['REDUCE', 'MAX', '1', $this->fieldName];
     }
 }

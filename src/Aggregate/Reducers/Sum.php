@@ -6,6 +6,6 @@ class Sum extends AbstractFieldNameReducer
 {
     public function toArray(): array
     {
-        return ['SUM', '1', $this->fieldName];
+        return ['REDUCE', 'SUM', '1', $this->fieldName];
     }
 }

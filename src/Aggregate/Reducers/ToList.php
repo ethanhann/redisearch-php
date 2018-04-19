@@ -6,6 +6,6 @@ class ToList extends AbstractFieldNameReducer
 {
     public function toArray(): array
     {
-        return ['TOLIST', '1', $this->fieldName];
+        return ['REDUCE', 'TOLIST', '1', $this->fieldName];
     }
 }

@@ -5,6 +5,9 @@ namespace Ehann\Tests\RediSearch\Aggregate;
 use Ehann\RediSearch\Aggregate\AggregationResult;
 use Ehann\Tests\AbstractTestCase;
 
+/**
+ * @group aggregate
+ */
 class AggregationResultTest extends AbstractTestCase
 {
     /** @var AggregationResult */

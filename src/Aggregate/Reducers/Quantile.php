@@ -14,6 +14,6 @@ class Quantile extends AbstractFieldNameReducer
 
     public function toArray(): array
     {
-        return ['QUANTILE', '2', $this->fieldName, $this->quantile];
+        return ['REDUCE', 'QUANTILE', '2', $this->fieldName, $this->quantile];
     }
 }

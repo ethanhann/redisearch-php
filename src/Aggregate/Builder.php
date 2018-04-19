@@ -6,7 +6,6 @@ use Ehann\RediSearch\Aggregate\Operations\Apply;
 use Ehann\RediSearch\Aggregate\Operations\GroupBy;
 use Ehann\RediSearch\Aggregate\Operations\Limit;
 use Ehann\RediSearch\Aggregate\Operations\Load;
-use Ehann\RediSearch\Aggregate\Operations\Reduce;
 use Ehann\RediSearch\Aggregate\Operations\SortBy;
 use Ehann\RediSearch\Aggregate\Reducers\CountDistinctApproximate;
 use Ehann\RediSearch\Aggregate\Reducers\FirstValue;
@@ -84,7 +83,7 @@ class Builder implements BuilderInterface
      */
     public function reduce(CanBecomeArrayInterface $reducer): BuilderInterface
     {
-        $this->pipeline[] = new Reduce($reducer);
+        $this->pipeline[] = $reducer;
         return $this;
     }
 

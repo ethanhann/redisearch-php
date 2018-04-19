@@ -15,6 +15,6 @@ class Count implements CanBecomeArrayInterface
 
     public function toArray(): array
     {
-        return ['COUNT', $this->group];
+        return ['REDUCE', 'COUNT', $this->group];
     }
 }
