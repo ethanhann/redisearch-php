@@ -99,6 +99,19 @@ class IndexTest extends AbstractTestCase
         $this->assertTrue($result);
     }
 
+    public function testCreateIndexWithNoindexFields()
+    {
+        $indexName = 'IndexWithNoindexFields';
+        $index = (new TestIndex($this->redisClient, $indexName))
+            ->addTextField('title', true)
+            ->addTextField('text_noindex', true, true)
+            ->addNumericField('numeric_noindex', true)
+            ->addGeoField('geo_noindex', true);
+
+        $result = $index->create();
+        $this->assertTrue($result);
+    }
+
     public function testAddDocumentWithZeroScore()
     {
         $this->subject->create();
