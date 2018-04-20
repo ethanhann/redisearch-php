@@ -14,7 +14,7 @@ use Ehann\RediSearch\Fields\TextField;
 use Ehann\RediSearch\Query\Builder as QueryBuilder;
 use Ehann\RediSearch\Query\BuilderInterface as QueryBuilderInterface;
 use Ehann\RediSearch\Query\SearchResult;
-use Ehann\RediSearch\Redis\RedisClientInterface;
+use Ehann\RedisRaw\RedisRawClientInterface;
 
 class Index extends AbstractIndex implements IndexInterface
 {
@@ -165,18 +165,18 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
-     * @return RedisClientInterface
+     * @return RedisRawClientInterface
      */
-    public function getRedisClient(): RedisClientInterface
+    public function getRedisClient(): RedisRawClientInterface
     {
         return $this->redisClient;
     }
 
     /**
-     * @param RedisClientInterface $redisClient
+     * @param RedisRawClientInterface $redisClient
      * @return IndexInterface
      */
-    public function setRedisClient(RedisClientInterface $redisClient): IndexInterface
+    public function setRedisClient(RedisRawClientInterface $redisClient): IndexInterface
     {
         $this->redisClient = $redisClient;
         return $this;

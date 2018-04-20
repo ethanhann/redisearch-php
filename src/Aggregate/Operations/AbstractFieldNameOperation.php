@@ -18,10 +18,11 @@ abstract class AbstractFieldNameOperation implements CanBecomeArrayInterface
     public function toArray(): array
     {
         $count = count($this->fieldNames);
-        return $count > 0 ? array_merge([$this->operationName, $count],
+        return $count > 0 ? array_merge(
+            [$this->operationName, $count],
             array_map(function ($fieldName) {
                 return "@$fieldName";
-            }, $this->fieldNames)) : [];
+            }, $this->fieldNames)
+        ) : [];
     }
 }
-

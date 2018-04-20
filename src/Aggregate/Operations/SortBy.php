@@ -24,7 +24,8 @@ class SortBy extends AbstractFieldNameOperation
             $options[] = 'MAX';
             $options[] = $this->max;
         }
-        return $count > 0 ? array_merge([$this->operationName, $count],
+        return $count > 0 ? array_merge(
+            [$this->operationName, $count],
             array_map(function ($fieldName) {
                 return "@$fieldName";
             }, $this->fieldNames),

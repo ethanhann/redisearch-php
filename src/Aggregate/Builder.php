@@ -16,8 +16,8 @@ use Ehann\RediSearch\Aggregate\Reducers\StandardDeviation;
 use Ehann\RediSearch\Aggregate\Reducers\Sum;
 use Ehann\RediSearch\Aggregate\Reducers\ToList;
 use Ehann\RediSearch\CanBecomeArrayInterface;
-use Ehann\RediSearch\Exceptions\RedisRawCommandException;
-use Ehann\RediSearch\Redis\RedisClientInterface;
+use Ehann\RedisRaw\Exceptions\RedisRawCommandException;
+use Ehann\RedisRaw\RedisRawClientInterface;
 use Ehann\RediSearch\Aggregate\Reducers\Avg;
 use Ehann\RediSearch\Aggregate\Reducers\Count;
 use Ehann\RediSearch\Aggregate\Reducers\CountDistinct;
@@ -30,7 +30,7 @@ class Builder implements BuilderInterface
     private $load = [];
 
 
-    public function __construct(RedisClientInterface $redis, string $indexName)
+    public function __construct(RedisRawClientInterface $redis, string $indexName)
     {
         $this->redis = $redis;
         $this->indexName = $indexName;
