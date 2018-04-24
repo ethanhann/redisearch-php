@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/1.0.0...1.0.1)
+
+* Support NOINDEX fields.
+
 ## 1.0.0
 
 [Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.11.0...1.0.0)
