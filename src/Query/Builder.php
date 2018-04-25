@@ -2,8 +2,8 @@
 
 namespace Ehann\RediSearch\Query;
 
-use Ehann\RediSearch\Exceptions\RedisRawCommandException;
-use Ehann\RediSearch\Redis\RedisClientInterface;
+use Ehann\RedisRaw\Exceptions\RedisRawCommandException;
+use Ehann\RedisRaw\RedisRawClientInterface;
 use InvalidArgumentException;
 
 class Builder implements BuilderInterface
@@ -30,10 +30,9 @@ class Builder implements BuilderInterface
     protected $scorer = '';
     protected $language = '';
     protected $redis;
-    /** @var string */
     private $indexName;
 
-    public function __construct(RedisClientInterface $redis, string $indexName)
+    public function __construct(RedisRawClientInterface $redis, string $indexName)
     {
         $this->redis = $redis;
         $this->indexName = $indexName;

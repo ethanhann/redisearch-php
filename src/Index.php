@@ -2,6 +2,8 @@
 
 namespace Ehann\RediSearch;
 
+use Ehann\RediSearch\Aggregate\Builder as AggregateBuilder;
+use Ehann\RediSearch\Aggregate\BuilderInterface as AggregateBuilderInterface;
 use Ehann\RediSearch\Document\AbstractDocumentFactory;
 use Ehann\RediSearch\Document\DocumentInterface;
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
@@ -12,7 +14,7 @@ use Ehann\RediSearch\Fields\TextField;
 use Ehann\RediSearch\Query\Builder as QueryBuilder;
 use Ehann\RediSearch\Query\BuilderInterface as QueryBuilderInterface;
 use Ehann\RediSearch\Query\SearchResult;
-use Ehann\RediSearch\Redis\RedisClientInterface;
+use Ehann\RedisRaw\RedisRawClientInterface;
 
 class Index extends AbstractIndex implements IndexInterface
 {
@@ -155,18 +157,26 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
-     * @return RedisClientInterface
+     * @return AggregateBuilderInterface
      */
-    public function getRedisClient(): RedisClientInterface
+    public function makeAggregateBuilder(): AggregateBuilderInterface
+    {
+        return new AggregateBuilder($this->getRedisClient(), $this->getIndexName());
+    }
+
+    /**
+     * @return RedisRawClientInterface
+     */
+    public function getRedisClient(): RedisRawClientInterface
     {
         return $this->redisClient;
     }
 
     /**
-     * @param RedisClientInterface $redisClient
+     * @param RedisRawClientInterface $redisClient
      * @return IndexInterface
      */
-    public function setRedisClient(RedisClientInterface $redisClient): IndexInterface
+    public function setRedisClient(RedisRawClientInterface $redisClient): IndexInterface
     {
         $this->redisClient = $redisClient;
         return $this;

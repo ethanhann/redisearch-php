@@ -2,7 +2,7 @@
 
 namespace Ehann\Tests\RediSearch;
 
-use Ehann\RediSearch\Exceptions\RedisRawCommandException;
+use Ehann\RedisRaw\Exceptions\RedisRawCommandException;
 use PHPUnit\Framework\TestCase;
 
 class RedisRawCommandExceptionTest extends TestCase
