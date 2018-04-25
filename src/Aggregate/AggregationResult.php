@@ -37,15 +37,20 @@ class AggregationResult
             $fields = $rawRediSearchResult[$i + ($documentWidth - 1)];
             if (is_array($fields)) {
                 for ($j = 0; $j < count($fields); $j += 2) {
-                    $normalizedKey = trim(preg_replace("/[^A-Za-z0-9 ]/", '_', $fields[$j]), '_');
+                    $normalizedKey = preg_replace("/[^A-Za-z0-9 ]/", '_', $fields[$j]);
+                    if ($normalizedKey !== '_') {
+                        // Avoid a situation where the key is empty by only trimming the key if it is not "_".
+                        $normalizedKey = trim($normalizedKey, '_');
+                    }
                     $documentsAsArray ?
                         $document[$normalizedKey] = $fields[$j + 1] :
-                        $document->{$normalizedKey} = $fields[$j + 1];
+                        $document->$normalizedKey = $fields[$j + 1];
 
                     if (strpos($fields[$j], '(')) {
+                        $normalizedKeyField = $normalizedKey . '_field';
                         $documentsAsArray ?
-                            $document[$normalizedKey . '_field'] = $fields[$j] :
-                            $document->{$normalizedKey . '_field'} = $fields[$j];
+                            $document[$normalizedKeyField] = $fields[$j] :
+                            $document->$normalizedKeyField = $fields[$j];
                     }
                 }
             }
