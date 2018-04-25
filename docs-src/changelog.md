@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/1.0.1...1.1.0)
+
+* Support [aggregations](aggregatio.md).
+
 ## 1.0.1
 
 [Changes since last release](https://github.com/ethanhann/redisearch-php/compare/1.0.0...1.0.1)
