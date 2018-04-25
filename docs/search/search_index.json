@@ -126,6 +126,21 @@
             "title": "Logging Queries"
         },
         {
+            "location": "/aggregating/",
+            "text": "Aggregating\n\u00b6\n\n\nThe Basics\n\u00b6\n\n\nMake an \nindex\n and add a few documents to it: \n\n\nuse\n \nEhann\\RediSearch\\Index\n;\n\n\n\n$bookIndex\n \n=\n \nnew\n \nIndex\n(\n$redis\n);\n\n\n\n$bookIndex\n->\nadd\n([\n\n    \n'title'\n \n=>\n \n'How to be awesome'\n,\n\n    \n'price'\n \n=>\n \n9.99\n\n\n]);\n\n\n\n$bookIndex\n->\nadd\n([\n\n    \n'title'\n \n=>\n \n'Aggregating is awesome'\n,\n\n    \n'price'\n \n=>\n \n19.99\n\n\n]);\n\n\n\n\n\nNow group by title and get the average price:\n\n\n$results\n \n=\n \n$bookIndex\n->\nmakeAggregateBuilder\n()\n\n    \n->\ngroupBy\n(\n'title'\n)\n\n    \n->\navg\n(\n'price'\n);",
+            "title": "Aggregating"
+        },
+        {
+            "location": "/aggregating/#aggregating",
+            "text": "",
+            "title": "Aggregating"
+        },
+        {
+            "location": "/aggregating/#the-basics",
+            "text": "Make an  index  and add a few documents to it:   use   Ehann\\RediSearch\\Index ;  $bookIndex   =   new   Index ( $redis );  $bookIndex -> add ([ \n     'title'   =>   'How to be awesome' , \n     'price'   =>   9.99  ]);  $bookIndex -> add ([ \n     'title'   =>   'Aggregating is awesome' , \n     'price'   =>   19.99  ]);   Now group by title and get the average price:  $results   =   $bookIndex -> makeAggregateBuilder () \n     -> groupBy ( 'title' ) \n     -> avg ( 'price' );",
+            "title": "The Basics"
+        },
+        {
             "location": "/suggesting/",
             "text": "Suggesting\n\u00b6\n\n\nCreating a Suggestion Index\n\u00b6\n\n\nCreate a suggestion index called \"MySuggestions\":\n\n\nuse\n \nEhann\\RediSearch\\Suggestion\n;\n\n\n\n$suggestion\n \n=\n \nnew\n \nSuggestion\n(\n$redisClient\n,\n \n'MySuggestions'\n);\n\n\n\n\n\nAdding a Suggestion\n\u00b6\n\n\nAdd a suggestion with a score:\n\n\n$suggestion\n->\nadd\n(\n'Tale of Two Cities'\n,\n \n1.10\n);\n\n\n\n\n\nGetting a Suggestion\n\u00b6\n\n\nPass a partial string to the get method: \n\n\n$result\n \n=\n \n$suggestion\n->\nget\n(\n'Cities'\n);\n\n\n\n\n\nDeleting a Suggestion\n\u00b6\n\n\nPass the entire suggestion string to the delete method:\n\n\n$result\n \n=\n \n$suggestion\n->\ndelete\n(\n'Tale of Two Cities'\n);\n\n\n\n\n\nGetting the Number of Possible Suggestions\n\u00b6\n\n\nSimply use the suggestion index's length method:\n\n\n$numberOfPossibleSuggestions\n \n=\n \n$suggestion\n->\nlength\n();",
             "title": "Suggesting"
