@@ -37,10 +37,16 @@ class AggregationResult
             $fields = $rawRediSearchResult[$i + ($documentWidth - 1)];
             if (is_array($fields)) {
                 for ($j = 0; $j < count($fields); $j += 2) {
-                    $normalizedKey = trim(str_replace('(', '_', $fields[$j]), ')');
+                    $normalizedKey = trim(preg_replace("/[^A-Za-z0-9 ]/", '_', $fields[$j]), '_');
                     $documentsAsArray ?
                         $document[$normalizedKey] = $fields[$j + 1] :
                         $document->{$normalizedKey} = $fields[$j + 1];
+
+                    if (strpos($fields[$j], '(')) {
+                        $documentsAsArray ?
+                            $document[$normalizedKey . '_field'] = $fields[$j] :
+                            $document->{$normalizedKey . '_field'} = $fields[$j];
+                    }
                 }
             }
             $documents[] = $document;

@@ -266,6 +266,7 @@ class BuilderTest extends AbstractTestCase
     public function testGetQuantile()
     {
         $expected1 = 19.99;
+        $expectedField1 = 'quantile(price,0.5)';
         $expected2 = 18.85;
         $expected3 = 38.85;
 
@@ -274,9 +275,10 @@ class BuilderTest extends AbstractTestCase
             ->quantile('price', 0.5)
             ->search();
 
-        $this->assertEquals($expected1, $result->getDocuments()[0]->quantile_price);
-        $this->assertEquals($expected2, $result->getDocuments()[1]->quantile_price);
-        $this->assertEquals($expected3, $result->getDocuments()[2]->quantile_price);
+        $this->assertEquals($expected1, $result->getDocuments()[0]->quantile_price_0_5);
+        $this->assertEquals($expectedField1, $result->getDocuments()[0]->quantile_price_0_5_field);
+        $this->assertEquals($expected2, $result->getDocuments()[1]->quantile_price_0_5);
+        $this->assertEquals($expected3, $result->getDocuments()[2]->quantile_price_0_5);
     }
 
     public function testGetAbsoluteQuantile()
@@ -288,7 +290,7 @@ class BuilderTest extends AbstractTestCase
             ->quantile('price', 0.5)
             ->search();
 
-        $this->assertEquals($expected, $result->getDocuments()[0]->quantile_price);
+        $this->assertEquals($expected, $result->getDocuments()[0]->quantile_price_0_5);
     }
 
     public function testGetStandardDeviation()
