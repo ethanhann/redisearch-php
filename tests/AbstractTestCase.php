@@ -2,10 +2,11 @@
 
 namespace Ehann\Tests;
 
-use Ehann\RediSearch\Redis\PhpRedisAdapter;
-use Ehann\RediSearch\Redis\PredisAdapter;
-use Ehann\RediSearch\Redis\RedisClientAdapter;
-use Ehann\RediSearch\Redis\RedisClientInterface;
+use Ehann\RedisRaw\AbstractRedisRawClient;
+use Ehann\RedisRaw\PhpRedisAdapter;
+use Ehann\RedisRaw\PredisAdapter;
+use Ehann\RedisRaw\RedisClientAdapter;
+use Ehann\RedisRaw\RedisRawClientInterface;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
@@ -18,7 +19,7 @@ abstract class AbstractTestCase extends TestCase
 
     /** @var string */
     protected $indexName;
-    /** @var RedisClientInterface */
+    /** @var RedisRawClientInterface */
     protected $redisClient;
 
     public function __construct($name = null, array $data = [], $dataName = '')
@@ -35,7 +36,7 @@ abstract class AbstractTestCase extends TestCase
         }
     }
 
-    protected function makePhpRedisAdapter(): RedisClientInterface
+    protected function makePhpRedisAdapter(): RedisRawClientInterface
     {
         return (new PhpRedisAdapter())->connect(
             getenv('REDIS_HOST') ?? '127.0.0.1',
@@ -44,7 +45,7 @@ abstract class AbstractTestCase extends TestCase
         );
     }
 
-    protected function makePredisAdapter(): RedisClientInterface
+    protected function makePredisAdapter(): RedisRawClientInterface
     {
         return (new PredisAdapter())->connect(
             getenv('REDIS_HOST') ?? '127.0.0.1',
@@ -53,7 +54,7 @@ abstract class AbstractTestCase extends TestCase
         );
     }
 
-    protected function makeRedisClientAdapter(): RedisClientInterface
+    protected function makeRedisClientAdapter(): RedisRawClientInterface
     {
         return (new RedisClientAdapter())->connect(
             getenv('REDIS_HOST') ?? '127.0.0.1',
@@ -64,16 +65,16 @@ abstract class AbstractTestCase extends TestCase
 
     protected function isUsingPredis()
     {
-        return getenv('REDIS_LIBRARY') === self::PREDIS_LIBRARY;
+        return getenv('REDIS_LIBRARY') === AbstractRedisRawClient::PREDIS_LIBRARY;
     }
 
     protected function isUsingPhpRedis()
     {
-        return getenv('REDIS_LIBRARY') === self::PHP_REDIS_LIBRARY;
+        return getenv('REDIS_LIBRARY') === AbstractRedisRawClient::PHP_REDIS_LIBRARY;
     }
 
     protected function isUsingRedisClient()
     {
-        return getenv('REDIS_LIBRARY') === self::REDIS_CLIENT_LIBRARY;
+        return getenv('REDIS_LIBRARY') === AbstractRedisRawClient::REDIS_CLIENT_LIBRARY;
     }
 }

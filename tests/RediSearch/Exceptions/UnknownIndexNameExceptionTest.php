@@ -2,7 +2,7 @@
 
 namespace Ehann\Tests\RediSearch;
 
-use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
+use Ehann\RedisRaw\Exceptions\UnknownIndexNameException;
 use PHPUnit\Framework\TestCase;
 
 class UnknownIndexNameExceptionTest extends TestCase

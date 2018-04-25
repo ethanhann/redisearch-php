@@ -1,6 +1,6 @@
 <?php
 
-namespace Ehann\Tests\RediSearch;
+namespace Ehann\Tests\RediSearch\Query;
 
 use Ehann\RediSearch\Fields\GeoLocation;
 use Ehann\RediSearch\Query\Builder;
