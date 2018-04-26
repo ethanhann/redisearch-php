@@ -3,6 +3,7 @@
 namespace Ehann\Tests\RediSearch;
 
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
+use Ehann\RediSearch\Index;
 use Ehann\RedisRaw\Exceptions\UnsupportedRediSearchLanguageException;
 use Ehann\RedisRaw\Exceptions\RawCommandErrorException;
 use Ehann\RediSearch\Fields\FieldFactory;
@@ -430,5 +431,18 @@ class IndexTest extends AbstractTestCase
             $documents[] = $document;
         }
         return $documents;
+    }
+
+    public function testShouldCreateIndexWithImplicitName()
+    {
+        $bookIndex = new Index($this->redisClient);
+
+        $result1 = $bookIndex->addTextField('title')->create();
+        $result2 = $bookIndex->add([
+            new TextField('title', 'Tale of Two Cities'),
+        ]);
+
+        $this->assertTrue($result1);
+        $this->assertTrue($result2);
     }
 }

@@ -309,7 +309,7 @@ class Index extends AbstractIndex implements IndexInterface
      * @param string $query
      * @param bool $documentsAsArray
      * @return SearchResult
-     * @throws Exceptions\RedisRawCommandException
+     * @throws \Ehann\RedisRaw\Exceptions\RedisRawCommandException
      */
     public function search(string $query = '', bool $documentsAsArray = false): SearchResult
     {
@@ -420,7 +420,7 @@ class Index extends AbstractIndex implements IndexInterface
         }
 
         $properties = $isFromHash ? $document->getHashDefinition() : $document->getDefinition();
-        array_unshift($properties, $this->indexName);
+        array_unshift($properties, $this->getIndexName());
         return $this->rawCommand($isFromHash ? 'FT.ADDHASH' : 'FT.ADD', $properties);
     }
 
