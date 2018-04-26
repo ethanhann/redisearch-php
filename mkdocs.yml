@@ -11,6 +11,7 @@ pages:
 - Documentation:
   - 'indexing.md'
   - 'searching.md'
+  - 'aggregating.md'
   - 'suggesting.md'
 - Laravel Support: 'laravel-support.md'
 - 'changelog.md'
