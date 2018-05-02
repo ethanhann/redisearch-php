@@ -23,7 +23,7 @@
     "require": {
         "php": ">=7",
         "psr/log": "^1.0",
-        "ethanhann/redis-raw": "^0.2.1"
+        "ethanhann/redis-raw": "^0.2"
     },
     "require-dev": {
         "ukko/phpredis-phpdoc": "^2.2@dev",

@@ -2,8 +2,10 @@
 
 namespace Ehann\Tests\RediSearch;
 
+use Ehann\RediSearch\Exceptions\FieldNotInSchemaException;
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
 use Ehann\RediSearch\Index;
+use Ehann\RedisRaw\Exceptions\UnknownIndexNameException;
 use Ehann\RedisRaw\Exceptions\UnsupportedRediSearchLanguageException;
 use Ehann\RedisRaw\Exceptions\RawCommandErrorException;
 use Ehann\RediSearch\Fields\FieldFactory;
@@ -206,6 +208,27 @@ class IndexTest extends AbstractTestCase
         $this->expectException(UnsupportedRediSearchLanguageException::class);
 
         $this->subject->language('foo')->search('bar');
+    }
+
+    public function testAddDocumentToIndexWithAnUndefinedField()
+    {
+        $this->subject->create();
+        $this->expectException(FieldNotInSchemaException::class);
+
+        $this->subject->add(['foo' => 'bar']);
+    }
+
+    public function testAddDocumentToUndefinedIndex()
+    {
+        $this->expectException(UnknownIndexNameException::class);
+        $index = new Index($this->redisClient);
+        /** @var TestDocument $document */
+        $document = $this->subject->makeDocument();
+        $document->title->setValue('How to be awesome.');
+
+        $result = $index->add($document);
+
+        $this->assertFalse($result);
     }
 
     public function testReplaceDocument()
