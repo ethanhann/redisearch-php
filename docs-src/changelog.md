@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.2
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/1.1.1...1.1.2)
+
+* Loosen version requirement for redis raw to pull in bug fix(es).
+
+## 1.1.1
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/1.1.0...1.1.1)
+
+* Fix issue with implicitly named indexes.
+
 ## 1.1.0
 
 [Changes since last release](https://github.com/ethanhann/redisearch-php/compare/1.0.1...1.1.0)
