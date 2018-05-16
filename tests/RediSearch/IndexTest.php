@@ -2,7 +2,13 @@
 
 namespace Ehann\Tests\RediSearch;
 
+use Ehann\RediSearch\Exceptions\FieldNotInSchemaException;
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
+use Ehann\RediSearch\Index;
+use Ehann\RedisRaw\Exceptions\UnknownIndexNameException;
+use Ehann\RedisRaw\Exceptions\UnsupportedRediSearchLanguageException;
+use Ehann\RedisRaw\Exceptions\RawCommandErrorException;
+use Ehann\RediSearch\Fields\FieldFactory;
 use Ehann\RediSearch\Fields\GeoLocation;
 use Ehann\RediSearch\Fields\NumericField;
 use Ehann\RediSearch\Fields\TextField;
@@ -43,7 +49,43 @@ class IndexTest extends AbstractTestCase
     {
         $result = $this->subject->create();
 
-        $this->assertTrue($result || $result = 'OK');
+        $this->assertTrue($result);
+    }
+
+    public function testShouldDropIndex()
+    {
+        $this->subject->create();
+
+        $result = $this->subject->drop();
+
+        $this->assertTrue($result);
+    }
+
+    public function testShouldGetInfo()
+    {
+        $this->subject->create();
+
+        $result = $this->subject->info();
+
+        $this->assertTrue(is_array($result));
+        $this->assertTrue(count($result) > 0);
+    }
+
+    public function testShouldDeleteDocumentById()
+    {
+        $this->subject->create();
+        $expectedId = 'kasdoi13hflkhfdls';
+        $document = $this->subject->makeDocument($expectedId);
+        $document->title->setValue('My New Book');
+        $document->author->setValue('Jack');
+        $document->price->setValue(123);
+        $document->stock->setValue(1123);
+        $this->subject->add($document);
+
+        $result = $this->subject->delete($expectedId);
+
+        $this->assertTrue($result);
+        $this->assertEmpty($this->subject->search('My New Book')->getDocuments());
     }
 
     public function testCreateIndexWithSortableFields()
@@ -57,7 +99,53 @@ class IndexTest extends AbstractTestCase
 
         $result = $index->create();
 
-        $this->assertTrue($result || $result = 'OK');
+        $this->assertTrue($result);
+    }
+
+    public function testCreateIndexWithNoindexFields()
+    {
+        $indexName = 'IndexWithNoindexFields';
+        $index = (new TestIndex($this->redisClient, $indexName))
+            ->addTextField('title', true)
+            ->addTextField('text_noindex', true, true)
+            ->addNumericField('numeric_noindex', true)
+            ->addGeoField('geo_noindex', true);
+
+        $result = $index->create();
+        $this->assertTrue($result);
+    }
+
+    public function testAddDocumentWithZeroScore()
+    {
+        $this->subject->create();
+        $document = $this->subject->makeDocument();
+        $expectedTitle = 'Tale of Two Cities';
+        $document->title = FieldFactory::make('title', $expectedTitle);
+        $expectedScore = 0.0;
+        $document->setScore($expectedScore);
+        $this->subject->add($document);
+
+        $result = $this->subject->withScores()->search($expectedTitle);
+
+        $firstDocument = $result->getDocuments()[0];
+        $this->assertEquals($expectedScore, $firstDocument->score);
+        $this->assertEquals($expectedTitle, $firstDocument->title);
+    }
+
+    public function testAddDocumentWithNonDefaultScore()
+    {
+        $this->subject->create();
+        $document = $this->subject->makeDocument();
+        $expectedTitle = 'Tale of Two Cities';
+        $document->title = FieldFactory::make('title', $expectedTitle);
+        $document->setScore(0.9);
+        $this->subject->add($document);
+
+        $result = $this->subject->withScores()->search($expectedTitle);
+
+        $firstDocument = $result->getDocuments()[0];
+        $this->assertNotEquals(2.0, $firstDocument->score);
+        $this->assertEquals($expectedTitle, $firstDocument->title);
     }
 
     public function testAddDocumentUsingArrayOfFields()
@@ -103,6 +191,46 @@ class IndexTest extends AbstractTestCase
         $this->assertTrue($result);
     }
 
+    public function testAddDocumentWithUnsupportedLanguage()
+    {
+        $this->subject->create();
+        $document = $this->subject->makeDocument();
+        $document->setLanguage('foo');
+        $document->title->setValue('How to be awesome.');
+        $this->expectException(UnsupportedRediSearchLanguageException::class);
+
+        $this->subject->add($document);
+    }
+
+    public function testSearchWithUnsupportedLanguage()
+    {
+        $this->subject->create();
+        $this->expectException(UnsupportedRediSearchLanguageException::class);
+
+        $this->subject->language('foo')->search('bar');
+    }
+
+    public function testAddDocumentToIndexWithAnUndefinedField()
+    {
+        $this->subject->create();
+        $this->expectException(FieldNotInSchemaException::class);
+
+        $this->subject->add(['foo' => 'bar']);
+    }
+
+    public function testAddDocumentToUndefinedIndex()
+    {
+        $this->expectException(UnknownIndexNameException::class);
+        $index = new Index($this->redisClient);
+        /** @var TestDocument $document */
+        $document = $this->subject->makeDocument();
+        $document->title->setValue('How to be awesome.');
+
+        $result = $index->add($document);
+
+        $this->assertFalse($result);
+    }
+
     public function testReplaceDocument()
     {
         $this->subject->create();
@@ -121,6 +249,66 @@ class IndexTest extends AbstractTestCase
         $result = $this->subject->numericFilter('price', 19.99)->search('Part 2');
         $this->assertTrue($isUpdated);
         $this->assertEquals(1, $result->getCount());
+    }
+
+    public function testAddDocumentFromHash()
+    {
+        $this->subject->create();
+        $id = 'gooblegobble';
+        $this->redisClient->rawCommand('HSET', [
+            $id,
+            'title',
+            'How to be awesome',
+            'author',
+            'Jack',
+            'price',
+            9.99,
+            'stock',
+            231
+        ]);
+        $document = $this->subject->makeDocument($id);
+
+        $result = $this->subject->addHash($document);
+
+        $this->assertTrue($result);
+    }
+
+    public function testShouldThrowExceptionWhenAddingFromHashThatDoesNotExist()
+    {
+        $this->subject->create();
+        $document = $this->subject->makeDocument('does_not_exist');
+        $this->expectException(RawCommandErrorException::class);
+
+        $this->subject->addHash($document);
+    }
+
+    public function testReplaceDocumentFromHash()
+    {
+        $this->subject->create();
+        $id = 'gooblegobble';
+        /** @var TestDocument $expectedDocument */
+        $expectedDocument = $this->subject->makeDocument($id);
+        $expectedDocument->title->setValue('How to be awesome.');
+        $expectedDocument->author->setValue('Jack');
+        $expectedDocument->price->setValue(9.99);
+        $expectedDocument->stock->setValue(231);
+        $this->subject->add($expectedDocument);
+        $this->redisClient->rawCommand('HSET', [
+            $id,
+            'title',
+            'How to be awesome, Part 2',
+            'author',
+            'Jack',
+            'price',
+            9.99,
+            'stock',
+            231
+        ]);
+        $document = $this->subject->makeDocument($id);
+
+        $result = $this->subject->replaceHash($document);
+
+        $this->assertTrue($result);
     }
 
     public function testSearch()
@@ -175,8 +363,7 @@ class IndexTest extends AbstractTestCase
         $result = $index
             ->geoFilter('place', -77.0366, 38.897, 100)
             ->numericFilter('population', 1, 500)
-            ->search('Foo')
-        ;
+            ->search('Foo');
 
         $this->assertEquals(1, $result->getCount());
     }
@@ -240,7 +427,11 @@ class IndexTest extends AbstractTestCase
      */
     public function testBatchIndexWithAddManyUsingPhpRedisWithAtomicityDisabled()
     {
-        $this->subject->setRedisClient($this->makeRedisClientWithPhpRedis())->create();
+        if (!$this->isUsingPhpRedis()) {
+            $this->markTestSkipped('Skipping because test suite is not configured to use PhpRedis.');
+        }
+
+        $this->subject->setRedisClient($this->makePhpRedisAdapter())->create();
         $expectedDocumentCount = 10;
         $documents = $this->makeDocuments();
         $expectedCount = count($documents);
@@ -263,5 +454,18 @@ class IndexTest extends AbstractTestCase
             $documents[] = $document;
         }
         return $documents;
+    }
+
+    public function testShouldCreateIndexWithImplicitName()
+    {
+        $bookIndex = new Index($this->redisClient);
+
+        $result1 = $bookIndex->addTextField('title')->create();
+        $result2 = $bookIndex->add([
+            new TextField('title', 'Tale of Two Cities'),
+        ]);
+
+        $this->assertTrue($result1);
+        $this->assertTrue($result2);
     }
 }

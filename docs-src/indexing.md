@@ -4,31 +4,32 @@
 
 There are three types of fields that can be added to a document: **TextField**, **NumericField**, and **GeoField**.
 
-They are instantiated like this...
+They are instantiated like this:
 
-```php
-<?php
+```php-inline
 new TextField('author', 'Charles Dickens');
 new NumericField('price', 9.99);
 new GeoField('place', new GeoLocation(-77.0366, 38.8977));
 ```
 
-Fields can also be made with the FieldFactory class...
+Fields can also be made with the FieldFactory class:
 
-```php
-<?php
-FieldFactory::make('author', 'Charles Dickens');                 // equal to new TextField('author', 'Charles Dickens');
-FieldFactory::make('price', 9.99);                               // equal to new NumericField('price', 9.99);
-FieldFactory::make('place', new GeoLocation(-77.0366, 38.8977)); // equal to new GeoField('place', new GeoLocation(-77.0366, 38.8977));
+```php-inline
+// Alternative syntax for: new TextField('author', 'Charles Dickens');
+FieldFactory::make('author', 'Charles Dickens');
+
+// Alternative syntax for: new NumericField('price', 9.99);
+FieldFactory::make('price', 9.99);
+
+// Alternative syntax for: new GeoField('place', new GeoLocation(-77.0366, 38.8977));
+FieldFactory::make('place', new GeoLocation(-77.0366, 38.8977));
 ```
 
 ## Adding Documents
 
-Add an array of field objects...
+Add an array of field objects:
 
-```php
-<?php
-
+```php-inline
 $bookIndex->add([
     new TextField('title', 'Tale of Two Cities'),
     new TextField('author', 'Charles Dickens'),
@@ -37,11 +38,9 @@ $bookIndex->add([
 ]);
 ```
 
-Add an associative array...
+Add an associative array:
 
-```php
-<?php
-
+```php-inline
 $bookIndex->add([
     'title' => 'Tale of Two Cities',
     'author' => 'Charles Dickens',
@@ -50,11 +49,9 @@ $bookIndex->add([
 ]);
 ```
 
-Create a document with the index's makeDocument method, then set field values...
+Create a document with the index's makeDocument method, then set field values:
 
-```php
-<?php
-
+```php-inline
 $document = $bookIndex->makeDocument();
 $document->title->setValue('How to be awesome.');
 $document->author->setValue('Jack');
@@ -64,11 +61,9 @@ $document->place->setValue(new GeoLocation(-77.0366, 38.8977));
 $this->add($document);
 ```
 
-DocBlocks can (optionally) be used to type hint field property names... 
+DocBlocks can (optionally) be used to type hint field property names:
 
-```php
-<?php
-
+```php-inline
 /** @var BookDocument $document */
 $document = $bookIndex->makeDocument();
 
@@ -102,8 +97,7 @@ class BookDocument extends Document
 
 Documents are updated with an index's replace method.
 
-```php
-<?php
+```php-inline
 // Make a document.
 $document = $bookIndex->makeDocument();
 $document->title->setValue('How to be awesome.');
@@ -120,10 +114,9 @@ $document->price->setValue(19.99);
 $bookIndex->replace($document);
 ```
 
-A document can also be updating when its ID is specified...
+A document can also be updating when its ID is specified:
 
-```php
-<?php
+```php-inline
 // Make a document.
 $document = $bookIndex->makeDocument();
 $document->title->setValue('How to be awesome.');
@@ -150,10 +143,8 @@ $bookIndex->replace($newDocument);
 Batch indexing is possible with the **addMany** method.
 To index an external collection, make sure to set the document's ID to the ID of the record in the external collection.
 
-```php
-<?php
-
-// Get a record set from your DB (or some other datastore)...
+```php-inline
+// Get a record set from your DB (or some other datastore).
 $records = $someDatabase->findAll();
 
 $documents = [];
@@ -171,4 +162,25 @@ $bookIndex->addMany($documents);
 // It is possible to increase indexing speed by disabling atomicity by passing true as the second parameter.
 // Note that this is only possible when using the phpredis extension.
 $bookIndex->addMany($documents, true);
+```
+
+## Indexing from a Hash
+
+Redis hashes are key/value pairs referenced by a key. 
+It is possible to index an existing hash with the **addHash** method.
+The document's ID has to be the same as the hash's key.
+Attempting to index a hash that does not exist will result in an exception.
+
+Index a hash with the key "foo":
+
+```php
+$document = $bookIndex->makeDocument('foo');
+$bookIndex->addHash($document);
+```
+
+Replace a document in the index from a hash:
+
+```php
+$document = $bookIndex->makeDocument('foo');
+$bookIndex->replaceHash($document);
 ```
