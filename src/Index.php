@@ -2,9 +2,10 @@
 
 namespace Ehann\RediSearch;
 
-use Ehann\RediSearch\Document\Document;
-use Ehann\RediSearch\Document\Builder as DocumentBuilder;
-use Ehann\RediSearch\Document\BuilderInterface as DocumentBuilderInterface;
+use Ehann\RediSearch\Aggregate\Builder as AggregateBuilder;
+use Ehann\RediSearch\Aggregate\BuilderInterface as AggregateBuilderInterface;
+use Ehann\RediSearch\Document\AbstractDocumentFactory;
+use Ehann\RediSearch\Document\DocumentInterface;
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
 use Ehann\RediSearch\Fields\FieldInterface;
 use Ehann\RediSearch\Fields\GeoField;
@@ -13,26 +14,16 @@ use Ehann\RediSearch\Fields\TextField;
 use Ehann\RediSearch\Query\Builder as QueryBuilder;
 use Ehann\RediSearch\Query\BuilderInterface as QueryBuilderInterface;
 use Ehann\RediSearch\Query\SearchResult;
-use Ehann\RediSearch\Redis\RedisClient;
+use Ehann\RedisRaw\RedisRawClientInterface;
 
-class Index implements IndexInterface
+class Index extends AbstractIndex implements IndexInterface
 {
-    /** @var RedisClient */
-    private $redisClient;
-    /** @var string */
-    private $indexName;
     /** @var bool */
     private $noOffsetsEnabled = false;
     /** @var bool */
     private $noFieldsEnabled = false;
-    /** @var bool */
-    private $noScoreIdxEnabled = false;
-
-    public function __construct(RedisClient $redisClient = null, string $indexName = '')
-    {
-        $this->redisClient = $redisClient ?? new RedisClient();
-        $this->indexName = $indexName;
-    }
+    /** @var array */
+    private $stopWords = null;
 
     /**
      * @return mixed
@@ -41,34 +32,32 @@ class Index implements IndexInterface
     public function create()
     {
         $properties = [$this->getIndexName()];
+
         if ($this->isNoOffsetsEnabled()) {
             $properties[] = 'NOOFFSETS';
         }
         if ($this->isNoFieldsEnabled()) {
             $properties[] = 'NOFIELDS';
         }
-        if ($this->isNoScoreIdxEnabled()) {
-            $properties[] = 'NOSCOREIDX';
+        if (!is_null($this->stopWords)) {
+            $properties[] = 'STOPWORDS';
+            $properties[] = count($this->stopWords);
+            $properties = array_merge($properties, $this->stopWords);
         }
-
         $properties[] = 'SCHEMA';
-        $hasAtLeastOneField = false;
+
+        $fieldDefinitions = [];
         foreach (get_object_vars($this) as $field) {
             if ($field instanceof FieldInterface) {
-                $properties[] = $field->getName();
-                $properties[] = $field->getType();
-                if ($field->isSortable()) {
-                    $properties[] = 'SORTABLE';
-                }
-                $hasAtLeastOneField = true;
+                $fieldDefinitions = array_merge($fieldDefinitions, $field->getTypeDefinition());
             }
         }
 
-        if (!$hasAtLeastOneField) {
+        if (count($fieldDefinitions) === 0) {
             throw new NoFieldsInIndexException();
         }
 
-        return $this->redisClient->rawCommand('FT.CREATE', $properties);
+        return $this->rawCommand('FT.CREATE', array_merge($properties, $fieldDefinitions));
     }
 
     /**
@@ -89,33 +78,34 @@ class Index implements IndexInterface
      * @param string $name
      * @param float $weight
      * @param bool $sortable
+     * @param bool $noindex
      * @return IndexInterface
      */
-    public function addTextField(string $name, float $weight = 1.0, bool $sortable = false): IndexInterface
+    public function addTextField(string $name, float $weight = 1.0, bool $sortable = false, bool $noindex = false): IndexInterface
     {
-        $this->$name = (new TextField($name))->setSortable($sortable)->setWeight($weight);
+        $this->$name = (new TextField($name))->setSortable($sortable)->setNoindex($noindex)->setWeight($weight);
         return $this;
     }
 
     /**
      * @param string $name
      * @param bool $sortable
+     * @param bool $noindex
      * @return IndexInterface
      */
-    public function addNumericField(string $name, bool $sortable = false): IndexInterface
+    public function addNumericField(string $name, bool $sortable = false, bool $noindex = false): IndexInterface
     {
-        $this->$name = (new NumericField($name))->setSortable($sortable);
+        $this->$name = (new NumericField($name))->setSortable($sortable)->setNoindex($noindex);
         return $this;
     }
 
     /**
      * @param string $name
-     * @param bool $sortable
      * @return IndexInterface
      */
-    public function addGeoField(string $name, bool $sortable = false): IndexInterface
+    public function addGeoField(string $name, bool $noindex = false): IndexInterface
     {
-        $this->$name = (new GeoField($name))->setSortable($sortable);
+        $this->$name = (new GeoField($name))->setNoindex($noindex);
         return $this;
     }
 
@@ -124,7 +114,7 @@ class Index implements IndexInterface
      */
     public function drop()
     {
-        return $this->redisClient->rawCommand('FT.DROP', [$this->getIndexName()]);
+        return $this->rawCommand('FT.DROP', [$this->getIndexName()]);
     }
 
     /**
@@ -132,7 +122,7 @@ class Index implements IndexInterface
      */
     public function info()
     {
-        return $this->redisClient->rawCommand('FT.INFO', [$this->getIndexName()]);
+        return $this->rawCommand('FT.INFO', [$this->getIndexName()]);
     }
 
     /**
@@ -141,41 +131,52 @@ class Index implements IndexInterface
      */
     public function delete($id)
     {
-        return $this->redisClient->rawCommand('FT.DEL', [$this->getIndexName(), $id]);
+        return boolval($this->rawCommand('FT.DEL', [$this->getIndexName(), $id]));
     }
 
     /**
-     * @return int
+     * @param string $command
+     * @param array $arguments
+     * @return mixed
      */
-    public function optimize()
+    protected function rawCommand(string $command, array $arguments)
     {
-        return $this->redisClient->rawCommand('FT.OPTIMIZE', [$this->getIndexName()]);
+        return $this->redisClient->rawCommand($command, $arguments);
     }
 
     /**
      * @param null $id
-     * @return Document
+     * @return DocumentInterface
+     * @throws Exceptions\FieldNotInSchemaException
      */
-    public function makeDocument($id = null): Document
+    public function makeDocument($id = null): DocumentInterface
     {
         $fields = $this->getFields();
-        $document = DocumentBuilder::makeFromArray($fields, $fields, $id);
+        $document = AbstractDocumentFactory::makeFromArray($fields, $fields, $id);
         return $document;
     }
 
     /**
-     * @return RedisClient
+     * @return AggregateBuilderInterface
      */
-    public function getRedisClient(): RedisClient
+    public function makeAggregateBuilder(): AggregateBuilderInterface
+    {
+        return new AggregateBuilder($this->getRedisClient(), $this->getIndexName());
+    }
+
+    /**
+     * @return RedisRawClientInterface
+     */
+    public function getRedisClient(): RedisRawClientInterface
     {
         return $this->redisClient;
     }
 
     /**
-     * @param RedisClient $redisClient
+     * @param RedisRawClientInterface $redisClient
      * @return IndexInterface
      */
-    public function setRedisClient(RedisClient $redisClient): IndexInterface
+    public function setRedisClient(RedisRawClientInterface $redisClient): IndexInterface
     {
         $this->redisClient = $redisClient;
         return $this;
@@ -236,24 +237,6 @@ class Index implements IndexInterface
     }
 
     /**
-     * @return bool
-     */
-    public function isNoScoreIdxEnabled(): bool
-    {
-        return $this->noScoreIdxEnabled;
-    }
-
-    /**
-     * @param bool $noScoreIdxEnabled
-     * @return IndexInterface
-     */
-    public function setNoScoreIdxEnabled(bool $noScoreIdxEnabled): IndexInterface
-    {
-        $this->noScoreIdxEnabled = $noScoreIdxEnabled;
-        return $this;
-    }
-
-    /**
      * @return QueryBuilder
      */
     protected function makeQueryBuilder(): QueryBuilder
@@ -286,11 +269,49 @@ class Index implements IndexInterface
     }
 
     /**
+     * @param string $fieldName
+     * @param $order
+     * @return QueryBuilderInterface
+     */
+    public function sortBy(string $fieldName, $order = 'ASC'): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->sortBy($fieldName, $order);
+    }
+
+    /**
+     * @param string $scoringFunction
+     * @return QueryBuilderInterface
+     */
+    public function scorer(string $scoringFunction): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->scorer($scoringFunction);
+    }
+
+    /**
+     * @param string $languageName
+     * @return QueryBuilderInterface
+     */
+    public function language(string $languageName): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->language($languageName);
+    }
+
+    /**
+     * @param string $query
+     * @return string
+     */
+    public function explain(string $query): string
+    {
+        return $this->makeQueryBuilder()->explain($query);
+    }
+
+    /**
      * @param string $query
      * @param bool $documentsAsArray
      * @return SearchResult
+     * @throws \Ehann\RedisRaw\Exceptions\RedisRawCommandException
      */
-    public function search(string $query, bool $documentsAsArray = false): SearchResult
+    public function search(string $query = '', bool $documentsAsArray = false): SearchResult
     {
         return $this->makeQueryBuilder()->search($query, $documentsAsArray);
     }
@@ -375,87 +396,131 @@ class Index implements IndexInterface
     }
 
     /**
-     * @return DocumentBuilder
-     */
-    protected function makeDocumentBuilder(): DocumentBuilder
-    {
-        return (new DocumentBuilder($this->redisClient, $this->getIndexName()));
-    }
-
-    /**
-     * @param $document
-     * @return bool
-     */
-    public function add($document): bool
-    {
-        if (is_array($document)) {
-            $document = DocumentBuilder::makeFromArray($document, $this->getFields());
-        }
-        return $this->makeDocumentBuilder()->add($document);
-    }
-
-    /**
      * @param array $documents
      * @param bool $disableAtomicity
      */
     public function addMany(array $documents, $disableAtomicity = false)
     {
-        $this->makeDocumentBuilder()->addMany($documents, $disableAtomicity);
+        $pipe = $this->redisClient->multi($disableAtomicity);
+        foreach ($documents as $document) {
+            $this->_add($document);
+        }
+        $pipe->exec();
+    }
+
+    /**
+     * @param DocumentInterface $document
+     * @param bool $isFromHash
+     * @return mixed
+     */
+    protected function _add(DocumentInterface $document, bool $isFromHash = false)
+    {
+        if (is_null($document->getId())) {
+            $document->setId(uniqid(true));
+        }
+
+        $properties = $isFromHash ? $document->getHashDefinition() : $document->getDefinition();
+        array_unshift($properties, $this->getIndexName());
+        return $this->rawCommand($isFromHash ? 'FT.ADDHASH' : 'FT.ADD', $properties);
+    }
+
+    /**
+     * @param $document
+     * @return DocumentInterface
+     * @throws Exceptions\FieldNotInSchemaException
+     */
+    protected function arrayToDocument($document)
+    {
+        return is_array($document) ? AbstractDocumentFactory::makeFromArray($document, $this->getFields()) : $document;
     }
 
     /**
      * @param $document
      * @return bool
+     * @throws Exceptions\FieldNotInSchemaException
+     */
+    public function add($document): bool
+    {
+        return $this->_add($this->arrayToDocument($document));
+    }
+
+    /**
+     * @param $document
+     * @return bool
+     * @throws Exceptions\FieldNotInSchemaException
      */
     public function replace($document): bool
     {
-        if (is_array($document)) {
-            $document = DocumentBuilder::makeFromArray($document, $this->getFields());
-        }
-        return $this->makeDocumentBuilder()->replace($document);
+        return $this->_add($this->arrayToDocument($document)->setReplace(true));
     }
 
     /**
-     * @param string $id
-     * @return DocumentBuilderInterface
+     * @param $document
+     * @return bool
+     * @throws Exceptions\FieldNotInSchemaException
      */
-    public function id(string $id): DocumentBuilderInterface
+    public function addHash($document): bool
     {
-        return $this->makeDocumentBuilder()->id($id);
+        return $this->_add($this->arrayToDocument($document), true);
     }
 
     /**
-     * @param $score
-     * @return DocumentBuilderInterface
+     * @param $document
+     * @return bool
+     * @throws Exceptions\FieldNotInSchemaException
      */
-    public function score($score): DocumentBuilderInterface
+    public function replaceHash($document): bool
     {
-        return $this->makeDocumentBuilder()->score($score);
+        return $this->_add($this->arrayToDocument($document)->setReplace(true), true);
     }
 
     /**
-     * @return DocumentBuilderInterface
+     * @param array $fields
+     * @return QueryBuilderInterface
      */
-    public function noSave(): DocumentBuilderInterface
+    public function return(array $fields): QueryBuilderInterface
     {
-        return $this->makeDocumentBuilder()->noSave();
+        return $this->makeQueryBuilder()->return($fields);
     }
 
     /**
-     * @param $payload
-     * @return DocumentBuilderInterface
+     * @param array $fields
+     * @param int $fragmentCount
+     * @param int $fragmentLength
+     * @param string $separator
+     * @return QueryBuilderInterface
      */
-    public function payload($payload): DocumentBuilderInterface
+    public function summarize(array $fields, int $fragmentCount = 3, int $fragmentLength = 50, string $separator = '...'): QueryBuilderInterface
     {
-        return $this->makeDocumentBuilder()->payload($payload);
+        return $this->makeQueryBuilder()->summarize($fields, $fragmentCount, $fragmentLength, $separator);
     }
 
     /**
-     * @param $language
-     * @return DocumentBuilderInterface
+     * @param array $fields
+     * @param string $openTag
+     * @param string $closeTag
+     * @return QueryBuilderInterface
      */
-    public function language($language): DocumentBuilderInterface
+    public function highlight(array $fields, string $openTag = '<strong>', string $closeTag = '</strong>'): QueryBuilderInterface
     {
-        return $this->makeDocumentBuilder()->language($language);
+        return $this->makeQueryBuilder()->highlight($fields, $openTag, $closeTag);
+    }
+
+    /**
+     * @param string $expander
+     * @return QueryBuilderInterface
+     */
+    public function expander(string $expander): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->expander($expander);
+    }
+
+    /**
+     * @param string $payload
+     * @return QueryBuilderInterface
+     */
+    public function payload(string $payload): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->payload($payload);
     }
 }

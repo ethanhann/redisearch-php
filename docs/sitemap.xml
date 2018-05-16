@@ -4,23 +4,43 @@
     
     <url>
      <loc>/</loc>
-     <lastmod>2017-03-22</lastmod>
+     <lastmod>2018-05-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
 
     
+        
     <url>
      <loc>/indexing/</loc>
-     <lastmod>2017-03-22</lastmod>
+     <lastmod>2018-05-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
+        
+    <url>
+     <loc>/searching/</loc>
+     <lastmod>2018-05-01</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>/aggregating/</loc>
+     <lastmod>2018-05-01</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>/suggesting/</loc>
+     <lastmod>2018-05-01</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
     
 
     
     <url>
-     <loc>/searching/</loc>
-     <lastmod>2017-03-22</lastmod>
+     <loc>/laravel-support/</loc>
+     <lastmod>2018-05-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -28,7 +48,7 @@
     
     <url>
      <loc>/changelog/</loc>
-     <lastmod>2017-03-22</lastmod>
+     <lastmod>2018-05-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     

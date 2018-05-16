@@ -2,15 +2,19 @@
 
 namespace Ehann\RediSearch\Query;
 
-use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
-use Ehann\RediSearch\Redis\RedisClient;
-use Exception;
+use Ehann\RedisRaw\Exceptions\RedisRawCommandException;
+use Ehann\RedisRaw\RedisRawClientInterface;
 use InvalidArgumentException;
 
 class Builder implements BuilderInterface
 {
     const GEO_FILTER_UNITS = ['m', 'km', 'mi', 'ft'];
 
+    protected $return = '';
+    protected $summarize = '';
+    protected $highlight = '';
+    protected $expander = '';
+    protected $payload = '';
     protected $limit = '';
     protected $slop = null;
     protected $verbatim = '';
@@ -22,11 +26,13 @@ class Builder implements BuilderInterface
     protected $inKeys = '';
     protected $numericFilters = [];
     protected $geoFilters = [];
+    protected $sortBy = '';
+    protected $scorer = '';
+    protected $language = '';
     protected $redis;
-    /** @var string */
     private $indexName;
 
-    public function __construct(RedisClient $redis, string $indexName)
+    public function __construct(RedisRawClientInterface $redis, string $indexName)
     {
         $this->redis = $redis;
         $this->indexName = $indexName;
@@ -38,6 +44,42 @@ class Builder implements BuilderInterface
         return $this;
     }
 
+    public function return(array $fields): BuilderInterface
+    {
+        $count = empty($fields) ? 0 : count($fields);
+        $field = implode(' ', $fields);
+        $this->return = "RETURN $count $field";
+        return $this;
+    }
+
+    public function summarize(array $fields, int $fragmentCount = 3, int $fragmentLength = 50, string $separator = '...'): BuilderInterface
+    {
+        $count = empty($fields) ? 0 : count($fields);
+        $field = implode(' ', $fields);
+        $this->summarize = "SUMMARIZE FIELDS $count $field FRAGS $fragmentCount LEN $fragmentLength SEPARATOR $separator";
+        return $this;
+    }
+
+    public function highlight(array $fields, string $openTag = '<strong>', string $closeTag = '</strong>'): BuilderInterface
+    {
+        $count = empty($fields) ? 0 : count($fields);
+        $field = implode(' ', $fields);
+        $this->highlight = "HIGHLIGHT FIELDS $count $field TAGS $openTag $closeTag";
+        return $this;
+    }
+
+    public function expander(string $expander): BuilderInterface
+    {
+        $this->expander = "EXPANDER $expander";
+        return $this;
+    }
+
+    public function payload(string $payload): BuilderInterface
+    {
+        $this->payload = "PAYLOAD $payload";
+        return $this;
+    }
+
     public function limit(int $offset, int $pageSize = 10): BuilderInterface
     {
         $this->limit = "LIMIT $offset $pageSize";
@@ -46,13 +88,13 @@ class Builder implements BuilderInterface
 
     public function inFields(int $number, array $fields): BuilderInterface
     {
-        $this->inFields = "INFIELDS $number {implode(' ', $fields)}";
+        $this->inFields = "INFIELDS $number " . implode(' ', $fields);
         return $this;
     }
 
     public function inKeys(int $number, array $keys): BuilderInterface
     {
-        $this->inKeys = "INKEYS $number {implode(' ', $keys)}";
+        $this->inKeys = "INKEYS $number " . implode(' ', $keys);
         return $this;
     }
 
@@ -89,7 +131,7 @@ class Builder implements BuilderInterface
     public function numericFilter(string $fieldName, $min, $max = null): BuilderInterface
     {
         $max = $max ?? $min;
-        $this->numericFilters[] = "FILTER $fieldName $min $max";
+        $this->numericFilters[] = "@$fieldName:[$min $max]";
         return $this;
     }
 
@@ -99,15 +141,33 @@ class Builder implements BuilderInterface
             throw new InvalidArgumentException($distanceUnit);
         }
 
-        $this->geoFilters[] = "GEOFILTER $fieldName $longitude $latitude $radius $distanceUnit";
+        $this->geoFilters[] = "@$fieldName:[$longitude $latitude $radius $distanceUnit]";
         return $this;
     }
 
-    public function search(string $query, bool $documentsAsArray = false): SearchResult
+    public function sortBy(string $fieldName, $order = 'ASC'): BuilderInterface
     {
-        $args = array_filter(
+        $this->sortBy = "SORTBY $fieldName $order";
+        return $this;
+    }
+
+    public function scorer(string $scoringFunction): BuilderInterface
+    {
+        $this->scorer = "SCORER $scoringFunction";
+        return $this;
+    }
+
+    public function language(string $languageName): BuilderInterface
+    {
+        $this->language = "LANGUAGE $languageName";
+        return $this;
+    }
+
+    public function makeSearchCommandArguments(string $query): array
+    {
+        return array_filter(
             array_merge(
-                [$this->indexName, $query],
+                trim($query) === '' ? [$this->indexName] : [$this->indexName, $query],
                 explode(' ', $this->limit),
                 explode(' ', $this->slop),
                 [
@@ -119,23 +179,31 @@ class Builder implements BuilderInterface
                 ],
                 explode(' ', $this->inFields),
                 explode(' ', $this->inKeys),
+                explode(' ', $this->return),
+                explode(' ', $this->summarize),
+                explode(' ', $this->highlight),
                 $this->numericFilters,
-                explode(' ', array_reduce($this->geoFilters, function ($previous, $next) {
-                    return $previous . $next;
-                }))
+                $this->geoFilters,
+                explode(' ', $this->sortBy),
+                explode(' ', $this->scorer),
+                explode(' ', $this->language),
+                explode(' ', $this->expander),
+                explode(' ', $this->payload)
             ),
             function ($item) {
                 return !is_null($item) && $item !== '';
             }
         );
+    }
 
-        $rawResult = $this->redis->rawCommand('FT.SEARCH', $args);
+    public function search(string $query = '', bool $documentsAsArray = false): SearchResult
+    {
+        $rawResult = $this->redis->rawCommand(
+            'FT.SEARCH',
+            $this->makeSearchCommandArguments($query)
+        );
         if (is_string($rawResult)) {
-            if ($rawResult === 'Unknown Index name') {
-                throw new UnknownIndexNameException();
-            } else {
-                throw new Exception($rawResult);
-            }
+            throw new RedisRawCommandException("Result: $rawResult, Query: $query");
         }
 
         return $rawResult ? SearchResult::makeSearchResult(
@@ -145,5 +213,10 @@ class Builder implements BuilderInterface
             $this->withPayloads !== '',
             $this->noContent !== ''
         ) : new SearchResult(0, []);
+    }
+
+    public function explain(string $query): string
+    {
+        return $this->redis->rawCommand('FT.EXPLAIN', $this->makeSearchCommandArguments($query));
     }
 }

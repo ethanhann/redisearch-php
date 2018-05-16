@@ -1,15 +1,45 @@
 docs_dir: docs-src
 site_dir: docs
+edit_uri: edit/master/docs-src/
 site_name: RediSearch-PHP
 repo_url: https://github.com/ethanhann/redisearch-php
 site_author: Ethan Hann
-copyright: © 2017 - Ethan Hann
+copyright: © 2018 - Ethan Hann
 
 pages:
 - Getting Started: 'index.md'
-- 'indexing.md'
-- 'searching.md'
+- Documentation:
+  - 'indexing.md'
+  - 'searching.md'
+  - 'aggregating.md'
+  - 'suggesting.md'
+- Laravel Support: 'laravel-support.md'
 - 'changelog.md'
 
 extra_css:
     - css/style.css
+
+theme:
+  name: 'material'
+  favicon: 'images/logo.png'
+  logo: 'images/logo.png'
+  palette:
+    primary: 'red'
+    accent: 'red'
+  feature:
+    tabs: false
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - pymdownx.superfences
+  - pymdownx.inlinehilite:
+      css_class: codehilite
+  - pymdownx.highlight:
+      css_class: codehilite
+      extend_pygments_lang:
+        - name: php-inline
+          lang: php
+          options:
+            startinline: true
+

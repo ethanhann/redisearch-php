@@ -2,9 +2,10 @@
 
 namespace Ehann\RediSearch\Document;
 
+use Ehann\RediSearch\Exceptions\OutOfRangeDocumentScoreException;
 use Ehann\RediSearch\Fields\FieldInterface;
 
-class Document
+class Document implements DocumentInterface
 {
     protected $id;
     protected $score = 1.0;
@@ -16,6 +17,25 @@ class Document
     public function __construct($id = null)
     {
         $this->id = $id ?? uniqid(true);
+    }
+
+    public function getHashDefinition(): array
+    {
+        $properties = [
+            $this->getId(),
+            $this->getScore(),
+        ];
+
+        if (!is_null($this->getLanguage())) {
+            $properties[] = 'LANGUAGE';
+            $properties[] = $this->getLanguage();
+        }
+
+        if ($this->isReplace()) {
+            $properties[] = 'REPLACE';
+        }
+
+        return $properties;
     }
 
     public function getDefinition(): array
@@ -47,7 +67,7 @@ class Document
 
         /** @var FieldInterface $field */
         foreach (get_object_vars($this) as $field) {
-            if ($field instanceof FieldInterface) {
+            if ($field instanceof FieldInterface && !is_null($field->getValue())) {
                 $properties[] = $field->getName();
                 $properties[] = $field->getValue();
             }
@@ -66,13 +86,16 @@ class Document
         return $this;
     }
 
-    public function getScore()
+    public function getScore(): float
     {
         return $this->score;
     }
 
-    public function setScore($score)
+    public function setScore(float $score)
     {
+        if ($score < 0.0 || $score > 1.0) {
+            throw new OutOfRangeDocumentScoreException();
+        }
         $this->score = $score;
         return $this;
     }
