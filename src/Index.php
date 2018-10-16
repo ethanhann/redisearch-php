@@ -155,8 +155,6 @@ class Index extends AbstractIndex implements IndexInterface
      */
     protected function rawCommand(string $command, array $arguments)
     {
-        print_r($command);
-        print_r($arguments);
         return $this->redisClient->rawCommand($command, $arguments);
     }
 
