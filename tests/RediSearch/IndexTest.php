@@ -120,7 +120,7 @@ class IndexTest extends AbstractTestCase
         $indexName = 'IndexWithTag';
         $index = (new TestIndex($this->redisClient, $indexName))
             ->addTextField('title', true)
-            ->addTagField('tagfield', ',', true, false);
+            ->addTagField('tagfield', true, false, ',');
 
 
         $result = $index->create();

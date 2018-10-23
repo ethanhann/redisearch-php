@@ -117,9 +117,9 @@ class Index extends AbstractIndex implements IndexInterface
      * @param bool $noindex
      * @return IndexInterface
      */
-    public function addTagField(string $name, string $separator = ',', bool $sortable = false, bool $noindex = false): IndexInterface
+    public function addTagField(string $name, bool $sortable = false, bool $noindex = false, string $separator = ','): IndexInterface
     {
-        $this->$name = (new TagField($name))->setSeparator($separator)->setSortable($sortable)->setNoindex($noindex);
+        $this->$name = (new TagField($name))->setSortable($sortable)->setNoindex($noindex)->setSeparator($separator);
         return $this;
     }
 
