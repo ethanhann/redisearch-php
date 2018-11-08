@@ -237,6 +237,16 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * @param array $stopWords
+     * @return IndexInterface
+     */
+    public function setStopWords(array $stopWords = []): IndexInterface
+    {
+        $this->stopWords = $stopWords;
+        return $this;
+    }
+
+    /**
      * @return QueryBuilder
      */
     protected function makeQueryBuilder(): QueryBuilder
