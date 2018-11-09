@@ -468,4 +468,24 @@ class IndexTest extends AbstractTestCase
         $this->assertTrue($result1);
         $this->assertTrue($result2);
     }
+
+    public function testSetStopWordsOnCreateIndex()
+    {
+        $this->subject->setStopWords(['Awesome'])->create();
+
+        /** @var TestDocument $document */
+        $document = $this->subject->makeDocument();
+        $document->title->setValue('Awesome');
+        $document->author->setValue('Jack');
+        $document->price->setValue(9.99);
+        $document->stock->setValue(231);
+
+        $isDocumentAdded = $this->subject->add($document);
+        $result = $this->subject->search('Awesome');
+        $this->assertTrue($isDocumentAdded);
+        $this->assertEquals(0, $result->getCount());
+
+        $result = $this->subject->search('Jack');
+        $this->assertEquals(1, $result->getCount());
+    }
 }
