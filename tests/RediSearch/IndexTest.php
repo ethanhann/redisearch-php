@@ -115,6 +115,18 @@ class IndexTest extends AbstractTestCase
         $this->assertTrue($result);
     }
 
+    public function testCreateIndexWithTagField()
+    {
+        $indexName = 'IndexWithTag';
+        $index = (new TestIndex($this->redisClient, $indexName))
+            ->addTextField('title', true)
+            ->addTagField('tagfield', true, false, ',');
+
+
+        $result = $index->create();
+        $this->assertTrue($result);
+    }
+
     public function testAddDocumentWithZeroScore()
     {
         $this->subject->create();
