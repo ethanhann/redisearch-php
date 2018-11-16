@@ -4,8 +4,10 @@ namespace Ehann\RediSearch\Aggregate\Reducers;
 
 class ToList extends AbstractFieldNameReducer
 {
+    protected $reducerKeyword = 'TOLIST';
+
     public function toArray(): array
     {
-        return ['REDUCE', 'TOLIST', '1', $this->fieldName];
+        return ['REDUCE', $this->reducerKeyword, '1', $this->fieldName, 'AS', $this->makeAlias()];
     }
 }

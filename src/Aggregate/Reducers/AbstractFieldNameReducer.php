@@ -6,8 +6,10 @@ use Ehann\RediSearch\CanBecomeArrayInterface;
 
 abstract class AbstractFieldNameReducer implements CanBecomeArrayInterface
 {
+    use Aliasable;
+
     public $fieldName;
-    public $alias;
+    protected $reducerKeyword;
 
     public function __construct(string $fieldName, string $alias = '')
     {
@@ -20,11 +22,8 @@ abstract class AbstractFieldNameReducer implements CanBecomeArrayInterface
         return [];
     }
 
-    protected function addAlias($params) {
-        if(empty($this->alias)) {
-            return $params;
-        }
-
-        return array_merge($params, ['AS', $this->alias]);
+    protected function makeAlias(): string
+    {
+        return empty($alias) ? strtolower($this->reducerKeyword) . "_" . $this->fieldName : $this->alias;
     }
 }
