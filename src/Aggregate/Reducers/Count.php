@@ -6,7 +6,10 @@ use Ehann\RediSearch\CanBecomeArrayInterface;
 
 class Count implements CanBecomeArrayInterface
 {
+    use Aliasable;
+
     private $group;
+    protected $reducerKeyword = 'COUNT';
 
     public function __construct(int $group)
     {
@@ -15,6 +18,6 @@ class Count implements CanBecomeArrayInterface
 
     public function toArray(): array
     {
-        return ['REDUCE', 'COUNT', $this->group];
+        return ['REDUCE', $this->reducerKeyword, $this->group, 'AS', empty($this->alias) ? 'count' : $this->alias];
     }
 }

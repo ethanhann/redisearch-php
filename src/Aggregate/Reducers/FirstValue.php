@@ -4,6 +4,7 @@ namespace Ehann\RediSearch\Aggregate\Reducers;
 
 class FirstValue extends AbstractFieldNameReducer
 {
+    protected $reducerKeyword = 'FIRST_VALUE';
     public $byFieldName;
     public $isAscending;
 
@@ -17,7 +18,7 @@ class FirstValue extends AbstractFieldNameReducer
     public function toArray(): array
     {
         return is_null($this->byFieldName) ?
-            ['REDUCE', 'FIRST_VALUE', '1', $this->fieldName] :
-            ['REDUCE', 'FIRST_VALUE', '4', $this->fieldName, 'BY', $this->byFieldName, $this->isAscending ? 'ASC' : 'DESC'];
+            ['REDUCE', $this->reducerKeyword, '1', $this->fieldName, 'AS', $this->makeAlias()] :
+            ['REDUCE', $this->reducerKeyword, '4', $this->fieldName, 'BY', $this->byFieldName, $this->isAscending ? 'ASC' : 'DESC', 'AS', $this->makeAlias()];
     }
 }

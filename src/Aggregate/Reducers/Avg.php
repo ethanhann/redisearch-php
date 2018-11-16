@@ -4,8 +4,10 @@ namespace Ehann\RediSearch\Aggregate\Reducers;
 
 class Avg extends AbstractFieldNameReducer
 {
+    protected $reducerKeyword = 'AVG';
+
     public function toArray(): array
     {
-        return ['REDUCE', 'AVG', '1', $this->fieldName];
+        return ['REDUCE', $this->reducerKeyword, '1', $this->fieldName, 'AS', $this->makeAlias()];
     }
 }
