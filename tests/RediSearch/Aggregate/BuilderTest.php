@@ -5,12 +5,12 @@ namespace Ehann\Tests\RediSearch\Aggregate;
 use Ehann\RediSearch\Aggregate\Builder;
 use Ehann\RediSearch\Aggregate\Reducers\Avg;
 use Ehann\Tests\Stubs\TestIndex;
-use Ehann\Tests\AbstractTestCase;
+use Ehann\Tests\RediSearchTestCase;
 
 /**
  * @group aggregate
  */
-class BuilderTest extends AbstractTestCase
+class BuilderTest extends RediSearchTestCase
 {
     /** @var Builder */
     private $subject;

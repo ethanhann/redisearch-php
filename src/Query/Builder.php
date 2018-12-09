@@ -2,8 +2,7 @@
 
 namespace Ehann\RediSearch\Query;
 
-use Ehann\RedisRaw\Exceptions\RedisRawCommandException;
-use Ehann\RedisRaw\RedisRawClientInterface;
+use Ehann\RediSearch\RediSearchRedisClient;
 use InvalidArgumentException;
 
 class Builder implements BuilderInterface
@@ -32,7 +31,7 @@ class Builder implements BuilderInterface
     protected $redis;
     private $indexName;
 
-    public function __construct(RedisRawClientInterface $redis, string $indexName)
+    public function __construct(RediSearchRedisClient $redis, string $indexName)
     {
         $this->redis = $redis;
         $this->indexName = $indexName;
@@ -130,7 +129,7 @@ class Builder implements BuilderInterface
 
     public function numericFilter(string $fieldName, $min, $max = null): BuilderInterface
     {
-        $max = $max ?? $min;
+        $max = $max ?? '+inf';
         $this->numericFilters[] = "@$fieldName:[$min $max]";
         return $this;
     }
@@ -165,9 +164,12 @@ class Builder implements BuilderInterface
 
     public function makeSearchCommandArguments(string $query): array
     {
+        $queryParts = array_merge([$query], $this->numericFilters, $this->geoFilters);
+        $queryWithFilters = "'" . implode(' ', $queryParts) . "'";
+
         return array_filter(
             array_merge(
-                trim($query) === '' ? [$this->indexName] : [$this->indexName, $query],
+                trim($queryWithFilters) === '' ? [$this->indexName] : [$this->indexName, $queryWithFilters],
                 explode(' ', $this->limit),
                 explode(' ', $this->slop),
                 [
@@ -182,8 +184,6 @@ class Builder implements BuilderInterface
                 explode(' ', $this->return),
                 explode(' ', $this->summarize),
                 explode(' ', $this->highlight),
-                $this->numericFilters,
-                $this->geoFilters,
                 explode(' ', $this->sortBy),
                 explode(' ', $this->scorer),
                 explode(' ', $this->language),
@@ -202,9 +202,6 @@ class Builder implements BuilderInterface
             'FT.SEARCH',
             $this->makeSearchCommandArguments($query)
         );
-        if (is_string($rawResult)) {
-            throw new RedisRawCommandException("Result: $rawResult, Query: $query");
-        }
 
         return $rawResult ? SearchResult::makeSearchResult(
             $rawResult,

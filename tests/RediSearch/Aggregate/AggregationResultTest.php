@@ -3,12 +3,12 @@
 namespace Ehann\Tests\RediSearch\Aggregate;
 
 use Ehann\RediSearch\Aggregate\AggregationResult;
-use Ehann\Tests\AbstractTestCase;
+use Ehann\Tests\RediSearchTestCase;
 
 /**
  * @group aggregate
  */
-class AggregationResultTest extends AbstractTestCase
+class AggregationResultTest extends RediSearchTestCase
 {
     /** @var AggregationResult */
     protected $subject;

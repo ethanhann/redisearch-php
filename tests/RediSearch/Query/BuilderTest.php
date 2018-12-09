@@ -5,9 +5,9 @@ namespace Ehann\Tests\RediSearch\Query;
 use Ehann\RediSearch\Fields\GeoLocation;
 use Ehann\RediSearch\Query\Builder;
 use Ehann\Tests\Stubs\TestIndex;
-use Ehann\Tests\AbstractTestCase;
+use Ehann\Tests\RediSearchTestCase;
 
-class BuilderTest extends AbstractTestCase
+class BuilderTest extends RediSearchTestCase
 {
     /** @var Builder */
     private $subject;
