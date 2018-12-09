@@ -2,10 +2,10 @@
 
 namespace Ehann\Tests\RediSearch\Redis;
 
-use Ehann\RedisRaw\Exceptions\UnknownIndexNameException;
-use Ehann\Tests\AbstractTestCase;
+use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
+use Ehann\Tests\RediSearchTestCase;
 
-class RedisClientTest extends AbstractTestCase
+class RedisClientTest extends RediSearchTestCase
 {
     public function testShouldThrowUnknownIndexNameExceptionIfIndexDoesNotExist()
     {

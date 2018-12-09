@@ -17,7 +17,7 @@ use Ehann\RediSearch\Aggregate\Reducers\Sum;
 use Ehann\RediSearch\Aggregate\Reducers\ToList;
 use Ehann\RediSearch\CanBecomeArrayInterface;
 use Ehann\RedisRaw\Exceptions\RedisRawCommandException;
-use Ehann\RedisRaw\RedisRawClientInterface;
+use Ehann\RediSearch\RediSearchRedisClient;
 use Ehann\RediSearch\Aggregate\Reducers\Avg;
 use Ehann\RediSearch\Aggregate\Reducers\Count;
 use Ehann\RediSearch\Aggregate\Reducers\CountDistinct;
@@ -30,7 +30,7 @@ class Builder implements BuilderInterface
     private $load = [];
 
 
-    public function __construct(RedisRawClientInterface $redis, string $indexName)
+    public function __construct(RediSearchRedisClient $redis, string $indexName)
     {
         $this->redis = $redis;
         $this->indexName = $indexName;
@@ -273,10 +273,6 @@ class Builder implements BuilderInterface
             'FT.AGGREGATE',
             $args
         );
-
-        if (is_string($rawResult)) {
-            throw new RedisRawCommandException("Result: $rawResult, Query: $query");
-        }
 
         return $rawResult ? AggregationResult::makeAggregationResult(
             $rawResult,

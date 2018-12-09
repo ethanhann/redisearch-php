@@ -3,9 +3,9 @@
 namespace Ehann\Tests\RediSearch;
 
 use Ehann\RediSearch\Suggestion;
-use Ehann\Tests\AbstractTestCase;
+use Ehann\Tests\RediSearchTestCase;
 
-class SuggestionTest extends AbstractTestCase
+class SuggestionTest extends RediSearchTestCase
 {
     /** @var Suggestion */
     private $subject;

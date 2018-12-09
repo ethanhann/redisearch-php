@@ -4,10 +4,10 @@ namespace Ehann\Tests\RediSearch;
 
 use Ehann\RediSearch\Exceptions\FieldNotInSchemaException;
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
+use Ehann\RediSearch\Exceptions\RediSearchException;
 use Ehann\RediSearch\Index;
-use Ehann\RedisRaw\Exceptions\UnknownIndexNameException;
-use Ehann\RedisRaw\Exceptions\UnsupportedRediSearchLanguageException;
-use Ehann\RedisRaw\Exceptions\RawCommandErrorException;
+use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
+use Ehann\RediSearch\Exceptions\UnsupportedRediSearchLanguageException;
 use Ehann\RediSearch\Fields\FieldFactory;
 use Ehann\RediSearch\Fields\GeoLocation;
 use Ehann\RediSearch\Fields\NumericField;
@@ -16,9 +16,9 @@ use Ehann\RediSearch\IndexInterface;
 use Ehann\Tests\Stubs\TestDocument;
 use Ehann\Tests\Stubs\TestIndex;
 use Ehann\Tests\Stubs\IndexWithoutFields;
-use Ehann\Tests\AbstractTestCase;
+use Ehann\Tests\RediSearchTestCase;
 
-class IndexTest extends AbstractTestCase
+class IndexTest extends RediSearchTestCase
 {
     /** @var IndexInterface */
     private $subject;
@@ -31,6 +31,8 @@ class IndexTest extends AbstractTestCase
             ->addTextField('author')
             ->addNumericField('price')
             ->addNumericField('stock');
+
+        $this->logger->debug('setUp...');
     }
 
     public function tearDown()
@@ -258,7 +260,7 @@ class IndexTest extends AbstractTestCase
 
         $isUpdated = $this->subject->replace($document);
 
-        $result = $this->subject->numericFilter('price', 19.99)->search('Part 2');
+        $result = $this->subject->numericFilter('price', 12.99)->search('Part 2');
         $this->assertTrue($isUpdated);
         $this->assertEquals(1, $result->getCount());
     }
@@ -289,7 +291,7 @@ class IndexTest extends AbstractTestCase
     {
         $this->subject->create();
         $document = $this->subject->makeDocument('does_not_exist');
-        $this->expectException(RawCommandErrorException::class);
+        $this->expectException(RediSearchException::class);
 
         $this->subject->addHash($document);
     }
