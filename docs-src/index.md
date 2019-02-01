@@ -11,7 +11,7 @@ RediSearch-PHP is a PHP client library for the [RediSearch](http://redisearch.io
 ## Install
 
 ```bash
-composer install ethanhann/redisearch-php
+composer require ethanhann/redisearch-php
 ```
 
 ## Load
