@@ -35,7 +35,7 @@ Numeric fields can be filtered with the index's filter method.
 
 ```php-inline
 $result = $bookIndex
-    ->filter('price', 4.99, 19.99)
+    ->geoFilter('place', -77.0366, 38.897, 100)
     ->search('two cities');
 ```
 
