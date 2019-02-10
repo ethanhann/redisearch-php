@@ -546,7 +546,7 @@
 <h2 id="filtering-geo-fields">Filtering Geo Fields<a class="headerlink" href="#filtering-geo-fields" title="Permanent link">&para;</a></h2>
 <p>Numeric fields can be filtered with the index's filter method.</p>
 <div class="codehilite"><pre><span></span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$bookIndex</span>
-    <span class="o">-&gt;</span><span class="na">filter</span><span class="p">(</span><span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="mf">4.99</span><span class="p">,</span> <span class="mf">19.99</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">geoFilter</span><span class="p">(</span><span class="s1">&#39;place&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mf">77.0366</span><span class="p">,</span> <span class="mf">38.897</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
     <span class="o">-&gt;</span><span class="na">search</span><span class="p">(</span><span class="s1">&#39;two cities&#39;</span><span class="p">);</span>
 </pre></div>
 
