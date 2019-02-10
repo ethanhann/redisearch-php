@@ -502,4 +502,22 @@ class IndexTest extends RediSearchTestCase
         $result = $this->subject->search('Jack');
         $this->assertEquals(1, $result->getCount());
     }
+
+    public function testShouldNotChangeOriginalSchemaFieldWhenAddingNewDocument()
+    {
+        $expectedId = 'id1';
+        $expectedTitle = 'Foo';
+        $documents = [];
+        $newDocument = $this->subject->makeDocument();
+        $newDocument->setId($expectedId);
+        $newDocument->title->setValue($expectedTitle);
+        $documents[] = $newDocument;
+
+        $barDocument = $this->subject->makeDocument();
+        $barDocument->setId('id2');
+        $barDocument->title->setValue('Bar');
+
+        $this->assertEquals($expectedId, $documents[0]->getId());
+        $this->assertEquals($expectedTitle, $documents[0]->title->getValue());
+    }
 }
