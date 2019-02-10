@@ -24,9 +24,9 @@ require_once 'vendor/autoload.php';
 ## Create a Redis Client
 
 ```php-inline
-use Ehann\RediSearch\Redis\PredisAdapter;
-use Ehann\RediSearch\Redis\PhpRedisAdapter;
-use Ehann\RediSearch\Redis\RedisClientAdapter;
+use Ehann\RedisRaw\PredisAdapter;
+use Ehann\RedisRaw\PhpRedisAdapter;
+use Ehann\RedisRaw\RedisClientAdapter;
 
 $redis = (new PredisAdapter())->connect('127.0.0.1', 6379);
 // or
