@@ -68,7 +68,7 @@ class Index extends AbstractIndex implements IndexInterface
         $fields = [];
         foreach (get_object_vars($this) as $field) {
             if ($field instanceof FieldInterface) {
-                $fields[$field->getName()] = $field;
+                $fields[$field->getName()] = clone $field;
             }
         }
         return $fields;
