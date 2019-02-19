@@ -8,7 +8,7 @@ It provides a [Laravel Scout](https://laravel.com/docs/5.6/scout) driver.
 ### Install
 
 ```bash
-composer install ethanhann/laravel-redisearch
+composer require ethanhann/laravel-redisearch
 ```
 
 ###  Register the Provider
