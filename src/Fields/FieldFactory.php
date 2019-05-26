@@ -8,6 +8,9 @@ class FieldFactory
 {
     public static function make($name, $value)
     {
+        if ($value instanceof Tag) {
+            return new TagField($name, $value);
+        }
         if (is_string($value)) {
             return new TextField($name, $value);
         }

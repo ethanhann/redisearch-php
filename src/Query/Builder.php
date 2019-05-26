@@ -23,6 +23,7 @@ class Builder implements BuilderInterface
     protected $noContent = '';
     protected $inFields = '';
     protected $inKeys = '';
+    protected $tagFilters = [];
     protected $numericFilters = [];
     protected $geoFilters = [];
     protected $sortBy = '';
@@ -127,6 +128,13 @@ class Builder implements BuilderInterface
         return $this;
     }
 
+    public function tagFilter(string $fieldName, array $values): BuilderInterface
+    {
+        $separatedValues = implode('|', $values);
+        $this->tagFilters[] = "@$fieldName:{{$separatedValues}}";
+        return $this;
+    }
+
     public function numericFilter(string $fieldName, $min, $max = null): BuilderInterface
     {
         $max = $max ?? '+inf';
@@ -164,8 +172,8 @@ class Builder implements BuilderInterface
 
     public function makeSearchCommandArguments(string $query): array
     {
-        $queryParts = array_merge([$query], $this->numericFilters, $this->geoFilters);
-        $queryWithFilters = "'" . implode(' ', $queryParts) . "'";
+        $queryParts = array_merge([$query], $this->tagFilters, $this->numericFilters, $this->geoFilters);
+        $queryWithFilters = "'" . trim(implode(' ', $queryParts)) . "'";
 
         return array_filter(
             array_merge(
@@ -198,10 +206,7 @@ class Builder implements BuilderInterface
 
     public function search(string $query = '', bool $documentsAsArray = false): SearchResult
     {
-        $rawResult = $this->redis->rawCommand(
-            'FT.SEARCH',
-            $this->makeSearchCommandArguments($query)
-        );
+        $rawResult = $this->redis->rawCommand('FT.SEARCH', $this->makeSearchCommandArguments($query));
 
         return $rawResult ? SearchResult::makeSearchResult(
             $rawResult,
