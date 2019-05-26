@@ -5,6 +5,8 @@ namespace Ehann\Tests\RediSearch;
 use Ehann\RediSearch\Exceptions\FieldNotInSchemaException;
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
 use Ehann\RediSearch\Exceptions\RediSearchException;
+use Ehann\RediSearch\Fields\Tag;
+use Ehann\RediSearch\Fields\TagField;
 use Ehann\RediSearch\Index;
 use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
 use Ehann\RediSearch\Exceptions\UnsupportedRediSearchLanguageException;
@@ -30,7 +32,9 @@ class IndexTest extends RediSearchTestCase
             ->addTextField('title')
             ->addTextField('author')
             ->addNumericField('price')
-            ->addNumericField('stock');
+            ->addNumericField('stock')
+            ->addGeoField('place')
+            ->addTagField('color');
 
         $this->logger->debug('setUp...');
     }
@@ -162,6 +166,22 @@ class IndexTest extends RediSearchTestCase
         $this->assertEquals($expectedTitle, $firstDocument->title);
     }
 
+    public function testAddDocumentUsingArrayOfFieldsCreatedWithFieldFactory()
+    {
+        $this->subject->create();
+
+        $result = $this->subject->add([
+            FieldFactory::make('title', 'How to be awesome.'),
+            FieldFactory::make('author', 'Jack'),
+            FieldFactory::make('price', 9.99),
+            FieldFactory::make('stock', 231),
+            FieldFactory::make('place', new GeoLocation(-77.0366, 38.8977)),
+            FieldFactory::make('color', new Tag('red')),
+        ]);
+
+        $this->assertTrue($result);
+    }
+
     public function testAddDocumentUsingArrayOfFields()
     {
         $this->subject->create();
@@ -171,6 +191,7 @@ class IndexTest extends RediSearchTestCase
             new TextField('author', 'Jack'),
             new NumericField('price', 9.99),
             new NumericField('stock', 231),
+            new TagField('color', 'red'),
         ]);
 
         $this->assertTrue($result);
@@ -378,6 +399,110 @@ class IndexTest extends RediSearchTestCase
             ->geoFilter('place', -77.0366, 38.897, 100)
             ->numericFilter('population', 1, 500)
             ->search('Foo');
+
+        $this->assertEquals(1, $result->getCount());
+    }
+
+    public function testAddDocumentWithTagField()
+    {
+        $index = (new TestIndex($this->redisClient))
+            ->setIndexName('TagTest');
+        $index
+            ->addTextField('name')
+            ->addNumericField('population')
+            ->addTagField('color')
+            ->create();
+        $index->add([
+            'name' => 'Foo',
+            'color' => 'red',
+        ]);
+        $index->add([
+            'name' => 'Bar',
+            'color' => 'blue',
+        ]);
+
+        $result = $index
+            ->tagFilter('color', ['blue'])
+            ->search();
+
+        $this->assertEquals(1, $result->getCount());
+    }
+
+    public function testAddDocumentWithTagFieldAndAlternateTagSeparator()
+    {
+        $index = (new TestIndex($this->redisClient))
+            ->setIndexName('TagTest');
+        $index
+            ->addTextField('name')
+            ->addNumericField('population')
+            ->addTagField('color', '^^^')
+            ->create();
+        $index->add([
+            'name' => 'Foo',
+            'color' => 'red',
+        ]);
+        $index->add([
+            'name' => 'Bar',
+            'color' => 'blue',
+        ]);
+
+        $result = $index
+            ->tagFilter('color', ['blue'])
+            ->search();
+
+        $this->assertEquals(1, $result->getCount());
+    }
+
+    public function testFilterTagFieldsAsUnionOfDocuments()
+    {
+        $index = (new TestIndex($this->redisClient))
+            ->setIndexName('TagTest');
+        $index
+            ->addTextField('name')
+            ->addTagField('color')
+            ->create();
+        $index->add([
+            'name' => 'Foo',
+            'color' => 'red',
+        ]);
+        $index->add([
+            'name' => 'Bar',
+            'color' => 'blue',
+        ]);
+
+        $result = $index
+            ->tagFilter('color', ['blue', 'red'])
+            ->search();
+
+        $this->assertEquals(2, $result->getCount());
+    }
+
+    public function testFilterTagFieldsAsIntersectionOfDocuments()
+    {
+        $index = (new TestIndex($this->redisClient))
+            ->setIndexName('TagTest');
+        $index
+            ->addTextField('name')
+            ->addTagField('color')
+            ->create();
+        $index->add([
+            'name' => 'Foo',
+            'color' => 'red',
+        ]);
+        $index->add([
+            'name' => 'Bar',
+            'color' => 'blue',
+        ]);
+
+        $index->add([
+            'name' => 'Bar',
+            'color' => 'red,yellow',
+        ]);
+
+        $result = $index
+            ->tagFilter('color', ['red'])
+            ->tagFilter('color', ['yellow'])
+            ->search();
 
         $this->assertEquals(1, $result->getCount());
     }

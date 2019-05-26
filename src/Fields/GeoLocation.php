@@ -4,7 +4,6 @@ namespace Ehann\RediSearch\Fields;
 
 class GeoLocation
 {
-    protected $name;
     protected $longitude;
     protected $latitude;
 

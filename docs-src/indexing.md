@@ -10,6 +10,7 @@ They are instantiated like this:
 new TextField('author', 'Charles Dickens');
 new NumericField('price', 9.99);
 new GeoField('place', new GeoLocation(-77.0366, 38.8977));
+new TagField('color', 'red');
 ```
 
 Fields can also be made with the FieldFactory class:
@@ -23,6 +24,9 @@ FieldFactory::make('price', 9.99);
 
 // Alternative syntax for: new GeoField('place', new GeoLocation(-77.0366, 38.8977));
 FieldFactory::make('place', new GeoLocation(-77.0366, 38.8977));
+
+// Alternative syntax for: new TagField('color', 'red');
+FieldFactory::make('color', 'red');
 ```
 
 ## Adding Documents
@@ -35,6 +39,7 @@ $bookIndex->add([
     new TextField('author', 'Charles Dickens'),
     new NumericField('price', 9.99),
     new GeoField('place', new GeoLocation(-77.0366, 38.8977)),
+    new TagField('color', 'red'),
 ]);
 ```
 
@@ -46,6 +51,7 @@ $bookIndex->add([
     'author' => 'Charles Dickens',
     'price' => 9.99,
     'place' => new GeoLocation(-77.0366, 38.8977),
+    'color' => new TagField('color', 'red'),,
 ]);
 ```
 

@@ -19,19 +19,40 @@ $result = $bookIndex->search('two cities', true);
 $result->documents(); // Array of arrays.
 ```
 
-## Filtering Numeric Fields
+## Filtering Tag Fields
 
-Numeric fields can be filtered with the index's filter method.
+Tag fields can be filtered with the index's tagFilter method. 
+
+Specifying multiple tags creates a union of documents.
 
 ```php-inline
 $result = $bookIndex
-    ->filter('price', 4.99, 19.99)
+    ->tagFilter('color', ['blue', 'red'])
+    ->search('two cities');
+```
+
+Use multiple separate tagFilter calls to create an intersection of documents.
+
+```php-inline
+$result = $bookIndex
+    ->tagFilter('color', ['blue'])
+    ->tagFilter('color', ['red'])
+    ->search('two cities');
+```
+
+## Filtering Numeric Fields
+
+Numeric fields can be filtered with the index's numericFilter method.
+
+```php-inline
+$result = $bookIndex
+    ->numericFilter('price', 4.99, 19.99)
     ->search('two cities');
 ```
 
 ## Filtering Geo Fields
 
-Numeric fields can be filtered with the index's filter method.
+Numeric fields can be filtered with the index's geoFilter method.
 
 ```php-inline
 $result = $bookIndex

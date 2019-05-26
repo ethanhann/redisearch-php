@@ -328,6 +328,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#filtering-tag-fields" title="Filtering Tag Fields" class="md-nav__link">
+    Filtering Tag Fields
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#filtering-numeric-fields" title="Filtering Numeric Fields" class="md-nav__link">
     Filtering Numeric Fields
   </a>
@@ -461,6 +468,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#filtering-tag-fields" title="Filtering Tag Fields" class="md-nav__link">
+    Filtering Tag Fields
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#filtering-numeric-fields" title="Filtering Numeric Fields" class="md-nav__link">
     Filtering Numeric Fields
   </a>
@@ -536,15 +550,30 @@
 <span class="nv">$result</span><span class="o">-&gt;</span><span class="na">documents</span><span class="p">();</span> <span class="c1">// Array of arrays.</span>
 </pre></div>
 
-<h2 id="filtering-numeric-fields">Filtering Numeric Fields<a class="headerlink" href="#filtering-numeric-fields" title="Permanent link">&para;</a></h2>
-<p>Numeric fields can be filtered with the index's filter method.</p>
+<h2 id="filtering-tag-fields">Filtering Tag Fields<a class="headerlink" href="#filtering-tag-fields" title="Permanent link">&para;</a></h2>
+<p>Tag fields can be filtered with the index's tagFilter method. </p>
+<p>Specifying multiple tags creates a union of documents.</p>
 <div class="codehilite"><pre><span></span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$bookIndex</span>
-    <span class="o">-&gt;</span><span class="na">filter</span><span class="p">(</span><span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="mf">4.99</span><span class="p">,</span> <span class="mf">19.99</span><span class="p">)</span>
+    <span class="o">-&gt;</span><span class="na">tagFilter</span><span class="p">(</span><span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">])</span>
+    <span class="o">-&gt;</span><span class="na">search</span><span class="p">(</span><span class="s1">&#39;two cities&#39;</span><span class="p">);</span>
+</pre></div>
+
+<p>Use multiple separate tagFilter calls to create an intersection of documents.</p>
+<div class="codehilite"><pre><span></span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$bookIndex</span>
+    <span class="o">-&gt;</span><span class="na">tagFilter</span><span class="p">(</span><span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;blue&#39;</span><span class="p">])</span>
+    <span class="o">-&gt;</span><span class="na">tagFilter</span><span class="p">(</span><span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">])</span>
+    <span class="o">-&gt;</span><span class="na">search</span><span class="p">(</span><span class="s1">&#39;two cities&#39;</span><span class="p">);</span>
+</pre></div>
+
+<h2 id="filtering-numeric-fields">Filtering Numeric Fields<a class="headerlink" href="#filtering-numeric-fields" title="Permanent link">&para;</a></h2>
+<p>Numeric fields can be filtered with the index's numericFilter method.</p>
+<div class="codehilite"><pre><span></span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$bookIndex</span>
+    <span class="o">-&gt;</span><span class="na">numericFilter</span><span class="p">(</span><span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="mf">4.99</span><span class="p">,</span> <span class="mf">19.99</span><span class="p">)</span>
     <span class="o">-&gt;</span><span class="na">search</span><span class="p">(</span><span class="s1">&#39;two cities&#39;</span><span class="p">);</span>
 </pre></div>
 
 <h2 id="filtering-geo-fields">Filtering Geo Fields<a class="headerlink" href="#filtering-geo-fields" title="Permanent link">&para;</a></h2>
-<p>Numeric fields can be filtered with the index's filter method.</p>
+<p>Numeric fields can be filtered with the index's geoFilter method.</p>
 <div class="codehilite"><pre><span></span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$bookIndex</span>
     <span class="o">-&gt;</span><span class="na">geoFilter</span><span class="p">(</span><span class="s1">&#39;place&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mf">77.0366</span><span class="p">,</span> <span class="mf">38.897</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
     <span class="o">-&gt;</span><span class="na">search</span><span class="p">(</span><span class="s1">&#39;two cities&#39;</span><span class="p">);</span>
