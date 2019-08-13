@@ -141,6 +141,18 @@ class Builder implements BuilderInterface
         $this->tagFilters[] = "@$fieldName:{$separatedValues}";
         return $this;
     }
+    
+    public function multiFieldFilter(array $fieldNames): BuilderInterface
+    {
+        $tagFilters = [];
+        foreach ($fieldNames as $fieldName => $values) {
+            $separatedValues = implode('|', $values);
+            $tagFilters[] = "@$fieldName:{$separatedValues}";
+        }
+        
+        $this->tagFilters[] = "( ". implode(' | ', $tagFilters) .")";
+        return $this;
+    }
 
     public function numericFilter(string $fieldName, $min, $max = null): BuilderInterface
     {
