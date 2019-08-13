@@ -277,6 +277,17 @@ class Index extends AbstractIndex implements IndexInterface
     {
         return $this->makeQueryBuilder()->tagFilter($fieldName, $values);
     }
+    
+    /**
+     * @param string $fieldName
+     * @param array $values
+     * @param string $separator
+     * @return QueryBuilderInterface
+     */
+    public function fieldFilter(string $fieldName, array $values): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->fieldFilter($fieldName, $values);
+    }
 
     /**
      * @param string $fieldName
