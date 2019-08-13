@@ -134,6 +134,13 @@ class Builder implements BuilderInterface
         $this->tagFilters[] = "@$fieldName:{{$separatedValues}}";
         return $this;
     }
+    
+    public function fieldFilter(string $fieldName, array $values): BuilderInterface
+    {
+        $separatedValues = implode('|', $values);
+        $this->tagFilters[] = "@$fieldName:{$separatedValues}";
+        return $this;
+    }
 
     public function numericFilter(string $fieldName, $min, $max = null): BuilderInterface
     {
