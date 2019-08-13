@@ -147,10 +147,10 @@ class Builder implements BuilderInterface
         $tagFilters = [];
         foreach ($fieldNames as $fieldName => $values) {
             $separatedValues = implode('|', $values);
-            $tagFilters[] = "@$fieldName:{$separatedValues}";
+            $tagFilters[] = "(@$fieldName:{$separatedValues})";
         }
         
-        $this->tagFilters[] = "( ". implode(' | ', $tagFilters) .")";
+        $this->tagFilters[] = implode('|', $tagFilters);
         return $this;
     }
 
