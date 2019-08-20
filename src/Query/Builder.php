@@ -153,6 +153,20 @@ class Builder implements BuilderInterface
         $this->tagFilters[] = implode('|', $tagFilters);
         return $this;
     }
+    
+    public function multiFieldNumericFilter(array $options): BuilderInterface
+    {
+        $numericFilters = [];
+        foreach ($options as  $o) {
+            $fieldName = $o['name'];
+            $min = $o['min'];
+            $max = $o['max'];
+            $numericFilters[] = "(@$fieldName:[$min $max])";
+        }
+        
+        $this->numericFilters[] = implode('|', $numericFilters);
+        return $this;
+    }
 
     public function numericFilter(string $fieldName, $min, $max = null): BuilderInterface
     {
