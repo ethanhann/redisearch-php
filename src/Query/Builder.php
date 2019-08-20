@@ -9,7 +9,7 @@ class Builder implements BuilderInterface
 {
     const GEO_FILTER_UNITS = ['m', 'km', 'mi', 'ft'];
 
-    protected $return = '';
+    protected $return = ''; 
     protected $summarize = '';
     protected $highlight = '';
     protected $expander = '';
@@ -160,7 +160,7 @@ class Builder implements BuilderInterface
         foreach ($options as  $o) {
             $fieldName = $o['name'];
             $min = $o['min'];
-            $max = $o['max'];
+            $max = $o['max'] ?? '+inf';
             $numericFilters[] = "(@$fieldName:[$min $max])";
         }
         
