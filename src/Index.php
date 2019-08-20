@@ -315,7 +315,7 @@ class Index extends AbstractIndex implements IndexInterface
      * @param $max
      * @return QueryBuilderInterface
      */
-    public function multiFieldNumericFilter(string $options): QueryBuilderInterface
+    public function multiFieldNumericFilter(array $options): QueryBuilderInterface
     {
         return $this->makeQueryBuilder()->multiFieldNumericFilter($options);
     }
