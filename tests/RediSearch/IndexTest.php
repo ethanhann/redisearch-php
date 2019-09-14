@@ -94,6 +94,23 @@ class IndexTest extends RediSearchTestCase
         $this->assertEmpty($this->subject->search('My New Book')->getDocuments());
     }
 
+    public function testShouldPhysicallyDeleteDocumentById()
+    {
+        $this->subject->create();
+        $expectedId = 'fio4oihfohsdfl';
+        $document = $this->subject->makeDocument($expectedId);
+        $document->title->setValue('My New Book');
+        $document->author->setValue('Jack');
+        $document->price->setValue(123);
+        $document->stock->setValue(1123);
+        $this->subject->add($document);
+
+        $result = $this->subject->delete($expectedId, true);
+
+        $this->assertTrue($result);
+        $this->assertEmpty($this->subject->search('My New Book')->getDocuments());
+    }
+
     public function testCreateIndexWithSortableFields()
     {
         $indexName = 'IndexWithSortableFieldsTest';
