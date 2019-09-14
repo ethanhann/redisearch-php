@@ -140,11 +140,16 @@ class Index extends AbstractIndex implements IndexInterface
 
     /**
      * @param $id
+     * @param bool $deleteDocument
      * @return bool
      */
-    public function delete($id)
+    public function delete($id, $deleteDocument = false)
     {
-        return boolval($this->rawCommand('FT.DEL', [$this->getIndexName(), $id]));
+        $arguments = [$this->getIndexName(), $id];
+        if ($deleteDocument) {
+            $arguments[] = 'DD';
+        }
+        return boolval($this->rawCommand('FT.DEL', $arguments));
     }
 
     /**
