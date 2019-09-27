@@ -29,6 +29,8 @@ class DocumentTest extends TestCase
         $expectedPayload = 'foo';
         $isNoSave = true;
         $shouldReplace = true;
+        $shouldPartial = true;
+        $shouldNoCreate = true;
         $expectedId = '9999';
         $expectedScore = 0.2;
         $expectedLanguage = 'EN';
@@ -40,6 +42,8 @@ class DocumentTest extends TestCase
             ->setLanguage($expectedLanguage)
             ->setPayload($expectedPayload)
             ->setReplace($shouldReplace)
+            ->setPartial($shouldPartial)
+            ->setNoCreate($shouldNoCreate)
             ->setScore($expectedScore);
         $subject->customField = FieldFactory::make($expectedFieldName, $expectedFieldValue);
 
@@ -50,13 +54,15 @@ class DocumentTest extends TestCase
         $this->assertEquals($expectedScore, $definition[1]);
         $this->assertEquals('NOSAVE', $definition[2]);
         $this->assertEquals('REPLACE', $definition[3]);
-        $this->assertEquals('LANGUAGE', $definition[4]);
-        $this->assertEquals($expectedLanguage, $definition[5]);
-        $this->assertEquals('PAYLOAD', $definition[6]);
-        $this->assertEquals($expectedPayload, $definition[7]);
-        $this->assertEquals('FIELDS', $definition[8]);
-        $this->assertEquals($expectedFieldName, $definition[9]);
-        $this->assertEquals($expectedFieldValue, $definition[10]);
+        $this->assertEquals('PARTIAL', $definition[4]);
+        $this->assertEquals('NOCREATE', $definition[5]);
+        $this->assertEquals('LANGUAGE', $definition[6]);
+        $this->assertEquals($expectedLanguage, $definition[7]);
+        $this->assertEquals('PAYLOAD', $definition[8]);
+        $this->assertEquals($expectedPayload, $definition[9]);
+        $this->assertEquals('FIELDS', $definition[10]);
+        $this->assertEquals($expectedFieldName, $definition[11]);
+        $this->assertEquals($expectedFieldValue, $definition[12]);
     }
 
     public function testShouldThrowExceptionWhenScoreIsTooLow()
