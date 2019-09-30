@@ -25,7 +25,7 @@ class DocumentTest extends TestCase
 
     public function testShouldGetDefinitionWithOptions()
     {
-        $expectedNumberOfElements = 11;
+        $expectedNumberOfElements = 13;
         $expectedPayload = 'foo';
         $isNoSave = true;
         $shouldReplace = true;

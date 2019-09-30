@@ -158,7 +158,7 @@ class Document implements DocumentInterface
 
     public function setNoCreate(bool $noCreate): Document
     {
-        $this->$noCreate = $noCreate;
+        $this->noCreate = $noCreate;
         return $this;
     }
 
