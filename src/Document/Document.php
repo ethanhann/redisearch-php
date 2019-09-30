@@ -35,14 +35,6 @@ class Document implements DocumentInterface
 
         if ($this->isReplace()) {
             $properties[] = 'REPLACE';
-
-          if ($this->isPartial()) {
-              $properties[] = 'PARTIAL';
-          }
-
-          if ($this->isNoCreate()) {
-              $properties[] = 'NOCREATE';
-          }
         }
 
         return $properties;
