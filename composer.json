@@ -26,7 +26,7 @@
         "ethanhann/redis-raw": "^0.3"
     },
     "require-dev": {
-        "ukko/phpredis-phpdoc": "^2.2@dev",
+        "ukko/phpredis-phpdoc": "^5.0.1",
         "phpunit/phpunit": "^6.0",
         "mockery/mockery": "^0.9.9",
         "predis/predis": "^1.1",
