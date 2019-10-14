@@ -22,6 +22,10 @@ class Index extends AbstractIndex implements IndexInterface
     private $noOffsetsEnabled = false;
     /** @var bool */
     private $noFieldsEnabled = false;
+    /** @var bool */
+    private $noFreqsEnabled = false;
+    /** @var array */
+    private $parameters = [];
     /** @var array */
     private $stopWords = null;
 
@@ -33,12 +37,18 @@ class Index extends AbstractIndex implements IndexInterface
     {
         $properties = [$this->getIndexName()];
 
+        $properties = array_merge($properties, $this->parameters);
+
         if ($this->isNoOffsetsEnabled()) {
             $properties[] = 'NOOFFSETS';
         }
         if ($this->isNoFieldsEnabled()) {
             $properties[] = 'NOFIELDS';
         }
+        if ($this->isNoFreqsEnabled()) {
+            $properties[] = 'NOFREQS';
+        }
+
         if (!is_null($this->stopWords)) {
             $properties[] = 'STOPWORDS';
             $properties[] = count($this->stopWords);
@@ -215,6 +225,44 @@ class Index extends AbstractIndex implements IndexInterface
     public function setIndexName(string $indexName): IndexInterface
     {
         $this->indexName = $indexName;
+        return $this;
+    }
+
+    /**
+     * @param array $parameters
+     * @return IndexInterface
+     */
+    public function setParameters(array $parameters)
+    {
+        $this->parameters = $parameters;
+        return $this;
+    }
+
+    /**
+     * @param string $parameter
+     * @return IndexInterface
+     */
+    public function addParameter(string $parameter)
+    {
+        $this->parameters[] = $parameter;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNoFreqsEnabled(): bool
+    {
+        return $this->noFreqsEnabled;
+    }
+
+    /**
+     * @param bool $noFreqsEnabled
+     * @return IndexInterface
+     */
+    public function setNoFreqsEnabled(bool $noFreqsEnabled): IndexInterface
+    {
+        $this->noFreqsEnabled = $noFreqsEnabled;
         return $this;
     }
 
