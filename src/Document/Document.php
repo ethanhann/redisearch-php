@@ -59,7 +59,7 @@ class Document implements DocumentInterface
             }
 
             if ($this->isNoCreate()) {
-               $properties[] = 'NOCREATE';
+                $properties[] = 'NOCREATE';
             }
         }
 
@@ -154,7 +154,7 @@ class Document implements DocumentInterface
         return $this;
     }
 
-  public function getPayload()
+    public function getPayload()
     {
         return $this->payload;
     }
