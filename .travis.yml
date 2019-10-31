@@ -5,9 +5,10 @@ before_install:
   - docker run -d -p 6379:6379 redislabs/redisearch:latest --protected-mode no --loadmodule /usr/lib/redis/modules/redisearch.so
 language: php
 php:
-  - '7.0'
-  - '7.1'
-  - '7.2'
+  - 7.0
+  - 7.1
+  - 7.2
+  - 7.3
 before_script:
   - printf "yes\n" | pecl install igbinary
   - composer install
