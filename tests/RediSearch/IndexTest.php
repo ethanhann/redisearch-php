@@ -645,6 +645,16 @@ class IndexTest extends RediSearchTestCase
         $this->assertEquals(1, $result->getCount());
     }
 
+    public function testShouldCreateIndexWithNoFrequencies()
+    {
+        $this->subject->setNoFrequenciesEnabled(true)->create();
+        $expected = 'NOFREQS';
+
+        $info = $this->subject->info();
+
+        $this->assertEquals($expected, $info[3][0]);
+    }
+
     public function testShouldNotChangeOriginalSchemaFieldWhenAddingNewDocument()
     {
         $expectedId = 'id1';
