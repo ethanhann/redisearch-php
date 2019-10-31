@@ -14,6 +14,10 @@ interface DocumentInterface
     public function setNoSave(bool $noSave): Document;
     public function isReplace(): bool;
     public function setReplace(bool $replace): Document;
+    public function isPartial(): bool;
+    public function setPartial(bool $partial): Document;
+    public function isNoCreate(): bool;
+    public function setNoCreate(bool $noCreate): Document;
     public function getPayload();
     public function setPayload($payload);
     public function getLanguage();
