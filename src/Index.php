@@ -22,6 +22,8 @@ class Index extends AbstractIndex implements IndexInterface
     private $noOffsetsEnabled = false;
     /** @var bool */
     private $noFieldsEnabled = false;
+    /** @var bool */
+    private $noFrequenciesEnabled = false;
     /** @var array */
     private $stopWords = null;
 
@@ -38,6 +40,9 @@ class Index extends AbstractIndex implements IndexInterface
         }
         if ($this->isNoFieldsEnabled()) {
             $properties[] = 'NOFIELDS';
+        }
+        if ($this->isNoFrequenciesEnabled()) {
+            $properties[] = 'NOFREQS';
         }
         if (!is_null($this->stopWords)) {
             $properties[] = 'STOPWORDS';
@@ -255,6 +260,24 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * @return bool
+     */
+    public function isNoFrequenciesEnabled(): bool
+    {
+        return $this->noFrequenciesEnabled;
+    }
+
+    /**
+     * @param bool $noFrequenciesEnabled
+     * @return IndexInterface
+     */
+    public function setNoFrequenciesEnabled(bool $noFrequenciesEnabled): IndexInterface
+    {
+        $this->noFrequenciesEnabled = $noFrequenciesEnabled;
+        return $this;
+    }
+    
+    /**
      * @param array $stopWords
      * @return IndexInterface
      */
@@ -275,7 +298,6 @@ class Index extends AbstractIndex implements IndexInterface
     /**
      * @param string $fieldName
      * @param array $values
-     * @param string $separator
      * @return QueryBuilderInterface
      */
     public function tagFilter(string $fieldName, array $values): QueryBuilderInterface
