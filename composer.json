@@ -26,13 +26,13 @@
         "ethanhann/redis-raw": "^0.3"
     },
     "require-dev": {
-        "ukko/phpredis-phpdoc": "^2.2@dev",
         "phpunit/phpunit": "^6.0",
         "mockery/mockery": "^0.9.9",
         "predis/predis": "^1.1",
         "friendsofphp/php-cs-fixer": "^2.2",
         "consolidation/robo": "^1.0",
         "monolog/monolog": "^1.23",
-        "cheprasov/php-redis-client": "^1.8"
+        "cheprasov/php-redis-client": "^1.8",
+        "ukko/phpredis-phpdoc": "^5.0@beta"
     }
 }
