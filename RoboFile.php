@@ -20,13 +20,53 @@ class RoboFile extends Tasks
         return $this->taskPhpUnit()->run();
     }
 
+    function testAll()
+    {
+        return (new Collection())
+            ->add($this->taskTestPredis())
+            ->add($this->taskTestPhpRedis())
+            ->add($this->taskTestRedisClient())
+            ->run();
+    }
+
+    function testPredis()
+    {
+        return $this->taskTestPredis()->run();
+    }
+
+    function testPhpRedis()
+    {
+        return $this->taskTestPhpRedis()->run();
+    }
+
+    function testRedisClient()
+    {
+        return $this->taskTestRedisClient()->run();
+    }
+
     function taskFixCodeStyle()
     {
         return $this->taskExec('./vendor/bin/php-cs-fixer fix src');
     }
 
-    function fixCodeStyle()
+    function taskTestPredis()
     {
-        return $this->taskFixCodeStyle()->run();
+        $task = $this->taskPhpUnit();
+        $task->env('REDIS_LIBRARY', 'Predis');
+        return $task;
+    }
+
+    function taskTestPhpRedis()
+    {
+        $task = $this->taskPhpUnit();
+        $task->env('REDIS_LIBRARY', 'PhpRedis');
+        return $task;
+    }
+
+    function taskTestRedisClient()
+    {
+        $task = $this->taskPhpUnit();
+        $task->env('REDIS_LIBRARY', 'RedisClient');
+        return $task;
     }
 }
