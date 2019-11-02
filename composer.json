@@ -32,7 +32,7 @@
         "friendsofphp/php-cs-fixer": "^2.2",
         "consolidation/robo": "^2.0",
         "monolog/monolog": "^1.23",
-        "cheprasov/php-redis-client": "^1.8",
-        "ukko/phpredis-phpdoc": "^5.0@beta"
+        "ukko/phpredis-phpdoc": "^5.0@beta",
+        "cheprasov/php-redis-client": "^1.9"
     }
 }
