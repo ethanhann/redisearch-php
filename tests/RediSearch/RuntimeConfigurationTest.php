@@ -22,6 +22,10 @@ class RuntimeConfigurationTest extends RediSearchTestCase
 
     public function testShouldSetMinPrefix()
     {
+        if ($this->isUsingPhpRedis()) {
+            $this->markTestSkipped('Skipping because test suite is configured to use PhpRedis.');
+        }
+
         $expected = 3;
 
         $result = $this->subject->setMinPrefix($expected);
@@ -32,6 +36,10 @@ class RuntimeConfigurationTest extends RediSearchTestCase
 
     public function testShouldSetMaxExpansions()
     {
+        if ($this->isUsingPhpRedis()) {
+            $this->markTestSkipped('Skipping because test suite is configured to use PhpRedis.');
+        }
+
         $expected = 300;
 
         $result = $this->subject->setMaxExpansions($expected);
@@ -42,6 +50,10 @@ class RuntimeConfigurationTest extends RediSearchTestCase
 
     public function testShouldSetTimeout()
     {
+        if ($this->isUsingPhpRedis()) {
+            $this->markTestSkipped('Skipping because test suite is configured to use PhpRedis.');
+        }
+
         $expected = 100;
 
         $result = $this->subject->setTimeoutInMilliseconds($expected);
@@ -52,6 +64,10 @@ class RuntimeConfigurationTest extends RediSearchTestCase
 
     public function testIsOnTimeoutPolicyReturn()
     {
+        if ($this->isUsingPhpRedis()) {
+            $this->markTestSkipped('Skipping because test suite is configured to use PhpRedis.');
+        }
+
         $this->subject->setOnTimeoutPolicyToReturn();
 
         $result = $this->subject->isOnTimeoutPolicyReturn();
@@ -61,6 +77,10 @@ class RuntimeConfigurationTest extends RediSearchTestCase
 
     public function testIsOnTimeoutPolicyFail()
     {
+        if ($this->isUsingPhpRedis()) {
+            $this->markTestSkipped('Skipping because test suite is configured to use PhpRedis.');
+        }
+
         $this->subject->setOnTimeoutPolicyToFail();
 
         $result = $this->subject->isOnTimeoutPolicyFail();
@@ -70,6 +90,10 @@ class RuntimeConfigurationTest extends RediSearchTestCase
 
     public function testShouldSetMinPhoneticTermLength()
     {
+        if ($this->isUsingPhpRedis()) {
+            $this->markTestSkipped('Skipping because test suite is configured to use PhpRedis.');
+        }
+
         $expected = 5;
 
         $result = $this->subject->setMinPhoneticTermLength($expected);
