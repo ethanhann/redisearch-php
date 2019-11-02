@@ -70,6 +70,24 @@ $result = $bookIndex
     ->search('two cities');
 ```
 
+
+## Number of Search Results
+
+The number of documents can be retrieved after performing a search.
+
+```php-inline
+$result = $bookIndex->search('two cities');
+
+$result->count();     // Number of documents.
+```
+
+Alternatively, the number of documents can be queried without returning the documents themselves. 
+This is useful if you want to check the total number of documents without returning any other data from the Redis server. 
+
+```php-inline
+$numberOfDocuments = $bookIndex->count('two cities');
+```
+
 ## Setting a Language
 
 A supported language can be specified when running a query.

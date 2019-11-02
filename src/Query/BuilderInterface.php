@@ -26,4 +26,5 @@ interface BuilderInterface
     public function language(string $languageName): BuilderInterface;
     public function search(string $query = '', bool $documentsAsArray = false): SearchResult;
     public function explain(string $query): string;
+    public function count(string $query = ''): int;
 }
