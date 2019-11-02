@@ -158,16 +158,6 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
-     * @param string $command
-     * @param array $arguments
-     * @return mixed
-     */
-    protected function rawCommand(string $command, array $arguments)
-    {
-        return $this->redisClient->rawCommand($command, $arguments);
-    }
-
-    /**
      * @param null $id
      * @return DocumentInterface
      * @throws Exceptions\FieldNotInSchemaException
