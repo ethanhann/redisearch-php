@@ -9,6 +9,7 @@ use Ehann\RediSearch\Exceptions\UnknownIndexNameOrNameIsAnAliasItselfException;
 use Ehann\RediSearch\Exceptions\UnknownRediSearchCommandException;
 use Ehann\RediSearch\Exceptions\UnsupportedRediSearchLanguageException;
 use Ehann\RedisRaw\AbstractRedisRawClient;
+use Ehann\RedisRaw\Exceptions\RawCommandErrorException;
 use Ehann\RedisRaw\RedisRawClientInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -74,7 +75,12 @@ class RediSearchRedisClient implements RedisRawClientInterface
 
     public function rawCommand(string $command, array $arguments)
     {
-        $result = $this->redis->rawCommand($command, $arguments);
+        try {
+            $result = $this->redis->rawCommand($command, $arguments);
+        } catch (RawCommandErrorException $exception) {
+            $result = $exception->getPrevious()->getMessage();
+        }
+
         if ($command !== 'FT.EXPLAIN') {
             $this->validateRawCommandResults($result);
         }
