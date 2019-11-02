@@ -593,4 +593,31 @@ class Index extends AbstractIndex implements IndexInterface
     {
         return $this->makeQueryBuilder()->count($query);
     }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function addAlias(string $name): bool
+    {
+        return $this->rawCommand('FT.ALIASADD', [$name, $this->getIndexName()]);
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function updateAlias(string $name): bool
+    {
+        return $this->rawCommand('FT.ALIASUPDATE', [$name, $this->getIndexName()]);
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function deleteAlias(string $name): bool
+    {
+        return $this->rawCommand('FT.ALIASDEL', [$name]);
+    }
 }

@@ -34,4 +34,7 @@ interface IndexInterface extends BuilderInterface
     public function replace($document): bool;
     public function addHash($document): bool;
     public function replaceHash($document): bool;
+    public function addAlias(string $name): bool;
+    public function updateAlias(string $name): bool;
+    public function deleteAlias(string $name): bool;
 }
