@@ -2,9 +2,11 @@
 
 namespace Ehann\Tests\RediSearch;
 
+use Ehann\RediSearch\Exceptions\AliasDoesNotExistException;
 use Ehann\RediSearch\Exceptions\FieldNotInSchemaException;
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
 use Ehann\RediSearch\Exceptions\RediSearchException;
+use Ehann\RediSearch\Exceptions\UnknownIndexNameOrNameIsAnAliasItselfException;
 use Ehann\RediSearch\Fields\Tag;
 use Ehann\RediSearch\Fields\TagField;
 use Ehann\RediSearch\Index;
@@ -688,5 +690,58 @@ class IndexTest extends RediSearchTestCase
 
         $this->assertEquals($expectedId, $documents[0]->getId());
         $this->assertEquals($expectedTitle, $documents[0]->title->getValue());
+    }
+
+    public function testShouldCreateAlias()
+    {
+        $this->subject->create();
+
+        $result = $this->subject->addAlias('MyAlias');
+
+        $this->assertTrue($result);
+    }
+
+    public function testShouldUpdateAlias()
+    {
+        $this->subject->create();
+        $this->subject->addAlias('MyAlias');
+        $index = (new Index($this->redisClient, 'Second'))
+            ->addTextField('foo');
+        $index->create();
+
+        $result = $index->updateAlias('MyAlias');
+
+        $this->assertTrue($result);
+    }
+
+    public function testShouldDeleteAlias()
+    {
+        $this->subject->create();
+        $this->subject->addAlias('MyAlias');
+
+        $result = $this->subject->deleteAlias('MyAlias');
+
+        $this->assertTrue($result);
+    }
+
+    public function testShouldFailToCreateAliasIfIndexDoesNotExist()
+    {
+        $this->expectException(UnknownIndexNameOrNameIsAnAliasItselfException::class);
+
+        $this->subject->addAlias('MyAlias');
+    }
+
+    public function testShouldFailToUpdateAliasIfIndexDoesNotExist()
+    {
+        $this->expectException(UnknownIndexNameOrNameIsAnAliasItselfException::class);
+
+        $this->subject->updateAlias('MyAlias');
+    }
+
+    public function testShouldFailToDeleteAliasIfIndexDoesNotExist()
+    {
+        $this->expectException(AliasDoesNotExistException::class);
+
+        $this->subject->deleteAlias('MyAlias');
     }
 }

@@ -170,7 +170,7 @@ $bookIndex->addMany($documents);
 $bookIndex->addMany($documents, true);
 ```
 
-## Indexing from a Hash
+## Indexing From a Hash
 
 Redis hashes are key/value pairs referenced by a key. 
 It is possible to index an existing hash with the **addHash** method.
@@ -189,4 +189,40 @@ Replace a document in the index from a hash:
 ```php
 $document = $bookIndex->makeDocument('foo');
 $bookIndex->replaceHash($document);
+```
+
+## Aliasing
+
+Indexes can be aliased.
+ 
+Note that an exception will be thrown if any alias method is called before an index's [schema](/#create-the-schema) is created.  
+
+### Adding an Alias
+
+An alias can be added for an index like this:
+
+```php-inline
+$index->addAlias('foo');
+```
+
+### Updating an Alias
+
+Assuming an alias has already been added to an index, like this:
+
+```php-inline
+$oldIndex->addAlias('foo');
+```
+
+...it can be reassigned to a different index like this:
+
+```php-inline
+$newIndex->updateAlias('foo');
+```
+
+### Deleting an Alias
+
+An alias can be deleted like this:
+
+```php-inline
+$index->deleteAlias('foo');
 ```

@@ -2,8 +2,10 @@
 
 namespace Ehann\RediSearch;
 
+use Ehann\RediSearch\Exceptions\AliasDoesNotExistException;
 use Ehann\RediSearch\Exceptions\RediSearchException;
 use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
+use Ehann\RediSearch\Exceptions\UnknownIndexNameOrNameIsAnAliasItselfException;
 use Ehann\RediSearch\Exceptions\UnknownRediSearchCommandException;
 use Ehann\RediSearch\Exceptions\UnsupportedRediSearchLanguageException;
 use Ehann\RedisRaw\AbstractRedisRawClient;
@@ -39,6 +41,15 @@ class RediSearchRedisClient implements RedisRawClientInterface
         if (in_array($message, ['unsupported language', 'unsupported stemmer language', 'bad argument for `language`'])) {
             throw new UnsupportedRediSearchLanguageException();
         }
+
+        if ($message === 'unknown index name (or name is an alias itself)') {
+            throw new UnknownIndexNameOrNameIsAnAliasItselfException();
+        }
+
+        if ($message === 'alias does not exist') {
+            throw new AliasDoesNotExistException();
+        }
+
         if (strpos($message, 'err unknown command \'ft.') !== false) {
             throw new UnknownRediSearchCommandException($message);
         }
