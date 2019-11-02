@@ -328,29 +328,49 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#filtering-tag-fields" title="Filtering Tag Fields" class="md-nav__link">
-    Filtering Tag Fields
+  <a href="#filtering" title="Filtering" class="md-nav__link">
+    Filtering
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tag-fields" title="Tag Fields" class="md-nav__link">
+    Tag Fields
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#filtering-numeric-fields" title="Filtering Numeric Fields" class="md-nav__link">
-    Filtering Numeric Fields
+        
+          <li class="md-nav__item">
+  <a href="#numeric-fields" title="Numeric Fields" class="md-nav__link">
+    Numeric Fields
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#filtering-geo-fields" title="Filtering Geo Fields" class="md-nav__link">
-    Filtering Geo Fields
+        
+          <li class="md-nav__item">
+  <a href="#geo-fields" title="Geo Fields" class="md-nav__link">
+    Geo Fields
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#sorting-results" title="Sorting Results" class="md-nav__link">
     Sorting Results
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#number-of-results" title="Number of Results" class="md-nav__link">
+    Number of Results
   </a>
   
 </li>
@@ -468,29 +488,49 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#filtering-tag-fields" title="Filtering Tag Fields" class="md-nav__link">
-    Filtering Tag Fields
+  <a href="#filtering" title="Filtering" class="md-nav__link">
+    Filtering
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tag-fields" title="Tag Fields" class="md-nav__link">
+    Tag Fields
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#filtering-numeric-fields" title="Filtering Numeric Fields" class="md-nav__link">
-    Filtering Numeric Fields
+        
+          <li class="md-nav__item">
+  <a href="#numeric-fields" title="Numeric Fields" class="md-nav__link">
+    Numeric Fields
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#filtering-geo-fields" title="Filtering Geo Fields" class="md-nav__link">
-    Filtering Geo Fields
+        
+          <li class="md-nav__item">
+  <a href="#geo-fields" title="Geo Fields" class="md-nav__link">
+    Geo Fields
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#sorting-results" title="Sorting Results" class="md-nav__link">
     Sorting Results
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#number-of-results" title="Number of Results" class="md-nav__link">
+    Number of Results
   </a>
   
 </li>
@@ -550,7 +590,8 @@
 <span class="nv">$result</span><span class="o">-&gt;</span><span class="na">documents</span><span class="p">();</span> <span class="c1">// Array of arrays.</span>
 </pre></div>
 
-<h2 id="filtering-tag-fields">Filtering Tag Fields<a class="headerlink" href="#filtering-tag-fields" title="Permanent link">&para;</a></h2>
+<h2 id="filtering">Filtering<a class="headerlink" href="#filtering" title="Permanent link">&para;</a></h2>
+<h3 id="tag-fields">Tag Fields<a class="headerlink" href="#tag-fields" title="Permanent link">&para;</a></h3>
 <p>Tag fields can be filtered with the index's tagFilter method. </p>
 <p>Specifying multiple tags creates a union of documents.</p>
 <div class="codehilite"><pre><span></span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$bookIndex</span>
@@ -565,14 +606,14 @@
     <span class="o">-&gt;</span><span class="na">search</span><span class="p">(</span><span class="s1">&#39;two cities&#39;</span><span class="p">);</span>
 </pre></div>
 
-<h2 id="filtering-numeric-fields">Filtering Numeric Fields<a class="headerlink" href="#filtering-numeric-fields" title="Permanent link">&para;</a></h2>
+<h3 id="numeric-fields">Numeric Fields<a class="headerlink" href="#numeric-fields" title="Permanent link">&para;</a></h3>
 <p>Numeric fields can be filtered with the index's numericFilter method.</p>
 <div class="codehilite"><pre><span></span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$bookIndex</span>
     <span class="o">-&gt;</span><span class="na">numericFilter</span><span class="p">(</span><span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="mf">4.99</span><span class="p">,</span> <span class="mf">19.99</span><span class="p">)</span>
     <span class="o">-&gt;</span><span class="na">search</span><span class="p">(</span><span class="s1">&#39;two cities&#39;</span><span class="p">);</span>
 </pre></div>
 
-<h2 id="filtering-geo-fields">Filtering Geo Fields<a class="headerlink" href="#filtering-geo-fields" title="Permanent link">&para;</a></h2>
+<h3 id="geo-fields">Geo Fields<a class="headerlink" href="#geo-fields" title="Permanent link">&para;</a></h3>
 <p>Numeric fields can be filtered with the index's geoFilter method.</p>
 <div class="codehilite"><pre><span></span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$bookIndex</span>
     <span class="o">-&gt;</span><span class="na">geoFilter</span><span class="p">(</span><span class="s1">&#39;place&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mf">77.0366</span><span class="p">,</span> <span class="mf">38.897</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
@@ -584,6 +625,18 @@
 <div class="codehilite"><pre><span></span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$bookIndex</span>
     <span class="o">-&gt;</span><span class="na">sortBy</span><span class="p">(</span><span class="s1">&#39;price&#39;</span><span class="p">)</span>
     <span class="o">-&gt;</span><span class="na">search</span><span class="p">(</span><span class="s1">&#39;two cities&#39;</span><span class="p">);</span>
+</pre></div>
+
+<h2 id="number-of-results">Number of Results<a class="headerlink" href="#number-of-results" title="Permanent link">&para;</a></h2>
+<p>The number of documents can be retrieved after performing a search.</p>
+<div class="codehilite"><pre><span></span><span class="nv">$result</span> <span class="o">=</span> <span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">search</span><span class="p">(</span><span class="s1">&#39;two cities&#39;</span><span class="p">);</span>
+
+<span class="nv">$result</span><span class="o">-&gt;</span><span class="na">count</span><span class="p">();</span>     <span class="c1">// Number of documents.</span>
+</pre></div>
+
+<p>Alternatively, the number of documents can be queried without returning the documents themselves. 
+This is useful if you want to check the total number of documents without returning any other data from the Redis server. </p>
+<div class="codehilite"><pre><span></span><span class="nv">$numberOfDocuments</span> <span class="o">=</span> <span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">count</span><span class="p">(</span><span class="s1">&#39;two cities&#39;</span><span class="p">);</span>
 </pre></div>
 
 <h2 id="setting-a-language">Setting a Language<a class="headerlink" href="#setting-a-language" title="Permanent link">&para;</a></h2>

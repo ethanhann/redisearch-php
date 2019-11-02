@@ -19,7 +19,8 @@ $result = $bookIndex->search('two cities', true);
 $result->documents(); // Array of arrays.
 ```
 
-## Filtering Tag Fields
+## Filtering
+### Tag Fields
 
 Tag fields can be filtered with the index's tagFilter method. 
 
@@ -40,7 +41,7 @@ $result = $bookIndex
     ->search('two cities');
 ```
 
-## Filtering Numeric Fields
+### Numeric Fields
 
 Numeric fields can be filtered with the index's numericFilter method.
 
@@ -50,7 +51,7 @@ $result = $bookIndex
     ->search('two cities');
 ```
 
-## Filtering Geo Fields
+### Geo Fields
 
 Numeric fields can be filtered with the index's geoFilter method.
 
@@ -69,9 +70,9 @@ $result = $bookIndex
     ->sortBy('price')
     ->search('two cities');
 ```
+    
 
-
-## Number of Search Results
+## Number of Results
 
 The number of documents can be retrieved after performing a search.
 
