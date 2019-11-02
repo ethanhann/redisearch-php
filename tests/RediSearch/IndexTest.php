@@ -17,6 +17,7 @@ use Ehann\RediSearch\Fields\GeoLocation;
 use Ehann\RediSearch\Fields\NumericField;
 use Ehann\RediSearch\Fields\TextField;
 use Ehann\RediSearch\IndexInterface;
+use Ehann\RediSearch\RediSearchRedisClient;
 use Ehann\Tests\Stubs\TestDocument;
 use Ehann\Tests\Stubs\TestIndex;
 use Ehann\Tests\Stubs\IndexWithoutFields;
@@ -606,7 +607,8 @@ class IndexTest extends RediSearchTestCase
             $this->markTestSkipped('Skipping because test suite is not configured to use PhpRedis.');
         }
 
-        $this->subject->setRedisClient($this->makePhpRedisAdapter())->create();
+        $rediSearchRedisClient = new RediSearchRedisClient($this->makePhpRedisAdapter());
+        $this->subject->setRedisClient($rediSearchRedisClient)->create();
         $expectedDocumentCount = 10;
         $documents = $this->makeDocuments();
         $expectedCount = count($documents);
