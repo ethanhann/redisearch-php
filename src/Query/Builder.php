@@ -44,7 +44,7 @@ class Builder implements BuilderInterface
         return $this;
     }
 
-    public function return (array $fields): BuilderInterface
+    public function return(array $fields): BuilderInterface
     {
         $count = empty($fields) ? 0 : count($fields);
         $field = implode(' ', $fields);

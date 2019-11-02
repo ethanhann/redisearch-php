@@ -337,9 +337,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#indexing-from-a-hash" title="Indexing from a Hash" class="md-nav__link">
-    Indexing from a Hash
+  <a href="#indexing-from-a-hash" title="Indexing From a Hash" class="md-nav__link">
+    Indexing From a Hash
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aliasing" title="Aliasing" class="md-nav__link">
+    Aliasing
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-an-alias" title="Adding an Alias" class="md-nav__link">
+    Adding an Alias
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updating-an-alias" title="Updating an Alias" class="md-nav__link">
+    Updating an Alias
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deleting-an-alias" title="Deleting an Alias" class="md-nav__link">
+    Deleting an Alias
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -468,9 +502,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#indexing-from-a-hash" title="Indexing from a Hash" class="md-nav__link">
-    Indexing from a Hash
+  <a href="#indexing-from-a-hash" title="Indexing From a Hash" class="md-nav__link">
+    Indexing From a Hash
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aliasing" title="Aliasing" class="md-nav__link">
+    Aliasing
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-an-alias" title="Adding an Alias" class="md-nav__link">
+    Adding an Alias
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updating-an-alias" title="Updating an Alias" class="md-nav__link">
+    Updating an Alias
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deleting-an-alias" title="Deleting an Alias" class="md-nav__link">
+    Deleting an Alias
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -640,7 +708,7 @@ To index an external collection, make sure to set the document's ID to the ID of
 <span class="nv">$bookIndex</span><span class="o">-&gt;</span><span class="na">addMany</span><span class="p">(</span><span class="nv">$documents</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
 </pre></div>
 
-<h2 id="indexing-from-a-hash">Indexing from a Hash<a class="headerlink" href="#indexing-from-a-hash" title="Permanent link">&para;</a></h2>
+<h2 id="indexing-from-a-hash">Indexing From a Hash<a class="headerlink" href="#indexing-from-a-hash" title="Permanent link">&para;</a></h2>
 <p>Redis hashes are key/value pairs referenced by a key. 
 It is possible to index an existing hash with the <strong>addHash</strong> method.
 The document's ID has to be the same as the hash's key.
@@ -653,6 +721,28 @@ Attempting to index a hash that does not exist will result in an exception.</p>
 <p>Replace a document in the index from a hash:</p>
 <div class="codehilite"><pre><span></span><span class="x">$document = $bookIndex-&gt;makeDocument(&#39;foo&#39;);</span>
 <span class="x">$bookIndex-&gt;replaceHash($document);</span>
+</pre></div>
+
+<h2 id="aliasing">Aliasing<a class="headerlink" href="#aliasing" title="Permanent link">&para;</a></h2>
+<p>Indexes can be aliased.</p>
+<p>Note that an exception will be thrown if any alias method is called before an index's <a href="/#create-the-schema">schema</a> is created.  </p>
+<h3 id="adding-an-alias">Adding an Alias<a class="headerlink" href="#adding-an-alias" title="Permanent link">&para;</a></h3>
+<p>An alias can be added for an index like this:</p>
+<div class="codehilite"><pre><span></span><span class="nv">$index</span><span class="o">-&gt;</span><span class="na">addAlias</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">);</span>
+</pre></div>
+
+<h3 id="updating-an-alias">Updating an Alias<a class="headerlink" href="#updating-an-alias" title="Permanent link">&para;</a></h3>
+<p>Assuming an alias has already been added to an index, like this:</p>
+<div class="codehilite"><pre><span></span><span class="nv">$oldIndex</span><span class="o">-&gt;</span><span class="na">addAlias</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">);</span>
+</pre></div>
+
+<p>...it can be reassigned to a different index like this:</p>
+<div class="codehilite"><pre><span></span><span class="nv">$newIndex</span><span class="o">-&gt;</span><span class="na">updateAlias</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">);</span>
+</pre></div>
+
+<h3 id="deleting-an-alias">Deleting an Alias<a class="headerlink" href="#deleting-an-alias" title="Permanent link">&para;</a></h3>
+<p>An alias can be deleted like this:</p>
+<div class="codehilite"><pre><span></span><span class="nv">$index</span><span class="o">-&gt;</span><span class="na">deleteAlias</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">);</span>
 </pre></div>
                 
                   
