@@ -380,6 +380,23 @@ class IndexTest extends RediSearchTestCase
         $this->assertEquals(2, $result->getCount());
     }
 
+    public function testGetCountDirectly()
+    {
+        $this->subject->create();
+        $this->subject->add([
+            new TextField('title', 'How to be awesome: Part 1.'),
+            new TextField('author', 'Jack'),
+        ]);
+        $this->subject->add([
+            new TextField('title', 'How to be awesome: Part 2.'),
+            new TextField('author', 'Jack'),
+        ]);
+
+        $result = $this->subject->count('awesome');
+
+        $this->assertTrue($result === 2);
+    }
+
     public function testSearchForNumeric()
     {
         $this->subject->create();

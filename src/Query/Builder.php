@@ -44,7 +44,7 @@ class Builder implements BuilderInterface
         return $this;
     }
 
-    public function return(array $fields): BuilderInterface
+    public function return (array $fields): BuilderInterface
     {
         $count = empty($fields) ? 0 : count($fields);
         $field = implode(' ', $fields);
@@ -208,17 +208,29 @@ class Builder implements BuilderInterface
     {
         $rawResult = $this->redis->rawCommand('FT.SEARCH', $this->makeSearchCommandArguments($query));
 
-        return $rawResult ? SearchResult::makeSearchResult(
+        if (!$rawResult) {
+            return new SearchResult(0, []);
+        }
+        if (is_array($rawResult) && count($rawResult) == 1) {
+            return new SearchResult($rawResult[0], []);
+        }
+
+        return SearchResult::makeSearchResult(
             $rawResult,
             $documentsAsArray,
             $this->withScores !== '',
             $this->withPayloads !== '',
             $this->noContent !== ''
-        ) : new SearchResult(0, []);
+        );
     }
 
     public function explain(string $query): string
     {
         return $this->redis->rawCommand('FT.EXPLAIN', $this->makeSearchCommandArguments($query));
+    }
+
+    public function count(string $query = ''): int
+    {
+        return $this->limit(0, 0)->search($query)->getCount();
     }
 }

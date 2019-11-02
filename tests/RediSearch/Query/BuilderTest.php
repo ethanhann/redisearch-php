@@ -66,8 +66,15 @@ class BuilderTest extends RediSearchTestCase
         $this->assertTrue($result->getCount() === 1);
     }
 
-    /* This should not be indexed and should therefore return zero results */
-    public function testUnindexed() {
+    public function testGetCountDirectly()
+    {
+        $result = $this->subject->count('Shoes');
+
+        $this->assertTrue($result === 1);
+    }
+
+    public function testReturnsZeroResultsWhenNotIndexed()
+    {
         $result = $this->subject->search('classified');
         $this->assertTrue($result->getCount() === 0);
     }

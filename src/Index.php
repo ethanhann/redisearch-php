@@ -584,4 +584,13 @@ class Index extends AbstractIndex implements IndexInterface
     {
         return $this->makeQueryBuilder()->payload($payload);
     }
+
+    /**
+     * @param string $query
+     * @return int
+     */
+    public function count(string $query = ''): int
+    {
+        return $this->makeQueryBuilder()->count($query);
+    }
 }
