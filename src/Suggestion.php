@@ -29,7 +29,7 @@ class Suggestion extends AbstractIndex
             $args[] = 'PAYLOAD';
             $args[] = $payload;
         }
-        return $this->redisClient->rawCommand('FT.SUGADD', $args);
+        return $this->rawCommand('FT.SUGADD', $args);
     }
 
     /**
@@ -40,7 +40,7 @@ class Suggestion extends AbstractIndex
      */
     public function delete(string $string): bool
     {
-        return $this->redisClient->rawCommand('FT.SUGDEL', [$this->indexName, $string]) === 1;
+        return $this->rawCommand('FT.SUGDEL', [$this->indexName, $string]) === 1;
     }
 
     /**
@@ -50,7 +50,7 @@ class Suggestion extends AbstractIndex
      */
     public function length(): int
     {
-        return $this->redisClient->rawCommand('FT.SUGLEN', [$this->indexName]);
+        return $this->rawCommand('FT.SUGLEN', [$this->indexName]);
     }
 
     /**
@@ -78,6 +78,6 @@ class Suggestion extends AbstractIndex
             $args[] = 'MAX';
             $args[] = $max;
         }
-        return $this->redisClient->rawCommand('FT.SUGGET', $args);
+        return $this->rawCommand('FT.SUGGET', $args);
     }
 }
