@@ -76,6 +76,12 @@ class RediSearchRedisClient implements RedisRawClientInterface
     public function rawCommand(string $command, array $arguments)
     {
         try {
+            foreach ($arguments as $index => $value) {
+                /* The various RedisRaw clients have different expectations about arg types, but generally they all
+                 * agree that they can be strings.
+                 */
+                $arguments[$index] = strval($value);
+            }
             $result = $this->redis->rawCommand($command, $arguments);
         } catch (RawCommandErrorException $exception) {
             $result = $exception->getPrevious()->getMessage();
