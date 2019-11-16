@@ -9,6 +9,7 @@ use Ehann\RediSearch\Query\BuilderInterface;
 interface IndexInterface extends BuilderInterface
 {
     public function create();
+    public function exists(): bool;
     public function drop();
     public function info();
     public function delete($id, $deleteDocument = false);

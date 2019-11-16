@@ -226,3 +226,17 @@ An alias can be deleted like this:
 ```php-inline
 $index->deleteAlias('foo');
 ```
+
+## Managing an Index
+
+Whether or not an index exists can be checked:
+
+```php-inline
+$indexExists = $index->exists();
+```
+
+An index can be removed:
+
+```php-inline
+$index->drop();
+```

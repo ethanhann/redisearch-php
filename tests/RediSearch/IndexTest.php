@@ -61,6 +61,22 @@ class IndexTest extends RediSearchTestCase
         $this->assertTrue($result);
     }
 
+    public function testShouldVerifyIndexExists()
+    {
+        $this->subject->create();
+
+        $result = $this->subject->exists();
+
+        $this->assertTrue($result);
+    }
+
+    public function testShouldVerifyIndexDoesNotExist()
+    {
+        $result = $this->subject->exists();
+
+        $this->assertFalse($result);
+    }
+
     public function testShouldDropIndex()
     {
         $this->subject->create();
