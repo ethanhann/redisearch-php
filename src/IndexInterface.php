@@ -13,6 +13,7 @@ interface IndexInterface extends BuilderInterface
     public function drop();
     public function info();
     public function delete($id, $deleteDocument = false);
+    public function getFields(): array;
     public function makeDocument($id = null): DocumentInterface;
     public function makeAggregateBuilder(): AggregateBuilderInterface;
     public function getRedisClient(): RediSearchRedisClient;
