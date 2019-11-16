@@ -7,6 +7,7 @@ use Ehann\RediSearch\Aggregate\BuilderInterface as AggregateBuilderInterface;
 use Ehann\RediSearch\Document\AbstractDocumentFactory;
 use Ehann\RediSearch\Document\DocumentInterface;
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
+use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
 use Ehann\RediSearch\Fields\FieldInterface;
 use Ehann\RediSearch\Fields\GeoField;
 use Ehann\RediSearch\Fields\NumericField;
@@ -63,6 +64,19 @@ class Index extends AbstractIndex implements IndexInterface
         }
 
         return $this->rawCommand('FT.CREATE', array_merge($properties, $fieldDefinitions));
+    }
+
+    /**
+     * @return bool
+     */
+    public function exists(): bool
+    {
+        try {
+            $this->info();
+            return true;
+        } catch (UnknownIndexNameException $exception) {
+            return false;
+        }
     }
 
     /**
