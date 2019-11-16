@@ -30,6 +30,7 @@ interface IndexInterface extends BuilderInterface
     public function addNumericField(string $name, bool $sortable = false, bool $noindex = false): IndexInterface;
     public function addGeoField(string $name, bool $noindex = false): IndexInterface;
     public function addTagField(string $name, bool $sortable = false, bool $noindex = false, string $separator = ','): IndexInterface;
+    public function tagValues(string $name): array;
     public function add($document): bool;
     public function addMany(array $documents, $disableAtomicity = false);
     public function replace($document): bool;
