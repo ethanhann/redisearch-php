@@ -82,7 +82,7 @@ class Index extends AbstractIndex implements IndexInterface
     /**
      * @return array
      */
-    protected function getFields(): array
+    public function getFields(): array
     {
         $fields = [];
         foreach (get_object_vars($this) as $field) {

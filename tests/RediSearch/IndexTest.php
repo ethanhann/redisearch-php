@@ -786,4 +786,24 @@ class IndexTest extends RediSearchTestCase
 
         $this->subject->deleteAlias('MyAlias');
     }
+
+    public function testShouldGetFields()
+    {
+        $this->subject->create();
+        $expectedTitle = 'title TEXT WEIGHT 1';
+        $expectedAuthor = 'author TEXT WEIGHT 1';
+        $expectedPrice = 'price NUMERIC';
+        $expectedStock = 'stock NUMERIC';
+        $expectedPlace = 'place GEO';
+        $expectedColor = 'color TAG SEPARATOR ,';
+
+        $fields = $this->subject->getFields();
+
+        $this->assertEquals($expectedTitle, implode(' ', $fields['title']->getTypeDefinition()));
+        $this->assertEquals($expectedAuthor, implode(' ', $fields['author']->getTypeDefinition()));
+        $this->assertEquals($expectedPrice, implode(' ', $fields['price']->getTypeDefinition()));
+        $this->assertEquals($expectedStock, implode(' ', $fields['stock']->getTypeDefinition()));
+        $this->assertEquals($expectedPlace, implode(' ', $fields['place']->getTypeDefinition()));
+        $this->assertEquals($expectedColor, implode(' ', $fields['color']->getTypeDefinition()));
+    }
 }
