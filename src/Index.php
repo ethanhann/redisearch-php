@@ -142,6 +142,15 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * @param string $name
+     * @return array
+     */
+    public function tagValues(string $name): array
+    {
+        return $this->rawCommand('FT.TAGVALS', [$this->getIndexName(), $name]);
+    }
+
+    /**
      * @return mixed
      */
     public function drop()

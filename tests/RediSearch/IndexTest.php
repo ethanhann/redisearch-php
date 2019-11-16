@@ -169,6 +169,30 @@ class IndexTest extends RediSearchTestCase
         $this->assertTrue($result);
     }
 
+    public function testGetTagValues()
+    {
+        $this->subject->create();
+        $this->subject->add([
+            new TextField('title', 'How to be awesome.'),
+            new TextField('author', 'Jack'),
+            new NumericField('price', 9.99),
+            new NumericField('stock', 231),
+            new TagField('color', 'red'),
+        ]);
+        $this->subject->add([
+            new TextField('title', 'F.O.W.L'),
+            new TextField('author', 'Jill'),
+            new NumericField('price', 19.99),
+            new NumericField('stock', 31),
+            new TagField('color', 'blue'),
+        ]);
+        $expected = ['red', 'blue'];
+
+        $actual = $this->subject->tagValues('color');
+
+        $this->assertEquals($expected, $actual);
+    }
+
     public function testAddDocumentWithZeroScore()
     {
         $this->subject->create();
