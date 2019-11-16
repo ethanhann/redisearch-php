@@ -2,7 +2,7 @@
 
 ## Field Types
 
-There are three types of fields that can be added to a document: **TextField**, **NumericField**, and **GeoField**.
+There are four types of fields that can be added to a document: **TextField**, **NumericField**, **GeoField** and **TagField**.
 
 They are instantiated like this:
 
