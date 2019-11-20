@@ -33,8 +33,9 @@ interface IndexInterface extends BuilderInterface
     public function addTagField(string $name, bool $sortable = false, bool $noindex = false, string $separator = ','): IndexInterface;
     public function tagValues(string $name): array;
     public function add($document): bool;
-    public function addMany(array $documents, $disableAtomicity = false);
+    public function addMany(array $documents, $disableAtomicity = false, $replace = false);
     public function replace($document): bool;
+    public function replaceMany(array $documents, $disableAtomicity = false);
     public function addHash($document): bool;
     public function replaceHash($document): bool;
     public function addAlias(string $name): bool;
