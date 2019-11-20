@@ -3,6 +3,7 @@
 namespace Ehann\RediSearch;
 
 use Ehann\RediSearch\Exceptions\AliasDoesNotExistException;
+use Ehann\RediSearch\Exceptions\DocumentAlreadyInIndexException;
 use Ehann\RediSearch\Exceptions\RediSearchException;
 use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
 use Ehann\RediSearch\Exceptions\UnknownIndexNameOrNameIsAnAliasItselfException;
@@ -53,6 +54,10 @@ class RediSearchRedisClient implements RedisRawClientInterface
 
         if (strpos($message, 'err unknown command \'ft.') !== false) {
             throw new UnknownRediSearchCommandException($message);
+        }
+
+        if (strpos($message, 'document already in index') !== false) {
+            throw new DocumentAlreadyInIndexException();
         }
 
         throw new RediSearchException($payload);
