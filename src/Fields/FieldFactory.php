@@ -6,8 +6,11 @@ use InvalidArgumentException;
 
 class FieldFactory
 {
-    public static function make($name, $value)
+    public static function make($name, $value, $tagSeparator = ',')
     {
+        if (is_array($value)) {
+            return (new TagField($name, implode($tagSeparator, $value)))->setSeparator($tagSeparator);
+        }
         if ($value instanceof Tag) {
             return new TagField($name, $value);
         }
