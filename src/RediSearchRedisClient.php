@@ -25,7 +25,7 @@ class RediSearchRedisClient implements RedisRawClientInterface
         $this->redis = $redis;
     }
 
-    public function validateRawCommandResults($payload)
+    public function validateRawCommandResults($payload, string $command, array $arguments)
     {
         $isPayloadException = $payload instanceof Exception;
         $message = $isPayloadException ? $payload->getMessage() : $payload;
@@ -57,7 +57,7 @@ class RediSearchRedisClient implements RedisRawClientInterface
         }
 
         if (strpos($message, 'document already in index') !== false) {
-            throw new DocumentAlreadyInIndexException();
+            throw new DocumentAlreadyInIndexException($arguments[0], $arguments[1]);
         }
 
         throw new RediSearchException($payload);
@@ -78,7 +78,7 @@ class RediSearchRedisClient implements RedisRawClientInterface
         return $this->redis->multi($usePipeline);
     }
 
-    public function rawCommand(string $command, array $arguments)
+    public function rawCommand(string $command, array $arguments = [])
     {
         try {
             foreach ($arguments as $index => $value) {
@@ -93,7 +93,7 @@ class RediSearchRedisClient implements RedisRawClientInterface
         }
 
         if ($command !== 'FT.EXPLAIN') {
-            $this->validateRawCommandResults($result);
+            $this->validateRawCommandResults($result, $command, $arguments);
         }
 
         return $result;
