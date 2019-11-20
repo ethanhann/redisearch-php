@@ -3,6 +3,7 @@
 namespace Ehann\Tests\RediSearch;
 
 use Ehann\RediSearch\Exceptions\AliasDoesNotExistException;
+use Ehann\RediSearch\Exceptions\DocumentAlreadyInIndexException;
 use Ehann\RediSearch\Exceptions\FieldNotInSchemaException;
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
 use Ehann\RediSearch\Exceptions\RediSearchException;
@@ -325,6 +326,21 @@ class IndexTest extends RediSearchTestCase
 
         $this->assertFalse($result);
     }
+
+    public function testAddDocumentAlreadyInIndex()
+    {
+        $this->subject->create();
+        $this->expectException(DocumentAlreadyInIndexException::class);
+        /** @var TestDocument $document */
+        $document = $this->subject->makeDocument();
+        $document->title->setValue('How to be awesome.');
+        $this->subject->add($document);
+
+        $result = $this->subject->add($document);
+
+        $this->assertFalse($result);
+    }
+
 
     public function testReplaceDocument()
     {
