@@ -63,6 +63,7 @@ $document->title->setValue('How to be awesome.');
 $document->author->setValue('Jack');
 $document->price->setValue(9.99);
 $document->place->setValue(new GeoLocation(-77.0366, 38.8977));
+$document->color->setValue(new Tag('red'));
 
 $this->add($document);
 ```

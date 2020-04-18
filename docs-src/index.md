@@ -66,11 +66,11 @@ $bookIndex->add([
 ```php-inline
 $result = $bookIndex->search('two cities');
 
-$result->count();     // Number of documents.
-$result->documents(); // Array of matches.
+$result->getCount();     // Number of documents.
+$result->getDocuments(); // Array of matches.
 
 // Documents are returned as objects by default.
-$firstResult = $result->documents()[0];
+$firstResult = $result->getDocuments()[0];
 $firstResult->title;
 $firstResult->author;
 ```
