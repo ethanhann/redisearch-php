@@ -60,9 +60,10 @@ class Suggestion extends AbstractIndex
      * @param bool $fuzzy
      * @param bool $withPayloads
      * @param int $max
+     * @param bool $withScores
      * @return array
      */
-    public function get(string $prefix, bool $fuzzy = false, bool $withPayloads = false, int $max = -1): array
+    public function get(string $prefix, bool $fuzzy = false, bool $withPayloads = false, int $max = -1, bool $withScores = false): array
     {
         $args = [
             $this->indexName,
@@ -73,6 +74,9 @@ class Suggestion extends AbstractIndex
         }
         if ($withPayloads) {
             $args[] = 'WITHPAYLOADS';
+        }
+        if ($withScores) {
+            $args[] = 'WITHSCORES';
         }
         if ($max >= 0) {
             $args[] = 'MAX';
