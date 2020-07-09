@@ -280,7 +280,7 @@ class Index extends AbstractIndex implements IndexInterface
     /**
      * @return QueryBuilder
      */
-    protected function makeQueryBuilder(): QueryBuilder
+    public function makeQueryBuilder(): QueryBuilder
     {
         return (new QueryBuilder($this->redisClient, $this->getIndexName()));
     }
