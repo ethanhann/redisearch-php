@@ -121,6 +121,8 @@ class Index extends AbstractIndex implements IndexInterface
         $this->$name = (new TagField($name))->setSortable($sortable)->setNoindex($noindex)->setSeparator($separator);
         return $this;
     }
+    
+    
 
     /**
      * @return mixed
@@ -287,6 +289,16 @@ class Index extends AbstractIndex implements IndexInterface
     public function fieldFilter(string $fieldName, array $values): QueryBuilderInterface
     {
         return $this->makeQueryBuilder()->fieldFilter($fieldName, $values);
+    }
+    
+     /**
+     * @param string $fieldName
+     * @param array $values
+     * @return QueryBuilderInterface
+     */
+    public function notFieldFilter(string $fieldName, array $values): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->notFieldFilter($fieldName, $values);
     }
     
     /**
