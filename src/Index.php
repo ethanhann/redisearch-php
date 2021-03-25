@@ -513,7 +513,7 @@ class Index extends AbstractIndex implements IndexInterface
 
         $properties = $isFromHash ? $document->getHashDefinition() : $document->getDefinition();
         array_unshift($properties, $this->getIndexName());
-        return $this->rawCommand($isFromHash ? 'FT.ADDHASH' : 'FT.ADD', $properties);
+        return $this->rawCommand($isFromHash ? 'HSET' : 'FT.ADD', $properties);
     }
 
     /**
