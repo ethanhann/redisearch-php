@@ -10,12 +10,12 @@ class RuntimeConfigurationTest extends RediSearchTestCase
     /** @var RuntimeConfiguration */
     private $subject;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->subject = (new RuntimeConfiguration($this->redisClient, 'foo'));
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->redisClient->flushAll();
     }

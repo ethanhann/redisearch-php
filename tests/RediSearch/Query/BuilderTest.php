@@ -14,7 +14,7 @@ class BuilderTest extends RediSearchTestCase
     private $expectedResult1;
     private $expectedResult2;
     private $expectedResult3;
-    public function setUp()
+    public function setUp(): void
     {
         $this->indexName = 'QueryBuilderTest';
         $index = (new TestIndex($this->redisClient, $this->indexName))
@@ -54,7 +54,7 @@ class BuilderTest extends RediSearchTestCase
         $this->subject = (new Builder($this->redisClient, $this->indexName));
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->redisClient->flushAll();
     }
