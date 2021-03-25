@@ -365,9 +365,9 @@ class IndexTest extends RediSearchTestCase
     public function testAddDocumentFromHash()
     {
         $this->subject->create();
-        $id = 'gooblegobble';
-        $this->redisClient->rawCommand('HSET', [
-            $id,
+
+        $result = $this->subject->addHash([
+            'gooblegobble',
             'title',
             'How to be awesome',
             'author',
@@ -377,20 +377,30 @@ class IndexTest extends RediSearchTestCase
             'stock',
             231
         ]);
-        $document = $this->subject->makeDocument($id);
-
-        $result = $this->subject->addHash($document);
 
         $this->assertTrue($result);
     }
 
-    public function testShouldThrowExceptionWhenAddingFromHashThatDoesNotExist()
+    public function testFindDocumentAddedWithHash ()
     {
         $this->subject->create();
-        $document = $this->subject->makeDocument('does_not_exist');
-        $this->expectException(RediSearchException::class);
+        $title = 'How to be awesome';
+        $this->redisClient->rawCommand('HSET', [
+            'gooblegobble',
+            'title',
+            $title,
+            'author',
+            'Jack',
+            'price',
+            9.99,
+            'stock',
+            231
+        ]);
 
-        $this->subject->addHash($document);
+        $result = $this->subject->search($title);
+
+        $this->assertEquals(1, $result->getCount());
+        $this->assertEquals($title, $result->getDocuments()[0]->title);
     }
 
     public function testReplaceDocumentFromHash()
@@ -417,7 +427,7 @@ class IndexTest extends RediSearchTestCase
         ]);
         $document = $this->subject->makeDocument($id);
 
-        $result = $this->subject->replaceHash($document);
+        $result = $this->subject->addHash($document);
 
         $this->assertTrue($result);
     }
