@@ -19,7 +19,7 @@ class BuilderTest extends RediSearchTestCase
     private $expectedResult3;
     private $expectedResult4;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->indexName = 'AggregateBuilderTest';
         $index = (new TestIndex($this->redisClient, $this->indexName))
@@ -67,7 +67,7 @@ class BuilderTest extends RediSearchTestCase
         $this->subject = (new Builder($this->redisClient, $this->indexName));
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->redisClient->flushAll();
     }
@@ -244,7 +244,7 @@ class BuilderTest extends RediSearchTestCase
         $expected = 9.99;
 
         $result = $this->subject
-            ->groupBy('_')
+            ->groupBy()
             ->min('price')
             ->search();
 
@@ -256,7 +256,7 @@ class BuilderTest extends RediSearchTestCase
         $expected = 38.85;
 
         $result = $this->subject
-            ->groupBy('_')
+            ->groupBy()
             ->max('price')
             ->search();
 
@@ -284,7 +284,7 @@ class BuilderTest extends RediSearchTestCase
         $expected = 38.85;
 
         $result = $this->subject
-            ->groupBy('_')
+            ->groupBy()
             ->quantile('price', 0.5)
             ->search();
 

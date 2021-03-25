@@ -21,18 +21,18 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=7",
+        "php": ">=7.3||>=8.0",
         "psr/log": "^1.0",
-        "ethanhann/redis-raw": "^0.3"
+        "ethanhann/redis-raw": "v1.x-dev"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6.0",
+        "phpunit/phpunit": "^8.0",
         "mockery/mockery": "^0.9.9",
         "predis/predis": "^1.1",
         "friendsofphp/php-cs-fixer": "^2.2",
         "consolidation/robo": "^2.0",
         "monolog/monolog": "^1.23",
-        "cheprasov/php-redis-client": "^1.8",
-        "ukko/phpredis-phpdoc": "^5.0@beta"
+        "ukko/phpredis-phpdoc": "^5.0@beta",
+        "cheprasov/php-redis-client": "^1.9"
     }
 }

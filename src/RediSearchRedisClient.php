@@ -3,12 +3,14 @@
 namespace Ehann\RediSearch;
 
 use Ehann\RediSearch\Exceptions\AliasDoesNotExistException;
+use Ehann\RediSearch\Exceptions\DocumentAlreadyInIndexException;
 use Ehann\RediSearch\Exceptions\RediSearchException;
 use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
 use Ehann\RediSearch\Exceptions\UnknownIndexNameOrNameIsAnAliasItselfException;
 use Ehann\RediSearch\Exceptions\UnknownRediSearchCommandException;
 use Ehann\RediSearch\Exceptions\UnsupportedRediSearchLanguageException;
 use Ehann\RedisRaw\AbstractRedisRawClient;
+use Ehann\RedisRaw\Exceptions\RawCommandErrorException;
 use Ehann\RedisRaw\RedisRawClientInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -23,7 +25,7 @@ class RediSearchRedisClient implements RedisRawClientInterface
         $this->redis = $redis;
     }
 
-    public function validateRawCommandResults($payload)
+    public function validateRawCommandResults($payload, string $command, array $arguments)
     {
         $isPayloadException = $payload instanceof Exception;
         $message = $isPayloadException ? $payload->getMessage() : $payload;
@@ -38,7 +40,7 @@ class RediSearchRedisClient implements RedisRawClientInterface
             throw new UnknownIndexNameException();
         }
 
-        if (in_array($message, ['unsupported language', 'unsupported stemmer language', 'bad argument for `language`'])) {
+        if (in_array($message, ['no such language', 'unsupported language', 'unsupported stemmer language', 'bad argument for `language`'])) {
             throw new UnsupportedRediSearchLanguageException();
         }
 
@@ -52,6 +54,10 @@ class RediSearchRedisClient implements RedisRawClientInterface
 
         if (strpos($message, 'err unknown command \'ft.') !== false) {
             throw new UnknownRediSearchCommandException($message);
+        }
+
+        if (in_array($message, ['document already in index', 'document already exists'])) {
+            throw new DocumentAlreadyInIndexException($arguments[0], $arguments[1]);
         }
 
         throw new RediSearchException($payload);
@@ -72,11 +78,22 @@ class RediSearchRedisClient implements RedisRawClientInterface
         return $this->redis->multi($usePipeline);
     }
 
-    public function rawCommand(string $command, array $arguments)
+    public function rawCommand(string $command, array $arguments = [])
     {
-        $result = $this->redis->rawCommand($command, $arguments);
+        try {
+            foreach ($arguments as $index => $value) {
+                /* The various RedisRaw clients have different expectations about arg types, but generally they all
+                 * agree that they can be strings.
+                 */
+                $arguments[$index] = strval($value);
+            }
+            $result = $this->redis->rawCommand($command, $arguments);
+        } catch (RawCommandErrorException $exception) {
+            $result = $exception->getPrevious()->getMessage();
+        }
+
         if ($command !== 'FT.EXPLAIN') {
-            $this->validateRawCommandResults($result);
+            $this->validateRawCommandResults($result, $command, $arguments);
         }
 
         return $result;

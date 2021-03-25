@@ -10,12 +10,12 @@ class SuggestionTest extends RediSearchTestCase
     /** @var Suggestion */
     private $subject;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->subject = (new Suggestion($this->redisClient, 'foo'));
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->redisClient->flushAll();
     }

@@ -14,7 +14,7 @@ class AggregationResultTest extends RediSearchTestCase
     protected $subject;
     protected $expectedDocuments;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->expectedDocuments = [
             ['title' => 'part1'],

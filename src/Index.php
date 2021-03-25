@@ -7,6 +7,7 @@ use Ehann\RediSearch\Aggregate\BuilderInterface as AggregateBuilderInterface;
 use Ehann\RediSearch\Document\AbstractDocumentFactory;
 use Ehann\RediSearch\Document\DocumentInterface;
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
+use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
 use Ehann\RediSearch\Fields\FieldInterface;
 use Ehann\RediSearch\Fields\GeoField;
 use Ehann\RediSearch\Fields\NumericField;
@@ -15,6 +16,8 @@ use Ehann\RediSearch\Fields\TextField;
 use Ehann\RediSearch\Query\Builder as QueryBuilder;
 use Ehann\RediSearch\Query\BuilderInterface as QueryBuilderInterface;
 use Ehann\RediSearch\Query\SearchResult;
+use Ehann\RedisRaw\Exceptions\RawCommandErrorException;
+use RedisException;
 
 class Index extends AbstractIndex implements IndexInterface
 {
@@ -66,9 +69,22 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * @return bool
+     */
+    public function exists(): bool
+    {
+        try {
+            $this->info();
+            return true;
+        } catch (UnknownIndexNameException $exception) {
+            return false;
+        }
+    }
+
+    /**
      * @return array
      */
-    protected function getFields(): array
+    public function getFields(): array
     {
         $fields = [];
         foreach (get_object_vars($this) as $field) {
@@ -125,6 +141,15 @@ class Index extends AbstractIndex implements IndexInterface
     {
         $this->$name = (new TagField($name))->setSortable($sortable)->setNoindex($noindex)->setSeparator($separator);
         return $this;
+    }
+
+    /**
+     * @param string $name
+     * @return array
+     */
+    public function tagValues(string $name): array
+    {
+        return $this->rawCommand('FT.TAGVALS', [$this->getIndexName(), $name]);
     }
 
     /**
@@ -449,14 +474,30 @@ class Index extends AbstractIndex implements IndexInterface
     /**
      * @param array $documents
      * @param bool $disableAtomicity
+     * @param bool $replace
      */
-    public function addMany(array $documents, $disableAtomicity = false)
+    public function addMany(array $documents, $disableAtomicity = false, $replace = false)
     {
+        $result = null;
+
         $pipe = $this->redisClient->multi($disableAtomicity);
         foreach ($documents as $document) {
-            $this->_add($document);
+            if (is_array($document)) {
+                $document = $this->arrayToDocument($document);
+            }
+            $this->_add($document->setReplace($replace));
         }
-        $pipe->exec();
+        try {
+            $pipe->exec();
+        } catch (RedisException $exception) {
+            $result = $exception->getMessage();
+        } catch (RawCommandErrorException $exception) {
+            $result = $exception->getPrevious()->getMessage();
+        }
+
+        if ($result) {
+            $this->redisClient->validateRawCommandResults($result, 'PIPE', [$this->indexName, '*MANY']);
+        }
     }
 
     /**
@@ -472,7 +513,7 @@ class Index extends AbstractIndex implements IndexInterface
 
         $properties = $isFromHash ? $document->getHashDefinition() : $document->getDefinition();
         array_unshift($properties, $this->getIndexName());
-        return $this->rawCommand($isFromHash ? 'FT.ADDHASH' : 'FT.ADD', $properties);
+        return $this->rawCommand($isFromHash ? 'HSET' : 'FT.ADD', $properties);
     }
 
     /**
@@ -503,6 +544,15 @@ class Index extends AbstractIndex implements IndexInterface
     public function replace($document): bool
     {
         return $this->_add($this->arrayToDocument($document)->setReplace(true));
+    }
+
+    /**
+     * @param array $documents
+     * @param bool $disableAtomicity
+     */
+    public function replaceMany(array $documents, $disableAtomicity = false)
+    {
+        $this->addMany($documents, $disableAtomicity, true);
     }
 
     /**

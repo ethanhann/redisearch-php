@@ -3,6 +3,7 @@
 namespace Ehann\Tests\RediSearch;
 
 use Ehann\RediSearch\Exceptions\AliasDoesNotExistException;
+use Ehann\RediSearch\Exceptions\DocumentAlreadyInIndexException;
 use Ehann\RediSearch\Exceptions\FieldNotInSchemaException;
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
 use Ehann\RediSearch\Exceptions\RediSearchException;
@@ -17,6 +18,7 @@ use Ehann\RediSearch\Fields\GeoLocation;
 use Ehann\RediSearch\Fields\NumericField;
 use Ehann\RediSearch\Fields\TextField;
 use Ehann\RediSearch\IndexInterface;
+use Ehann\RediSearch\RediSearchRedisClient;
 use Ehann\Tests\Stubs\TestDocument;
 use Ehann\Tests\Stubs\TestIndex;
 use Ehann\Tests\Stubs\IndexWithoutFields;
@@ -27,7 +29,7 @@ class IndexTest extends RediSearchTestCase
     /** @var IndexInterface */
     private $subject;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->indexName = 'ClientTest';
         $this->subject = (new TestIndex($this->redisClient, $this->indexName))
@@ -41,7 +43,7 @@ class IndexTest extends RediSearchTestCase
         $this->logger->debug('setUp...');
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->redisClient->flushAll();
     }
@@ -58,6 +60,22 @@ class IndexTest extends RediSearchTestCase
         $result = $this->subject->create();
 
         $this->assertTrue($result);
+    }
+
+    public function testShouldVerifyIndexExists()
+    {
+        $this->subject->create();
+
+        $result = $this->subject->exists();
+
+        $this->assertTrue($result);
+    }
+
+    public function testShouldVerifyIndexDoesNotExist()
+    {
+        $result = $this->subject->exists();
+
+        $this->assertFalse($result);
     }
 
     public function testShouldDropIndex()
@@ -150,6 +168,30 @@ class IndexTest extends RediSearchTestCase
 
         $result = $index->create();
         $this->assertTrue($result);
+    }
+
+    public function testGetTagValues()
+    {
+        $this->subject->create();
+        $this->subject->add([
+            new TextField('title', 'How to be awesome.'),
+            new TextField('author', 'Jack'),
+            new NumericField('price', 9.99),
+            new NumericField('stock', 231),
+            new TagField('color', 'red'),
+        ]);
+        $this->subject->add([
+            new TextField('title', 'F.O.W.L'),
+            new TextField('author', 'Jill'),
+            new NumericField('price', 19.99),
+            new NumericField('stock', 31),
+            new TagField('color', 'blue'),
+        ]);
+        $expected = ['red', 'blue'];
+
+        $actual = $this->subject->tagValues('color');
+
+        $this->assertEquals($expected, $actual);
     }
 
     public function testAddDocumentWithZeroScore()
@@ -285,6 +327,21 @@ class IndexTest extends RediSearchTestCase
         $this->assertFalse($result);
     }
 
+    public function testAddDocumentAlreadyInIndex()
+    {
+        $this->subject->create();
+        $this->expectException(DocumentAlreadyInIndexException::class);
+        /** @var TestDocument $document */
+        $document = $this->subject->makeDocument();
+        $document->title->setValue('How to be awesome.');
+        $this->subject->add($document);
+
+        $result = $this->subject->add($document);
+
+        $this->assertFalse($result);
+    }
+
+
     public function testReplaceDocument()
     {
         $this->subject->create();
@@ -308,9 +365,9 @@ class IndexTest extends RediSearchTestCase
     public function testAddDocumentFromHash()
     {
         $this->subject->create();
-        $id = 'gooblegobble';
-        $this->redisClient->rawCommand('HSET', [
-            $id,
+
+        $result = $this->subject->addHash([
+            'gooblegobble',
             'title',
             'How to be awesome',
             'author',
@@ -320,20 +377,30 @@ class IndexTest extends RediSearchTestCase
             'stock',
             231
         ]);
-        $document = $this->subject->makeDocument($id);
-
-        $result = $this->subject->addHash($document);
 
         $this->assertTrue($result);
     }
 
-    public function testShouldThrowExceptionWhenAddingFromHashThatDoesNotExist()
+    public function testFindDocumentAddedWithHash ()
     {
         $this->subject->create();
-        $document = $this->subject->makeDocument('does_not_exist');
-        $this->expectException(RediSearchException::class);
+        $title = 'How to be awesome';
+        $this->redisClient->rawCommand('HSET', [
+            'gooblegobble',
+            'title',
+            $title,
+            'author',
+            'Jack',
+            'price',
+            9.99,
+            'stock',
+            231
+        ]);
 
-        $this->subject->addHash($document);
+        $result = $this->subject->search($title);
+
+        $this->assertEquals(1, $result->getCount());
+        $this->assertEquals($title, $result->getDocuments()[0]->title);
     }
 
     public function testReplaceDocumentFromHash()
@@ -360,7 +427,7 @@ class IndexTest extends RediSearchTestCase
         ]);
         $document = $this->subject->makeDocument($id);
 
-        $result = $this->subject->replaceHash($document);
+        $result = $this->subject->addHash($document);
 
         $this->assertTrue($result);
     }
@@ -606,7 +673,8 @@ class IndexTest extends RediSearchTestCase
             $this->markTestSkipped('Skipping because test suite is not configured to use PhpRedis.');
         }
 
-        $this->subject->setRedisClient($this->makePhpRedisAdapter())->create();
+        $rediSearchRedisClient = new RediSearchRedisClient($this->makePhpRedisAdapter());
+        $this->subject->setRedisClient($rediSearchRedisClient)->create();
         $expectedDocumentCount = 10;
         $documents = $this->makeDocuments();
         $expectedCount = count($documents);
@@ -743,5 +811,25 @@ class IndexTest extends RediSearchTestCase
         $this->expectException(AliasDoesNotExistException::class);
 
         $this->subject->deleteAlias('MyAlias');
+    }
+
+    public function testShouldGetFields()
+    {
+        $this->subject->create();
+        $expectedTitle = 'title TEXT WEIGHT 1';
+        $expectedAuthor = 'author TEXT WEIGHT 1';
+        $expectedPrice = 'price NUMERIC';
+        $expectedStock = 'stock NUMERIC';
+        $expectedPlace = 'place GEO';
+        $expectedColor = 'color TAG SEPARATOR ,';
+
+        $fields = $this->subject->getFields();
+
+        $this->assertEquals($expectedTitle, implode(' ', $fields['title']->getTypeDefinition()));
+        $this->assertEquals($expectedAuthor, implode(' ', $fields['author']->getTypeDefinition()));
+        $this->assertEquals($expectedPrice, implode(' ', $fields['price']->getTypeDefinition()));
+        $this->assertEquals($expectedStock, implode(' ', $fields['stock']->getTypeDefinition()));
+        $this->assertEquals($expectedPlace, implode(' ', $fields['place']->getTypeDefinition()));
+        $this->assertEquals($expectedColor, implode(' ', $fields['color']->getTypeDefinition()));
     }
 }
