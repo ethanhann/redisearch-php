@@ -56,7 +56,7 @@ class RediSearchRedisClient implements RedisRawClientInterface
             throw new UnknownRediSearchCommandException($message);
         }
 
-        if (strpos($message, 'document already in index') !== false) {
+        if (in_array($message, ['document already in index', 'document already exists'])) {
             throw new DocumentAlreadyInIndexException($arguments[0], $arguments[1]);
         }
 
