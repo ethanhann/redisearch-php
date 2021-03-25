@@ -1,7 +1,5 @@
 # RediSearch PHP Client
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/EthanHann/5)
-
 [![Build Status](https://travis-ci.org/ethanhann/redisearch-php.svg?branch=master)](https://travis-ci.org/ethanhann/redisearch-php)
 [![Latest Stable Version](https://poser.pugx.org/ethanhann/redisearch-php/v/stable)](https://packagist.org/packages/ethanhann/redisearch-php)
 [![Total Downloads](https://poser.pugx.org/ethanhann/redisearch-php/downloads)](https://packagist.org/packages/ethanhann/redisearch-php)
