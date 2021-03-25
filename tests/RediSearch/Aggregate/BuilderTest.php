@@ -244,7 +244,7 @@ class BuilderTest extends RediSearchTestCase
         $expected = 9.99;
 
         $result = $this->subject
-            ->groupBy('_')
+            ->groupBy()
             ->min('price')
             ->search();
 
@@ -256,7 +256,7 @@ class BuilderTest extends RediSearchTestCase
         $expected = 38.85;
 
         $result = $this->subject
-            ->groupBy('_')
+            ->groupBy()
             ->max('price')
             ->search();
 
@@ -284,7 +284,7 @@ class BuilderTest extends RediSearchTestCase
         $expected = 38.85;
 
         $result = $this->subject
-            ->groupBy('_')
+            ->groupBy()
             ->quantile('price', 0.5)
             ->search();
 
