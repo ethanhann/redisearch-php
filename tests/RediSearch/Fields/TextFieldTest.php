@@ -18,7 +18,7 @@ class TextFieldTest extends TestCase
     /** @var float */
     private $defaultWeight = 1.0;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->subject = new TextField($this->fieldName);
     }

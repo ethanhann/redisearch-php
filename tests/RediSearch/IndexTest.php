@@ -29,7 +29,7 @@ class IndexTest extends RediSearchTestCase
     /** @var IndexInterface */
     private $subject;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->indexName = 'ClientTest';
         $this->subject = (new TestIndex($this->redisClient, $this->indexName))
@@ -43,7 +43,7 @@ class IndexTest extends RediSearchTestCase
         $this->logger->debug('setUp...');
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->redisClient->flushAll();
     }
