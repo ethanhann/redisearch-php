@@ -68,7 +68,7 @@ class Builder implements BuilderInterface
      * @param CanBecomeArrayInterface|array $reducer
      * @return BuilderInterface
      */
-    public function groupBy($fieldName, CanBecomeArrayInterface $reducer = null): BuilderInterface
+    public function groupBy($fieldName = [], CanBecomeArrayInterface $reducer = null): BuilderInterface
     {
         $this->pipeline[] = new GroupBy(is_array($fieldName) ? $fieldName : [$fieldName]);
         if (!is_null($reducer)) {
