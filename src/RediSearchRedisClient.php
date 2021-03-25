@@ -40,7 +40,7 @@ class RediSearchRedisClient implements RedisRawClientInterface
             throw new UnknownIndexNameException();
         }
 
-        if (in_array($message, ['unsupported language', 'unsupported stemmer language', 'bad argument for `language`'])) {
+        if (in_array($message, ['no such language', 'unsupported language', 'unsupported stemmer language', 'bad argument for `language`'])) {
             throw new UnsupportedRediSearchLanguageException();
         }
 
