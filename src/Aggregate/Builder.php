@@ -3,6 +3,7 @@
 namespace Ehann\RediSearch\Aggregate;
 
 use Ehann\RediSearch\Aggregate\Operations\Apply;
+use Ehann\RediSearch\Aggregate\Operations\Filter;
 use Ehann\RediSearch\Aggregate\Operations\GroupBy;
 use Ehann\RediSearch\Aggregate\Operations\Limit;
 use Ehann\RediSearch\Aggregate\Operations\Load;
@@ -220,6 +221,16 @@ class Builder implements BuilderInterface
     public function apply(string $expression, string $asFieldName): BuilderInterface
     {
         $this->pipeline[] = new Apply($expression, $asFieldName);
+        return $this;
+    }
+
+    /**
+     * @param string $expression
+     * @return BuilderInterface
+     */
+    public function filter(string $expression): BuilderInterface
+    {
+        $this->pipeline[] = new Filter($expression);
         return $this;
     }
 
