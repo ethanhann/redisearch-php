@@ -523,9 +523,17 @@ class IndexTest extends RediSearchTestCase
             'name' => 'Bar',
             'color' => 'blue',
         ]);
+        $index->add([
+            'name' => 'Baz',
+            'color' => 'sky blue',
+        ]);
+        $index->add([
+            'name' => 'Qux',
+            'color' => 'sugar-cookie',
+        ]);
 
         $result = $index
-            ->tagFilter('color', ['blue'])
+            ->tagFilter('color', ['sugar-cookie'])
             ->search();
 
         $this->assertEquals(1, $result->getCount());
