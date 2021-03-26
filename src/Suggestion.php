@@ -23,7 +23,7 @@ class Suggestion extends AbstractIndex
             $score
         ];
         if ($increment) {
-            $args[] = 'INC';
+            $args[] = 'INCR';
         }
         if (!is_null($payload)) {
             $args[] = 'PAYLOAD';

@@ -29,6 +29,22 @@ class SuggestionTest extends RediSearchTestCase
         $this->assertEquals($expectedSizeOfIndex, $result);
     }
 
+    public function testShouldIncrementExistingSuggestion()
+    {
+        $expectedSizeOfIndex = 2;
+        $expectedFirstResult = 'bar';
+        $expectedSecondResult = 'baz';
+        $this->subject->add($expectedFirstResult, 5);
+        $this->subject->add($expectedSecondResult, 7);
+
+        $result = $this->subject->add($expectedFirstResult, 10, true);
+
+        $actualSuggestion = $this->subject->get('ba');
+        $this->assertEquals($expectedSizeOfIndex, $result);
+        $this->assertEquals($expectedFirstResult, $actualSuggestion[0]);
+        $this->assertEquals($expectedSecondResult, $actualSuggestion[1]);
+    }
+
     public function testShouldDeleteSuggestion()
     {
         $string = 'bar';
