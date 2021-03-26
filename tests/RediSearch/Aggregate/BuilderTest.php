@@ -114,6 +114,21 @@ class BuilderTest extends RediSearchTestCase
         $this->assertEquals($expectedAveragePrice, $result->getDocuments()[0]->avg_price);
     }
 
+    public function testGetGroupByAndReduceAndFilter()
+    {
+        $expectedCount = 2;
+        $expectedAveragePrice = 18.85;
+
+        $result = $this->subject
+            ->groupBy('author')
+            ->reduce(new Avg('price'))
+            ->filter('@author == "Jessica" || @author == "Jack"')
+            ->search();
+
+        $this->assertEquals($expectedCount, $result->getCount());
+        $this->assertEquals($expectedAveragePrice, $result->getDocuments()[0]->avg_price);
+    }
+
     public function testPipelineHasCommands()
     {
         $this->subject
