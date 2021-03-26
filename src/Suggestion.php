@@ -4,6 +4,7 @@ namespace Ehann\RediSearch;
 
 class Suggestion extends AbstractIndex
 {
+
     /**
      * Add a suggestion string to an auto-complete suggestion dictionary.
      * This is disconnected from the index definitions,
@@ -59,10 +60,11 @@ class Suggestion extends AbstractIndex
      * @param string $prefix
      * @param bool $fuzzy
      * @param bool $withPayloads
+     * @param bool $withScores
      * @param int $max
      * @return array
      */
-    public function get(string $prefix, bool $fuzzy = false, bool $withPayloads = false, int $max = -1): array
+    public function get(string $prefix, bool $fuzzy = false, bool $withPayloads = false, int $max = -1, bool $withScores = false): array
     {
         $args = [
             $this->indexName,
@@ -73,6 +75,9 @@ class Suggestion extends AbstractIndex
         }
         if ($withPayloads) {
             $args[] = 'WITHPAYLOADS';
+        }
+        if ($withScores) {
+            $args[] = 'WITHSCORES';
         }
         if ($max >= 0) {
             $args[] = 'MAX';
