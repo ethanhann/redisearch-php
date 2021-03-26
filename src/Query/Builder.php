@@ -128,9 +128,20 @@ class Builder implements BuilderInterface
         return $this;
     }
 
-    public function tagFilter(string $fieldName, array $values): BuilderInterface
+    public function tagFilter(string $fieldName, array $values, array $charactersToEscape = null): BuilderInterface
     {
-        $separatedValues = implode('|', $values);
+        if ($charactersToEscape == null) {
+            $charactersToEscape = [' ', '-'];
+        }
+        $escapedValues = [];
+        foreach ($values as $value) {
+            $escapedValue = $value;
+            foreach ($charactersToEscape as $character) {
+                $escapedValue = str_replace($character, "\\$character", $escapedValue);
+            }
+            $escapedValues[] = $escapedValue;
+        }
+        $separatedValues = implode('|', $escapedValues);
         $this->tagFilters[] = "@$fieldName:{{$separatedValues}}";
         return $this;
     }

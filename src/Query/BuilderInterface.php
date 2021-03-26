@@ -18,7 +18,7 @@ interface BuilderInterface
     public function withPayloads(): BuilderInterface;
     public function withScores(): BuilderInterface;
     public function verbatim(): BuilderInterface;
-    public function tagFilter(string $fieldName, array $values): BuilderInterface;
+    public function tagFilter(string $fieldName, array $values, array $charactersToEscape = null): BuilderInterface;
     public function numericFilter(string $fieldName, $min, $max = null): BuilderInterface;
     public function geoFilter(string $fieldName, float $longitude, float $latitude, float $radius, string $distanceUnit = 'km'): BuilderInterface;
     public function sortBy(string $fieldName, $order = 'ASC'): BuilderInterface;
