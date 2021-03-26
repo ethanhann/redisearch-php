@@ -11,6 +11,7 @@ interface BuilderInterface
     public function reduce(CanBecomeArrayInterface $reducer): BuilderInterface;
     public function sortBy($fieldName, $isAscending = true, int $max = -1): BuilderInterface;
     public function apply(string $expression, string $asName): BuilderInterface;
+    public function filter(string $expression): BuilderInterface;
     public function limit(int $offset, int $pageSize = 10): BuilderInterface;
     public function search(string $query = '', bool $documentsAsArray = false): AggregationResult;
     public function avg(string $fieldName): BuilderInterface;
