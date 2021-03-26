@@ -82,4 +82,20 @@ class SuggestionTest extends RediSearchTestCase
         $this->assertEquals($expectedFirstResult, $result[0]);
         $this->assertEquals($expectedSecondResult, $result[1]);
     }
+
+    public function testShouldGetSuggestionWithScore()
+    {
+        $expectedSuggestion = 'bar';
+        $expectedScore = '2147483648';
+        $this->subject->add('bar', 1.23);
+        $this->subject->add('baz', 24.99);
+        $this->subject->add('qux', 14.0);
+        $expectedSizeOfResults = 2;
+
+        $result = $this->subject->get('bar', false, false, 1, true);
+
+        $this->assertCount($expectedSizeOfResults, $result);
+        $this->assertEquals($expectedSuggestion, $result[0]);
+        $this->assertEquals($expectedScore, $result[1]);
+    }
 }
