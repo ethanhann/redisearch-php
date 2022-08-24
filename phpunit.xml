@@ -16,11 +16,11 @@
             <directory suffix="Test.php">./tests</directory>
         </testsuite>
     </testsuites>
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
+    <coverage>
+        <include>
             <directory suffix=".php">./src</directory>
-        </whitelist>
-    </filter>
+        </include>
+    </coverage>
     <php>
         <env name="REDIS_LIBRARY" value="Predis" />
         <env name="REDIS_HOST" value="localhost" />
