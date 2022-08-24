@@ -286,17 +286,18 @@ class BuilderTest extends RediSearchTestCase
 
         $result = $this->subject
             ->groupBy('title')
-            ->quantile('price', 0.5)
+            ->quantile('price', 1)
             ->search();
 
-        $this->assertEquals($expected1, $result->getDocuments()[0]->quantile_price);
-        $this->assertEquals($expected2, $result->getDocuments()[1]->quantile_price);
-        $this->assertEquals($expected3, $result->getDocuments()[2]->quantile_price);
+        $documents = $result->getDocuments();
+        $this->assertEquals($expected1, $documents[0]->quantile_price);
+        $this->assertEquals($expected2, $documents[1]->quantile_price);
+        $this->assertEquals($expected3, $documents[2]->quantile_price);
     }
 
     public function testGetAbsoluteQuantile()
     {
-        $expected = 38.85;
+        $expected = 18.85;
 
         $result = $this->subject
             ->groupBy()

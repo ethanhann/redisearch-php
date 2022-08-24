@@ -7,7 +7,7 @@ use InvalidArgumentException;
 
 class Builder implements BuilderInterface
 {
-    const GEO_FILTER_UNITS = ['m', 'km', 'mi', 'ft'];
+    public const GEO_FILTER_UNITS = ['m', 'km', 'mi', 'ft'];
 
     protected $return = '';
     protected $summarize = '';
@@ -181,6 +181,11 @@ class Builder implements BuilderInterface
         return $this;
     }
 
+    protected function explodeArgument(?string $argument): array
+    {
+        return explode(' ', $argument ?? '');
+    }
+
     public function makeSearchCommandArguments(string $query): array
     {
         $queryParts = array_merge([$query], $this->tagFilters, $this->numericFilters, $this->geoFilters);
@@ -189,8 +194,8 @@ class Builder implements BuilderInterface
         return array_filter(
             array_merge(
                 trim($queryWithFilters) === '' ? [$this->indexName] : [$this->indexName, $queryWithFilters],
-                explode(' ', $this->limit),
-                explode(' ', $this->slop),
+                $this->explodeArgument($this->limit),
+                $this->explodeArgument($this->slop),
                 [
                     $this->verbatim,
                     $this->withScores,
@@ -198,16 +203,16 @@ class Builder implements BuilderInterface
                     $this->noStopWords,
                     $this->noContent,
                 ],
-                explode(' ', $this->inFields),
-                explode(' ', $this->inKeys),
-                explode(' ', $this->return),
-                explode(' ', $this->summarize),
-                explode(' ', $this->highlight),
-                explode(' ', $this->sortBy),
-                explode(' ', $this->scorer),
-                explode(' ', $this->language),
-                explode(' ', $this->expander),
-                explode(' ', $this->payload)
+                $this->explodeArgument($this->inFields),
+                $this->explodeArgument($this->inKeys),
+                $this->explodeArgument($this->return),
+                $this->explodeArgument($this->summarize),
+                $this->explodeArgument($this->highlight),
+                $this->explodeArgument($this->sortBy),
+                $this->explodeArgument($this->scorer),
+                $this->explodeArgument($this->language),
+                $this->explodeArgument($this->expander),
+                $this->explodeArgument($this->payload),
             ),
             function ($item) {
                 return !is_null($item) && $item !== '';

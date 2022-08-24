@@ -214,7 +214,7 @@ class BuilderTest extends RediSearchTestCase
 
         $result = $this->subject->explain('How awesome');
 
-        $this->assertContains($expectedInExplanation, $result);
+        $this->assertStringContainsString($expectedInExplanation, $result);
     }
 
     public function testExplainComplexSearchQuery()
@@ -224,8 +224,8 @@ class BuilderTest extends RediSearchTestCase
 
         $result = $this->subject->explain('(How awesome)|(22st Century)');
 
-        $this->assertContains($expectedInExplanation1, $result);
-        $this->assertContains($expectedInExplanation2, $result);
+        $this->assertStringContainsString($expectedInExplanation1, $result);
+        $this->assertStringContainsString($expectedInExplanation2, $result);
     }
 
     public function testSearchWithScorerFunction()
