@@ -682,7 +682,10 @@ class IndexTest extends RediSearchTestCase
         }
 
         $rediSearchRedisClient = new RediSearchRedisClient($this->makePhpRedisAdapter());
-        $this->subject->setRedisClient($rediSearchRedisClient)->create();
+        $rediSearchRedisClient->setLogger($this->logger);
+        $this->subject
+            ->setRedisClient($rediSearchRedisClient)
+            ->create();
         $expectedDocumentCount = 10;
         $documents = $this->makeDocuments();
         $expectedCount = count($documents);
