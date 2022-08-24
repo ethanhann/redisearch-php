@@ -1,5 +1,7 @@
 <?php
 
+use Robo\Collection\CollectionBuilder;
+use Robo\Result;
 use Robo\Tasks;
 use Robo\Collection\Collection;
 
@@ -7,7 +9,7 @@ require_once 'vendor/autoload.php';
 
 class RoboFile extends Tasks
 {
-    function build()
+    public function build(): Result
     {
         return (new Collection())
             ->add($this->taskFixCodeStyle())
@@ -15,12 +17,12 @@ class RoboFile extends Tasks
             ->run();
     }
 
-    function test()
+    public function test(): Result
     {
         return $this->taskPhpUnit()->run();
     }
 
-    function testAll()
+    public function testAll(): Result
     {
         return (new Collection())
             ->add($this->taskTestPredis())
@@ -29,41 +31,41 @@ class RoboFile extends Tasks
             ->run();
     }
 
-    function testPredis()
+    public function testPredis(): Result
     {
         return $this->taskTestPredis()->run();
     }
 
-    function testPhpRedis()
+    public function testPhpRedis(): Result
     {
         return $this->taskTestPhpRedis()->run();
     }
 
-    function testRedisClient()
+    public function testRedisClient(): Result
     {
         return $this->taskTestRedisClient()->run();
     }
 
-    function taskFixCodeStyle()
+    public function taskFixCodeStyle(): CollectionBuilder
     {
         return $this->taskExec('./vendor/bin/php-cs-fixer fix src');
     }
 
-    function taskTestPredis()
+    public function taskTestPredis(): CollectionBuilder
     {
         $task = $this->taskPhpUnit();
         $task->env('REDIS_LIBRARY', 'Predis');
         return $task;
     }
 
-    function taskTestPhpRedis()
+    public function taskTestPhpRedis(): CollectionBuilder
     {
         $task = $this->taskPhpUnit();
         $task->env('REDIS_LIBRARY', 'PhpRedis');
         return $task;
     }
 
-    function taskTestRedisClient()
+    public function taskTestRedisClient(): CollectionBuilder
     {
         $task = $this->taskPhpUnit();
         $task->env('REDIS_LIBRARY', 'RedisClient');

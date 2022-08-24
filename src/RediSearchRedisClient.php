@@ -25,10 +25,19 @@ class RediSearchRedisClient implements RedisRawClientInterface
         $this->redis = $redis;
     }
 
-    public function validateRawCommandResults($payload, string $command, array $arguments)
+    /**
+     * @throws RediSearchException
+     * @throws DocumentAlreadyInIndexException
+     * @throws UnknownIndexNameException
+     * @throws UnsupportedRediSearchLanguageException
+     * @throws AliasDoesNotExistException
+     * @throws UnknownRediSearchCommandException
+     * @throws UnknownIndexNameOrNameIsAnAliasItselfException
+     */
+    public function validateRawCommandResults($rawResult, string $command, array $arguments)
     {
-        $isPayloadException = $payload instanceof Exception;
-        $message = $isPayloadException ? $payload->getMessage() : $payload;
+        $isRawResultException = $rawResult instanceof Exception;
+        $message = $isRawResultException ? $rawResult->getMessage() : $rawResult;
 
         if (!is_string($message)) {
             return;
@@ -60,12 +69,13 @@ class RediSearchRedisClient implements RedisRawClientInterface
             throw new DocumentAlreadyInIndexException($arguments[0], $arguments[1]);
         }
 
-        throw new RediSearchException($payload);
+        throw new RediSearchException($rawResult);
     }
 
     public function connect($hostname = '127.0.0.1', $port = 6379, $db = 0, $password = null): RedisRawClientInterface
     {
         $this->redis->connect($hostname, $port, $db, $password);
+        return $this;
     }
 
     public function flushAll()
@@ -78,6 +88,15 @@ class RediSearchRedisClient implements RedisRawClientInterface
         return $this->redis->multi($usePipeline);
     }
 
+    /**
+     * @throws RediSearchException
+     * @throws DocumentAlreadyInIndexException
+     * @throws UnknownIndexNameException
+     * @throws UnsupportedRediSearchLanguageException
+     * @throws AliasDoesNotExistException
+     * @throws UnknownRediSearchCommandException
+     * @throws UnknownIndexNameOrNameIsAnAliasItselfException
+     */
     public function rawCommand(string $command, array $arguments = [])
     {
         try {
