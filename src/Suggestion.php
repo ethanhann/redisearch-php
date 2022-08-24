@@ -4,7 +4,6 @@ namespace Ehann\RediSearch;
 
 class Suggestion extends AbstractIndex
 {
-
     /**
      * Add a suggestion string to an auto-complete suggestion dictionary.
      * This is disconnected from the index definitions,

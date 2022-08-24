@@ -291,7 +291,7 @@ class Index extends AbstractIndex implements IndexInterface
         $this->noFrequenciesEnabled = $noFrequenciesEnabled;
         return $this;
     }
-    
+
     /**
      * @param array $stopWords
      * @return IndexInterface

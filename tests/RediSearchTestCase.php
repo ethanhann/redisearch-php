@@ -15,9 +15,9 @@ use PHPUnit\Framework\TestCase;
 
 abstract class RediSearchTestCase extends TestCase
 {
-    const PREDIS_LIBRARY = 'Predis';
-    const PHP_REDIS_LIBRARY = 'PhpRedis';
-    const REDIS_CLIENT_LIBRARY = 'RedisClient';
+    public const PREDIS_LIBRARY = 'Predis';
+    public const PHP_REDIS_LIBRARY = 'PhpRedis';
+    public const REDIS_CLIENT_LIBRARY = 'RedisClient';
 
     /** @var string */
     protected $indexName;
