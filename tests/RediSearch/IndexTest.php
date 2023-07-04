@@ -172,26 +172,30 @@ class IndexTest extends RediSearchTestCase
 
     public function testGetTagValues()
     {
+        $expectedTagCount = 2;
+        $blue = 'blue';
+        $red = 'red';
         $this->subject->create();
         $this->subject->add([
             new TextField('title', 'How to be awesome.'),
             new TextField('author', 'Jack'),
             new NumericField('price', 9.99),
             new NumericField('stock', 231),
-            new TagField('color', 'red'),
+            new TagField('color', $red),
         ]);
         $this->subject->add([
             new TextField('title', 'F.O.W.L'),
             new TextField('author', 'Jill'),
             new NumericField('price', 19.99),
             new NumericField('stock', 31),
-            new TagField('color', 'blue'),
+            new TagField('color', $blue),
         ]);
-        $expected = ['red', 'blue'];
 
         $actual = $this->subject->tagValues('color');
 
-        $this->assertEquals($expected, $actual);
+        $this->assertContains($blue, $actual);
+        $this->assertContains($red, $actual);
+        $this->assertEquals($expectedTagCount, count($actual));
     }
 
     public function testAddDocumentWithZeroScore()
@@ -381,7 +385,7 @@ class IndexTest extends RediSearchTestCase
         $this->assertTrue($result);
     }
 
-    public function testFindDocumentAddedWithHash ()
+    public function testFindDocumentAddedWithHash()
     {
         $this->subject->create();
         $title = 'How to be awesome';
