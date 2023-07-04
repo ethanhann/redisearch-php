@@ -21,7 +21,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.2",
         "psr/log": "^3.0.0",
         "ethanhann/redis-raw": "^2.1.0"
     },
