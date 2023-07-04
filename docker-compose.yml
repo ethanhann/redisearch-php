@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
     redis:
-      container_name: redis
+      container_name: redisSearchPhpTest
       image: 'redis/redis-stack'
       ports:
         - '6381:6379'
