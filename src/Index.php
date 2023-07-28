@@ -29,6 +29,8 @@ class Index extends AbstractIndex implements IndexInterface
     private $noFrequenciesEnabled = false;
     /** @var array */
     private $stopWords = null;
+    /** @var array|null  */
+    private $prefixes;
 
     /**
      * @return mixed
@@ -38,6 +40,11 @@ class Index extends AbstractIndex implements IndexInterface
     {
         $properties = [$this->getIndexName()];
 
+        if (!is_null($this->prefixes)) {
+            $properties[] = 'PREFIX';
+            $properties[] = count($this->prefixes);
+            $properties = array_merge($properties, $this->prefixes);
+        }
         if ($this->isNoOffsetsEnabled()) {
             $properties[] = 'NOOFFSETS';
         }
@@ -299,6 +306,18 @@ class Index extends AbstractIndex implements IndexInterface
     public function setStopWords(array $stopWords = []): IndexInterface
     {
         $this->stopWords = $stopWords;
+        return $this;
+    }
+
+    /**
+     * @param array $prefixes
+     *
+     * @return IndexInterface
+     */
+    public function setPrefixes(array $prefixes = []): IndexInterface
+    {
+        $this->prefixes = $prefixes;
+
         return $this;
     }
 
