@@ -26,8 +26,9 @@ abstract class AbstractDocumentFactory
                 if (!isset($availableSchemaFields[$index])) {
                     throw new FieldNotInSchemaException($index);
                 }
-                $document->{$index} = ($field instanceof FieldInterface) ?
-                    $availableSchemaFields[$index]->setValue($field) :
+                $fieldType = $availableSchemaFields[$index];
+                $document->{$index} = ($fieldType instanceof FieldInterface) ?
+                    $fieldType->setValue($field) :
                     FieldFactory::make($index, $field);
             }
         }
