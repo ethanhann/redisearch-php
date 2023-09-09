@@ -876,4 +876,23 @@ class IndexTest extends RediSearchTestCase
         $this->assertEquals($expectedPlace, implode(' ', $fields['place']->getTypeDefinition()));
         $this->assertEquals($expectedColor, implode(' ', $fields['color']->getTypeDefinition()));
     }
+
+    public function testShouldConvertAnArrayToDocument()
+    {
+        $title = 'Your Honor';
+        $arr = [
+            'title' => $title,
+        ];
+        /** @var TestDocument $document */
+        $document = $this->subject->makeDocument();
+        $document->title->setValue($title);
+
+        /** @var TestDocument $documentFromArray */
+        $documentFromArray = $this->subject->arrayToDocument($arr);
+
+        $this->assertEquals($documentFromArray->title->getValue(), $title);
+        $this->assertEquals($document->title->getValue(), $title);
+        $this->assertEquals(json_encode($document->title), json_encode($documentFromArray->title));
+
+    }
 }

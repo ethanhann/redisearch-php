@@ -547,7 +547,7 @@ class Index extends AbstractIndex implements IndexInterface
      * @return DocumentInterface
      * @throws Exceptions\FieldNotInSchemaException
      */
-    protected function arrayToDocument($document)
+    public function arrayToDocument($document): DocumentInterface
     {
         return is_array($document) ? AbstractDocumentFactory::makeFromArray($document, $this->getFields()) : $document;
     }
