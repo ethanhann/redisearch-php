@@ -15,20 +15,46 @@ See the [documentation](http://www.ethanhann.com/redisearch-php/) for more infor
 
 Contributions are welcome. Before submitting a PR for review, please run confirm all tests in the test suite pass.
 
-Start the local dev environment by running:
+Start the local Docker dev environment by running:
 
-```docker compose up```
+```shell
+docker compose up
+```
 
 ...or simply:
 
-```./dev```
+```shell
+./dev
+```
 
 Then run the tests:
 
-```./vendor/bin/phpunit```
+```shell
+vendor/bin/robo test
+```
+
+Specific Redis clients can be tested:
+
+```shell
+vendor/bin/robo test:predis
+vendor/bin/robo test:php-redis
+vendor/bin/robo test:redis-client
+```
+
+Or to run tests for all clients:
+
+```shell
+vendor/bin/robo test:all
+```
 
 Do not run tests on a prod system (of course), or any system that has a Redis instance with data you care about - 
 Redis is flushed between tests.
+
+To fix code style, before submitting a PR:
+
+```shell
+vendor/bin/robo task:fix-code-style
+```
 
 **Laravel Support**
 
