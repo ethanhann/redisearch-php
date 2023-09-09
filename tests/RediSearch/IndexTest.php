@@ -747,6 +747,16 @@ class IndexTest extends RediSearchTestCase
         $this->assertEquals(1, $result->getCount());
     }
 
+    public function testSetPrefixesOnCreateIndex()
+    {
+        $expected = 'Foo';
+        $this->subject->setPrefixes([$expected])->create();
+
+        $info = $this->subject->info();
+
+        $this->assertSame($expected, $info[5][3][0]);
+    }
+
     public function testShouldCreateIndexWithNoFrequencies()
     {
         $this->subject->setNoFrequenciesEnabled(true)->create();

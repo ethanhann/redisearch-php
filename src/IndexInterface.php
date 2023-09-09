@@ -27,6 +27,7 @@ interface IndexInterface extends BuilderInterface
     public function isNoFrequenciesEnabled(): bool;
     public function setNoFrequenciesEnabled(bool $noFieldsEnabled): IndexInterface;
     public function setStopWords(array $stopWords): IndexInterface;
+    public function setPrefixes(array $prefixes): IndexInterface;
     public function addTextField(string $name, float $weight = 1.0, bool $sortable = false, bool $noindex = false): IndexInterface;
     public function addNumericField(string $name, bool $sortable = false, bool $noindex = false): IndexInterface;
     public function addGeoField(string $name, bool $noindex = false): IndexInterface;
