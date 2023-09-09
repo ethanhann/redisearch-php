@@ -733,7 +733,7 @@ class IndexTest extends RediSearchTestCase
         $this->assertEquals(1, $result->getCount());
     }
 
-    public function testWithPrefix()
+    public function testShouldNotSearchEveryIndexWhenAPrefixIsSpecified()
     {
         $expectedFirstResult = 'Jack';
         $firstPrefix = 'Foo';
@@ -757,16 +757,14 @@ class IndexTest extends RediSearchTestCase
         $this->assertEquals($expectedFirstResult, $firstResult->getDocuments()[0]->name);
     }
 
-    public function testWithoutPrefix()
+    public function testShouldSearchEveryIndexWhenAPrefixIsNotSpecified()
     {
         $expectedDocuments = 1;
         $expectedName = 'Jack';
-        $firstIndex = (new Index($this->redisClient, 'first'))
-            ->addTextField('name');
+        $firstIndex = (new Index($this->redisClient, 'first'))->addTextField('name');
         $firstIndex->create();
         $firstIndex->add([new TextField('name', $expectedName)]);
-        $secondIndex = (new Index($this->redisClient, 'second'))
-            ->addTextField('name');
+        $secondIndex = (new Index($this->redisClient, 'second'))->addTextField('name');
         $secondIndex->create();
 
         $firstResult = $firstIndex->search($expectedName);

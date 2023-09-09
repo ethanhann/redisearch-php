@@ -23,6 +23,18 @@ class Document implements DocumentInterface
         $this->id = $id ?? uniqid(true);
     }
 
+    protected function addFieldsToProperties($properties): array
+    {
+        /** @var FieldInterface $field */
+        foreach (get_object_vars($this) as $field) {
+            if ($field instanceof FieldInterface && !is_null($field->getValue())) {
+                $properties[] = $field->getName();
+                $properties[] = $field->getValue();
+            }
+        }
+        return $properties;
+    }
+
     public function getHashDefinition(array $prefixes = null): array
     {
         $id = $this->getId();
@@ -45,15 +57,7 @@ class Document implements DocumentInterface
             $properties[] = 'REPLACE';
         }
 
-        /** @var FieldInterface $field */
-        foreach (get_object_vars($this) as $field) {
-            if ($field instanceof FieldInterface && !is_null($field->getValue())) {
-                $properties[] = $field->getName();
-                $properties[] = $field->getValue();
-            }
-        }
-
-        return $properties;
+        return $this->addFieldsToProperties($properties);
     }
 
     public function getDefinition(): array
@@ -91,14 +95,7 @@ class Document implements DocumentInterface
 
         $properties[] = 'FIELDS';
 
-        /** @var FieldInterface $field */
-        foreach (get_object_vars($this) as $field) {
-            if ($field instanceof FieldInterface && !is_null($field->getValue())) {
-                $properties[] = $field->getName();
-                $properties[] = $field->getValue();
-            }
-        }
-        return $properties;
+        return $this->addFieldsToProperties($properties);
     }
 
     public function getId(): string
