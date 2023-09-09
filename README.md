@@ -13,8 +13,19 @@ See the [documentation](http://www.ethanhann.com/redisearch-php/) for more infor
 
 **Contributing**
 
-Contributions are welcome. Before submitting a PR for review, please run **./vendor/bin/robo build** to ensure your 
-contribution conforms to the project's code style, and that all tests in the test suite pass.
+Contributions are welcome. Before submitting a PR for review, please run confirm all tests in the test suite pass.
+
+Start the local dev environment by running:
+
+```docker compose up```
+
+...or simply:
+
+```./dev```
+
+Then run the tests:
+
+```./vendor/bin/phpunit```
 
 Do not run tests on a prod system (of course), or any system that has a Redis instance with data you care about - 
 Redis is flushed between tests.
