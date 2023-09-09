@@ -23,20 +23,34 @@ class Document implements DocumentInterface
         $this->id = $id ?? uniqid(true);
     }
 
-    public function getHashDefinition(): array
+    public function getHashDefinition(array $prefixes = null): array
     {
+        $id = $this->getId();
+        $completeId = !is_null($prefixes) && count($prefixes) > 0 ?
+            implode(':', $prefixes) . ':' . $id :
+            $id;
+
         $properties = [
-            $this->getId(),
-            $this->getScore(),
+            $completeId,
+            '__score',
+            $this->score
         ];
 
         if (!is_null($this->getLanguage())) {
-            $properties[] = 'LANGUAGE';
+            $properties[] = '__language';
             $properties[] = $this->getLanguage();
         }
 
         if ($this->isReplace()) {
             $properties[] = 'REPLACE';
+        }
+
+        /** @var FieldInterface $field */
+        foreach (get_object_vars($this) as $field) {
+            if ($field instanceof FieldInterface && !is_null($field->getValue())) {
+                $properties[] = $field->getName();
+                $properties[] = $field->getValue();
+            }
         }
 
         return $properties;

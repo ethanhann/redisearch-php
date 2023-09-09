@@ -371,15 +371,10 @@ class IndexTest extends RediSearchTestCase
         $this->subject->create();
 
         $result = $this->subject->addHash([
-            'gooblegobble',
-            'title',
-            'How to be awesome',
-            'author',
-            'Jack',
-            'price',
-            9.99,
-            'stock',
-            231
+            'title' => 'How to be awesome',
+            'author' => 'Jack',
+            'price' => 9.99,
+            'stock' => 231
         ]);
 
         $this->assertTrue($result);
@@ -389,16 +384,11 @@ class IndexTest extends RediSearchTestCase
     {
         $this->subject->create();
         $title = 'How to be awesome';
-        $this->redisClient->rawCommand('HSET', [
-            'gooblegobble',
-            'title',
-            $title,
-            'author',
-            'Jack',
-            'price',
-            9.99,
-            'stock',
-            231
+        $this->subject->addHash([
+            'title' => 'How to be awesome',
+            'author' => 'Jack',
+            'price' => 9.99,
+            'stock' => 231
         ]);
 
         $result = $this->subject->search($title);
@@ -411,29 +401,25 @@ class IndexTest extends RediSearchTestCase
     {
         $this->subject->create();
         $id = 'gooblegobble';
-        /** @var TestDocument $expectedDocument */
-        $expectedDocument = $this->subject->makeDocument($id);
-        $expectedDocument->title->setValue('How to be awesome.');
-        $expectedDocument->author->setValue('Jack');
-        $expectedDocument->price->setValue(9.99);
-        $expectedDocument->stock->setValue(231);
-        $this->subject->add($expectedDocument);
-        $this->redisClient->rawCommand('HSET', [
-            $id,
-            'title',
-            'How to be awesome, Part 2',
-            'author',
-            'Jack',
-            'price',
-            9.99,
-            'stock',
-            231
-        ]);
-        $document = $this->subject->makeDocument($id);
+        /** @var TestDocument $originalDocument */
+        $originalDocument = $this->subject->makeDocument($id);
+        $originalDocument->title->setValue('How to be awesome.');
+        $originalDocument->author->setValue('Jack');
+        $originalDocument->price->setValue(9.99);
+        $originalDocument->stock->setValue(231);
+        $this->subject->add($originalDocument);
+        /** @var TestDocument $hashDocument */
+        $hashDocument = $this->subject->makeDocument($id);
+        $hashDocument->title->setValue('Farming For Fun');
+        $hashDocument->author->setValue('Fred');
+        $hashDocument->price->setValue(19.99);
+        $hashDocument->stock->setValue(200);
 
-        $result = $this->subject->addHash($document);
+        $hasAdded = $this->subject->addHash($hashDocument);
 
-        $this->assertTrue($result);
+        $this->assertTrue($hasAdded);
+        $searchResult = $this->subject->search('Farming');
+        $this->assertEquals($searchResult->getDocuments()[0]->id, $id);
     }
 
     public function testSearch()
@@ -747,14 +733,49 @@ class IndexTest extends RediSearchTestCase
         $this->assertEquals(1, $result->getCount());
     }
 
-    public function testSetPrefixesOnCreateIndex()
+    public function testWithPrefix()
     {
-        $expected = 'Foo';
-        $this->subject->setPrefixes([$expected])->create();
+        $expectedFirstResult = 'Jack';
+        $firstPrefix = 'Foo';
+        $secondPrefix = 'Bar';
+        $firstIndex = (new Index($this->redisClient, 'first'))
+            ->setPrefixes([$firstPrefix])
+            ->addTextField('name');
+        $firstIndex->create();
+        $firstIndex->addHash(['name' => $expectedFirstResult]);
 
-        $info = $this->subject->info();
+        $secondIndex = (new Index($this->redisClient, 'second'))
+            ->setPrefixes([$secondPrefix])
+            ->addTextField('name');
+        $secondIndex->create();
 
-        $this->assertSame($expected, $info[5][3][0]);
+        $firstResult = $firstIndex->search($expectedFirstResult);
+        $secondResult = $secondIndex->search($expectedFirstResult);
+
+        $this->assertEquals(1, $firstResult->getCount());
+        $this->assertEquals(0, $secondResult->getCount());
+        $this->assertEquals($expectedFirstResult, $firstResult->getDocuments()[0]->name);
+    }
+
+    public function testWithoutPrefix()
+    {
+        $expectedDocuments = 1;
+        $expectedName = 'Jack';
+        $firstIndex = (new Index($this->redisClient, 'first'))
+            ->addTextField('name');
+        $firstIndex->create();
+        $firstIndex->add([new TextField('name', $expectedName)]);
+        $secondIndex = (new Index($this->redisClient, 'second'))
+            ->addTextField('name');
+        $secondIndex->create();
+
+        $firstResult = $firstIndex->search($expectedName);
+        $secondResult = $secondIndex->search($expectedName);
+
+        $this->assertEquals($expectedDocuments, $firstResult->getCount());
+        $this->assertEquals($expectedDocuments, $secondResult->getCount());
+        $this->assertEquals($expectedName, $firstResult->getDocuments()[0]->name);
+        $this->assertEquals($expectedName, $secondResult->getDocuments()[0]->name);
     }
 
     public function testShouldCreateIndexWithNoFrequencies()

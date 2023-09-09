@@ -29,7 +29,7 @@ class Index extends AbstractIndex implements IndexInterface
     private $noFrequenciesEnabled = false;
     /** @var array */
     private $stopWords = null;
-    /** @var array|null  */
+    /** @var array|null */
     private $prefixes;
 
     /**
@@ -531,9 +531,15 @@ class Index extends AbstractIndex implements IndexInterface
             $document->setId(uniqid(true));
         }
 
-        $properties = $isFromHash ? $document->getHashDefinition() : $document->getDefinition();
-        array_unshift($properties, $this->getIndexName());
-        return $this->rawCommand($isFromHash ? 'HSET' : 'FT.ADD', $properties);
+        $properties = $isFromHash ?
+            $document->getHashDefinition($this->prefixes) :
+            $document->getDefinition();
+        if (!$isFromHash) {
+            array_unshift($properties, $this->getIndexName());
+        }
+
+        $command = $isFromHash ? 'HSET' : 'FT.ADD';
+        return $this->rawCommand($command, $properties);
     }
 
     /**
@@ -582,7 +588,8 @@ class Index extends AbstractIndex implements IndexInterface
      */
     public function addHash($document): bool
     {
-        return $this->_add($this->arrayToDocument($document), true);
+        $typedDocument = $this->arrayToDocument($document);
+        return $this->_add($typedDocument, true);
     }
 
     /**

@@ -4,7 +4,7 @@ namespace Ehann\RediSearch\Document;
 
 interface DocumentInterface
 {
-    public function getHashDefinition(): array;
+    public function getHashDefinition(array|null $prefixes): array;
     public function getDefinition(): array;
     public function getId(): string;
     public function setId(string $id);
