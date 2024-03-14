@@ -31,6 +31,8 @@ class Index extends AbstractIndex implements IndexInterface
     private $stopWords = null;
     /** @var array|null */
     private $prefixes;
+    /** @var array */
+    private $fields = [];
 
     /**
      * @return mixed
@@ -62,10 +64,8 @@ class Index extends AbstractIndex implements IndexInterface
         $properties[] = 'SCHEMA';
 
         $fieldDefinitions = [];
-        foreach (get_object_vars($this) as $field) {
-            if ($field instanceof FieldInterface) {
-                $fieldDefinitions = array_merge($fieldDefinitions, $field->getTypeDefinition());
-            }
+        foreach ($this->getFields() as $field) {
+            $fieldDefinitions = array_merge($fieldDefinitions, $field->getTypeDefinition());
         }
 
         if (count($fieldDefinitions) === 0) {
@@ -89,17 +89,52 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * @param string $name
+     * @param FieldInterface $value
+     *
+     * @return void
+     */
+    public function __set(string $name, FieldInterface $value): void
+    {
+        $this->fields[$name] = $value;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function __isset(string $name): bool
+    {
+        return array_key_exists($name, $this->fields) !== false;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return ?FieldInterface
+     */
+    public function __get(string $name): ?FieldInterface
+    {
+        return $this->fields[$name] ?? null;
+    }
+
+    /**
      * @return array
      */
     public function getFields(): array
     {
-        $fields = [];
-        foreach (get_object_vars($this) as $field) {
-            if ($field instanceof FieldInterface) {
-                $fields[$field->getName()] = clone $field;
-            }
-        }
-        return $fields;
+        return $this->fields;
+    }
+
+    /**
+     * Returns an array of fields as cloned objects
+     * 
+     * @return array
+     */
+    public function getFieldsCloned(): array
+    {
+        return array_map(fn($field) => clone $field, $this->fields);
     }
 
     /**
@@ -129,6 +164,7 @@ class Index extends AbstractIndex implements IndexInterface
 
     /**
      * @param string $name
+     * @param bool $noindex
      * @return IndexInterface
      */
     public function addGeoField(string $name, bool $noindex = false): IndexInterface
@@ -139,9 +175,9 @@ class Index extends AbstractIndex implements IndexInterface
 
     /**
      * @param string $name
-     * @param string $separator
      * @param bool $sortable
      * @param bool $noindex
+     * @param string $separator
      * @return IndexInterface
      */
     public function addTagField(string $name, bool $sortable = false, bool $noindex = false, string $separator = ','): IndexInterface
@@ -196,7 +232,7 @@ class Index extends AbstractIndex implements IndexInterface
      */
     public function makeDocument($id = null): DocumentInterface
     {
-        $fields = $this->getFields();
+        $fields = $this->getFieldsCloned();
         $document = AbstractDocumentFactory::makeFromArray($fields, $fields, $id);
         return $document;
     }
