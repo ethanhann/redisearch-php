@@ -30,8 +30,7 @@
         "mockery/mockery": "^1.5.0",
         "predis/predis": "^v2.0.0",
         "friendsofphp/php-cs-fixer": "^v3.10.0",
-        "consolidation/robo": "^4.0.0-alpha1",
-        "monolog/monolog": "^3.2.0",
+"monolog/monolog": "^3.2.0",
         "ukko/phpredis-phpdoc": "^5.0@beta",
         "cheprasov/php-redis-client": "^1.9"
     }
