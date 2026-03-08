@@ -25,9 +25,9 @@ abstract class RediSearchTestCase extends TestCase
     protected $redisClient;
     protected $logger;
 
-    public function __construct($name = null, array $data = [], $dataName = '')
+    public function setUp(): void
     {
-        parent::__construct($name, $data, $dataName);
+        parent::setUp();
 
         $factoryMethod = 'make' . getenv('REDIS_LIBRARY') . 'Adapter';
         $this->redisClient = new RediSearchRedisClient($this->$factoryMethod());

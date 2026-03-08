@@ -18,42 +18,36 @@ Contributions are welcome. Before submitting a PR for review, please run confirm
 Start the local Docker dev environment by running:
 
 ```shell
-docker compose up
-```
-
-...or simply:
-
-```shell
-./dev
+just up
 ```
 
 Then run the tests:
 
 ```shell
-vendor/bin/robo test
+just test
 ```
 
 Specific Redis clients can be tested:
 
 ```shell
-vendor/bin/robo test:predis
-vendor/bin/robo test:php-redis
-vendor/bin/robo test:redis-client
+just test-predis
+just test-php-redis
+just test-redis-client
 ```
 
 Or to run tests for all clients:
 
 ```shell
-vendor/bin/robo test:all
+just test-all
 ```
 
-Do not run tests on a prod system (of course), or any system that has a Redis instance with data you care about - 
+Do not run tests on a prod system (of course), or any system that has a Redis instance with data you care about -
 Redis is flushed between tests.
 
 To fix code style, before submitting a PR:
 
 ```shell
-vendor/bin/robo task:fix-code-style
+just fmt
 ```
 
 **Laravel Support**
