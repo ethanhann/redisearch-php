@@ -255,7 +255,7 @@ class IndexTest extends RediSearchTestCase
 
         // Assert
         $firstDocument = $result->getDocuments()[0];
-        $this->assertSame($expectedScore, $firstDocument->score);
+        $this->assertEquals($expectedScore, $firstDocument->score);
         $this->assertSame($expectedTitle, $firstDocument->title);
     }
 

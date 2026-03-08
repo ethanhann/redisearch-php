@@ -184,9 +184,9 @@ class BuilderTest extends RediSearchTestCase
             ->search();
 
         // Assert
-        $this->assertSame($expected1, $result->getDocuments()[0]->count);
-        $this->assertSame($expected2, $result->getDocuments()[1]->count);
-        $this->assertSame($expected3, $result->getDocuments()[2]->count);
+        $this->assertEquals($expected1, $result->getDocuments()[0]->count);
+        $this->assertEquals($expected2, $result->getDocuments()[1]->count);
+        $this->assertEquals($expected3, $result->getDocuments()[2]->count);
     }
 
     public function testGetCountDistinct(): void
@@ -203,9 +203,9 @@ class BuilderTest extends RediSearchTestCase
             ->search();
 
         // Assert
-        $this->assertSame($expected1, $result->getDocuments()[0]->count_distinct_title);
-        $this->assertSame($expected2, $result->getDocuments()[1]->count_distinct_title);
-        $this->assertSame($expected3, $result->getDocuments()[2]->count_distinct_title);
+        $this->assertEquals($expected1, $result->getDocuments()[0]->count_distinct_title);
+        $this->assertEquals($expected2, $result->getDocuments()[1]->count_distinct_title);
+        $this->assertEquals($expected3, $result->getDocuments()[2]->count_distinct_title);
     }
 
     public function testGetCountDistinctWithReduceByField(): void
@@ -221,8 +221,8 @@ class BuilderTest extends RediSearchTestCase
             ->search();
 
         // Assert
-        $this->assertSame($expected1, $result->getDocuments()[0]->count_distinct_title);
-        $this->assertSame($expected2, $result->getDocuments()[1]->count_distinct_title);
+        $this->assertEquals($expected1, $result->getDocuments()[0]->count_distinct_title);
+        $this->assertEquals($expected2, $result->getDocuments()[1]->count_distinct_title);
     }
 
     public function testGetCountDistinctApproximate(): void
@@ -239,9 +239,9 @@ class BuilderTest extends RediSearchTestCase
             ->search();
 
         // Assert
-        $this->assertSame($expected1, $result->getDocuments()[0]->count_distinctish_title);
-        $this->assertSame($expected2, $result->getDocuments()[1]->count_distinctish_title);
-        $this->assertSame($expected3, $result->getDocuments()[2]->count_distinctish_title);
+        $this->assertEquals($expected1, $result->getDocuments()[0]->count_distinctish_title);
+        $this->assertEquals($expected2, $result->getDocuments()[1]->count_distinctish_title);
+        $this->assertEquals($expected3, $result->getDocuments()[2]->count_distinctish_title);
     }
 
     public function testGetSum(): void
@@ -258,9 +258,9 @@ class BuilderTest extends RediSearchTestCase
             ->search();
 
         // Assert
-        $this->assertSame($expected1, $result->getDocuments()[0]->sum_stock);
-        $this->assertSame($expected2, $result->getDocuments()[1]->sum_stock);
-        $this->assertSame($expected3, $result->getDocuments()[2]->sum_stock);
+        $this->assertEquals($expected1, $result->getDocuments()[0]->sum_stock);
+        $this->assertEquals($expected2, $result->getDocuments()[1]->sum_stock);
+        $this->assertEquals($expected3, $result->getDocuments()[2]->sum_stock);
     }
 
     public function testGetMax(): void

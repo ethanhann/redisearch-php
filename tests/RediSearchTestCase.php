@@ -19,9 +19,12 @@ abstract class RediSearchTestCase extends TestCase
     public const PHP_REDIS_LIBRARY = 'PhpRedis';
     public const REDIS_CLIENT_LIBRARY = 'RedisClient';
 
-    protected string $indexName;
-    protected RediSearchRedisClient $redisClient;
-    protected Logger $logger;
+    /** @var string */
+    protected $indexName;
+    /** @var RediSearchRedisClient */
+    protected $redisClient;
+    /** @var Logger|null */
+    protected $logger;
 
     public function setUp(): void
     {
