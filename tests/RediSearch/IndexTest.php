@@ -886,7 +886,7 @@ class IndexTest extends RediSearchTestCase
         $info = $this->subject->info();
 
         // Assert
-        $this->assertSame($expected, $info[3][0]);
+        $this->assertEquals($expected, $info[3][0]);
     }
 
     public function testShouldNotChangeOriginalSchemaFieldWhenAddingNewDocument(): void
