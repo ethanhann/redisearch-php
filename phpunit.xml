@@ -14,7 +14,7 @@
             <directory suffix=".php">./src</directory>
         </include>
     </source>
-    <php>
+<php>
         <env name="REDIS_LIBRARY" value="Predis" />
         <env name="REDIS_HOST" value="localhost" />
         <env name="REDIS_PORT" value="6381" />

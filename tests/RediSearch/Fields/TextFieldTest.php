@@ -7,54 +7,62 @@ use PHPUnit\Framework\TestCase;
 
 class TextFieldTest extends TestCase
 {
-    /** @var TextField */
-    private $subject;
-    /** @var string */
-    private $fieldName = 'MyTextField';
-    /** @var string */
-    private $fieldType = 'TEXT';
-    /** @var string */
-    private $weightKeyword = 'WEIGHT';
-    /** @var float */
-    private $defaultWeight = 1.0;
+    private TextField $subject;
+    private string $fieldName = 'MyTextField';
+    private string $fieldType = 'TEXT';
+    private string $weightKeyword = 'WEIGHT';
+    private float $defaultWeight = 1.0;
 
     public function setUp(): void
     {
         $this->subject = new TextField($this->fieldName);
     }
 
-    public function testShouldGetCorrectType()
+    public function testShouldGetCorrectType(): void
     {
+        // Arrange — see setUp()
+
+        // Act
         $type = $this->subject->getType();
 
-        $this->assertEquals($this->fieldType, $type);
+        // Assert
+        $this->assertSame($this->fieldType, $type);
     }
 
-    public function testShouldGetWeight()
+    public function testShouldGetWeight(): void
     {
+        // Arrange — see setUp()
+
+        // Act
         $weight = $this->subject->getWeight();
 
-        $this->assertEquals($this->defaultWeight, $weight);
+        // Assert
+        $this->assertSame($this->defaultWeight, $weight);
     }
 
-    public function testShouldSetWeight()
+    public function testShouldSetWeight(): void
     {
+        // Arrange
         $expected = 243.0;
 
-        $weight = $this->subject
-            ->setWeight($expected)
-            ->getWeight();
+        // Act
+        $weight = $this->subject->setWeight($expected)->getWeight();
 
-        $this->assertEquals($expected, $weight);
+        // Assert
+        $this->assertSame($expected, $weight);
     }
 
-    public function testShouldGetTypeDefinition()
+    public function testShouldGetTypeDefinition(): void
     {
+        // Arrange — see setUp()
+
+        // Act
         $typeDefinition = $this->subject->getTypeDefinition();
 
-        $this->assertEquals($this->fieldName, $typeDefinition[0]);
-        $this->assertEquals($this->fieldType, $typeDefinition[1]);
-        $this->assertEquals($this->weightKeyword, $typeDefinition[2]);
-        $this->assertEquals($this->defaultWeight, $typeDefinition[3]);
+        // Assert
+        $this->assertSame($this->fieldName, $typeDefinition[0]);
+        $this->assertSame($this->fieldType, $typeDefinition[1]);
+        $this->assertSame($this->weightKeyword, $typeDefinition[2]);
+        $this->assertSame($this->defaultWeight, $typeDefinition[3]);
     }
 }

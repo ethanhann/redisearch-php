@@ -7,14 +7,16 @@ use PHPUnit\Framework\TestCase;
 
 class UnknownIndexNameExceptionTest extends TestCase
 {
-    public function testShouldShowCustomMessage()
+    public function testShouldShowCustomMessage(): void
     {
+        // Arrange
         $indexName = 'MyIndex';
         $expected = "Unknown index name. $indexName";
-        $subject = new UnknownIndexNameException($indexName);
 
-        $message = $subject->getMessage();
+        // Act
+        $message = (new UnknownIndexNameException($indexName))->getMessage();
 
-        $this->assertEquals($expected, $message);
+        // Assert
+        $this->assertSame($expected, $message);
     }
 }

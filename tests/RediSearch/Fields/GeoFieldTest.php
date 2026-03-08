@@ -7,12 +7,15 @@ use PHPUnit\Framework\TestCase;
 
 class GeoFieldTest extends TestCase
 {
-    public function testShouldGetCorrectType()
+    public function testShouldGetCorrectType(): void
     {
+        // Arrange
         $expected = 'GEO';
 
+        // Act
         $type = (new GeoField('MyGeoField'))->getType();
 
-        $this->assertEquals($expected, $type);
+        // Assert
+        $this->assertSame($expected, $type);
     }
 }

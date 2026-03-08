@@ -7,12 +7,15 @@ use PHPUnit\Framework\TestCase;
 
 class GeoLocationTest extends TestCase
 {
-    public function testShouldGetStringValueOfGeoLocation()
+    public function testShouldGetStringValueOfGeoLocation(): void
     {
+        // Arrange
         $expected = '50.9741 20.1415';
 
+        // Act
         $actual = (string)(new GeoLocation(50.9741, 20.1415));
 
-        $this->assertEquals($expected, $actual);
+        // Assert
+        $this->assertSame($expected, $actual);
     }
 }

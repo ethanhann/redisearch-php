@@ -9,11 +9,11 @@ use Ehann\Tests\RediSearchTestCase;
 
 class BuilderTest extends RediSearchTestCase
 {
-    /** @var Builder */
-    private $subject;
-    private $expectedResult1;
-    private $expectedResult2;
-    private $expectedResult3;
+    private Builder $subject;
+    private array $expectedResult1;
+    private array $expectedResult2;
+    private array $expectedResult3;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -60,184 +60,257 @@ class BuilderTest extends RediSearchTestCase
         $this->redisClient->flushAll();
     }
 
-    public function testSearch()
+    public function testSearch(): void
     {
+        // Arrange — see setUp()
+
+        // Act
         $result = $this->subject->search('Shoes');
 
+        // Assert
         $this->assertTrue($result->getCount() === 1);
     }
 
-    public function testGetCountDirectly()
+    public function testGetCountDirectly(): void
     {
+        // Arrange — see setUp()
+
+        // Act
         $result = $this->subject->count('Shoes');
 
+        // Assert
         $this->assertTrue($result === 1);
     }
 
-    public function testReturnsZeroResultsWhenNotIndexed()
+    public function testReturnsZeroResultsWhenNotIndexed(): void
     {
+        // Arrange — see setUp()
+
+        // Act
         $result = $this->subject->search('classified');
+
+        // Assert
         $this->assertTrue($result->getCount() === 0);
     }
 
-    public function testSearchWithReturn()
+    public function testSearchWithReturn(): void
     {
+        // Arrange
         $expectedAuthor = 'Jessica';
 
+        // Act
         $result = $this->subject->return(['author'])->search('Shoes');
 
+        // Assert
         $firstResult = $result->getDocuments()[0];
-        $this->assertEquals($expectedAuthor, $firstResult->author);
+        $this->assertSame($expectedAuthor, $firstResult->author);
         $this->assertTrue(property_exists($firstResult, 'author'));
         $this->assertFalse(property_exists($firstResult, 'title'));
     }
 
-    public function testSearchWithSummarize()
+    public function testSearchWithSummarize(): void
     {
+        // Arrange
         $expectedTitle = 'Shoes in the 22nd...';
 
+        // Act
         $result = $this->subject->summarize(['title', 'author'])->search('Shoes');
 
+        // Assert
         $firstResult = $result->getDocuments()[0];
-        $this->assertEquals($expectedTitle, $firstResult->title);
+        $this->assertSame($expectedTitle, $firstResult->title);
     }
 
-    public function testSearchWithHighlight()
+    public function testSearchWithHighlight(): void
     {
+        // Arrange
         $expectedTitle = '<strong>Shoes</strong> in the 22nd Century';
 
+        // Act
         $result = $this->subject->highlight(['title', 'author'])->search('Shoes');
 
+        // Assert
         $firstResult = $result->getDocuments()[0];
-        $this->assertEquals($expectedTitle, $firstResult->title);
+        $this->assertSame($expectedTitle, $firstResult->title);
     }
 
-    public function testSearchWithScores()
+    public function testSearchWithScores(): void
     {
+        // Arrange — see setUp()
+
+        // Act
         $result = $this->subject->withScores()->search('Shoes');
 
+        // Assert
         $this->assertTrue($result->getCount() === 1);
         $this->assertTrue(property_exists($result->getDocuments()[0], 'score'));
     }
 
-    public function testSearchWithPayloads()
+    public function testSearchWithPayloads(): void
     {
+        // Arrange — see setUp()
+
+        // Act
         $result = $this->subject->withPayloads()->search('Shoes');
 
-        $this->assertEquals(1, $result->getCount());
+        // Assert
+        $this->assertSame(1, $result->getCount());
         $this->assertTrue(property_exists($result->getDocuments()[0], 'payload'));
     }
 
-    public function testVerbatimSearch()
+    public function testVerbatimSearch(): void
     {
+        // Arrange — see setUp()
+
+        // Act
         $result = $this->subject->verbatim()->search('Shoes in the 22nd Century');
 
-        $this->assertEquals(1, $result->getCount());
+        // Assert
+        $this->assertSame(1, $result->getCount());
     }
 
-    public function testVerbatimSearchFails()
+    public function testVerbatimSearchFails(): void
     {
+        // Arrange — see setUp()
+
+        // Act
         $result = $this->subject->verbatim()->search('Shoess');
 
-        $this->assertEquals(0, $result->getCount());
+        // Assert
+        $this->assertSame(0, $result->getCount());
     }
 
-    public function testNumericRangeQuery()
+    public function testNumericRangeQuery(): void
     {
+        // Arrange
         $expectedCount = 1;
 
+        // Act
         $result = $this->subject
             ->numericFilter('price', 8, 10)
             ->search();
 
-        $this->assertEquals($expectedCount, $result->getCount());
-        $this->assertEquals($this->expectedResult1['author'], $result->getDocuments()[0]->author);
+        // Assert
+        $this->assertSame($expectedCount, $result->getCount());
+        $this->assertSame($this->expectedResult1['author'], $result->getDocuments()[0]->author);
     }
 
-    public function testGeoQuery()
+    public function testGeoQuery(): void
     {
+        // Arrange
         $expectedCount = 1;
 
+        // Act
         $result = $this->subject
             ->geoFilter('location', '51.0544782', '3.7178716', '100', 'km')
             ->search('Shoes');
 
-        $this->assertEquals($expectedCount, $result->getCount());
-        $this->assertEquals($this->expectedResult2['author'], $result->getDocuments()[0]->author);
+        // Assert
+        $this->assertSame($expectedCount, $result->getCount());
+        $this->assertSame($this->expectedResult2['author'], $result->getDocuments()[0]->author);
     }
 
-    public function testGeoQueryWithoutSearchTerm()
+    public function testGeoQueryWithoutSearchTerm(): void
     {
+        // Arrange
         $expectedCount = 1;
 
+        // Act
         $result = $this->subject
             ->geoFilter('location', '51.0544782', '3.7178716', '100', 'km')
             ->search();
 
-        $this->assertEquals($expectedCount, $result->getCount());
-        $this->assertEquals($this->expectedResult2['author'], $result->getDocuments()[0]->author);
+        // Assert
+        $this->assertSame($expectedCount, $result->getCount());
+        $this->assertSame($this->expectedResult2['author'], $result->getDocuments()[0]->author);
     }
 
-    public function testLimitSearch()
+    public function testLimitSearch(): void
     {
+        // Arrange
         $expectedCount = 1;
 
+        // Act
         $result = $this->subject->limit(0, $expectedCount)->search('How');
 
+        // Assert
         $this->assertCount($expectedCount, $result->getDocuments());
     }
 
-    public function testSearchWithNoContent()
+    public function testSearchWithNoContent(): void
     {
+        // Arrange — see setUp()
+
+        // Act
         $result = $this->subject->noContent()->search('How');
 
+        // Assert
         $this->assertFalse(property_exists($result->getDocuments()[0], 'title'));
         $this->assertFalse(property_exists($result->getDocuments()[1], 'title'));
     }
 
-    public function testSearchWithDefaultSlop()
+    public function testSearchWithDefaultSlop(): void
     {
+        // Arrange — see setUp()
+
+        // Act
         $result = $this->subject->slop(0)->search('How appendix');
 
+        // Assert
         $this->assertCount(0, $result->getDocuments());
     }
 
-    public function testSearchWithNonDefaultSlop()
+    public function testSearchWithNonDefaultSlop(): void
     {
+        // Arrange — see setUp()
+
+        // Act
         $result = $this->subject->slop(10)->search('How awesome');
 
+        // Assert
         $this->assertCount(2, $result->getDocuments());
     }
 
-    public function testExplainSimpleSearchQuery()
+    public function testExplainSimpleSearchQuery(): void
     {
+        // Arrange
         $expectedInExplanation = 'INTERSECT';
 
+        // Act
         $result = $this->subject->explain('How awesome');
 
+        // Assert
         $this->assertStringContainsString($expectedInExplanation, $result);
     }
 
-    public function testExplainComplexSearchQuery()
+    public function testExplainComplexSearchQuery(): void
     {
+        // Arrange
         $expectedInExplanation1 = 'INTERSECT';
         $expectedInExplanation2 = 'UNION';
 
+        // Act
         $result = $this->subject->explain('(How awesome)|(22st Century)');
 
+        // Assert
         $this->assertStringContainsString($expectedInExplanation1, $result);
         $this->assertStringContainsString($expectedInExplanation2, $result);
     }
 
-    public function testSearchWithScorerFunction()
+    public function testSearchWithScorerFunction(): void
     {
+        // Arrange — see setUp()
+
+        // Act
         $result = $this->subject->scorer('DISMAX')->search('Shoes');
 
+        // Assert
         $this->assertTrue($result->getCount() === 1);
     }
 
-    public function testSearchWithSortBy()
+    public function testSearchWithSortBy(): void
     {
+        // Arrange
         $indexName = 'QueryBuilderSortByTest';
         $index = (new TestIndex($this->redisClient, $indexName))
             ->addTextField('title')
@@ -271,12 +344,14 @@ class BuilderTest extends RediSearchTestCase
         ];
         $index->add($expectedResult3);
 
+        // Act
         $result = (new Builder($this->redisClient, $indexName))
             ->sortBy('price')
             ->search('book');
 
-        $this->assertEquals($expectedResult1['title'], $result->getDocuments()[1]->title);
-        $this->assertEquals($expectedResult2['title'], $result->getDocuments()[0]->title);
-        $this->assertEquals($expectedResult3['title'], $result->getDocuments()[2]->title);
+        // Assert
+        $this->assertSame($expectedResult1['title'], $result->getDocuments()[1]->title);
+        $this->assertSame($expectedResult2['title'], $result->getDocuments()[0]->title);
+        $this->assertSame($expectedResult3['title'], $result->getDocuments()[2]->title);
     }
 }

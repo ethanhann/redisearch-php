@@ -8,10 +8,15 @@ use PHPUnit\Framework\TestCase;
 
 class FieldFactoryTest extends TestCase
 {
-    public function testShouldGetCorrectType()
+    public function testShouldThrowWhenFieldTypeIsUnknown(): void
     {
+        // Arrange
+        $unknownType = 'SOME_NON_EXISTING_TYPE';
+
+        // Assert
         $this->expectException(InvalidArgumentException::class);
 
-        FieldFactory::make('SOME_NON_EXISTING_TYPE', new \stdClass());
+        // Act
+        FieldFactory::make($unknownType, new \stdClass());
     }
 }
