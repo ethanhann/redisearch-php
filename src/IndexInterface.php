@@ -4,13 +4,14 @@ namespace Ehann\RediSearch;
 
 use Ehann\RediSearch\Aggregate\BuilderInterface as AggregateBuilderInterface;
 use Ehann\RediSearch\Document\DocumentInterface;
+use Ehann\RediSearch\Fields\VectorField;
 use Ehann\RediSearch\Query\BuilderInterface;
 
 interface IndexInterface extends BuilderInterface
 {
     public function create();
     public function exists(): bool;
-    public function drop();
+    public function drop(bool $deleteDocuments = false);
     public function info();
     public function delete($id, $deleteDocument = false);
     public function getFields(): array;
@@ -32,6 +33,14 @@ interface IndexInterface extends BuilderInterface
     public function addNumericField(string $name, bool $sortable = false, bool $noindex = false): IndexInterface;
     public function addGeoField(string $name, bool $noindex = false): IndexInterface;
     public function addTagField(string $name, bool $sortable = false, bool $noindex = false, string $separator = ','): IndexInterface;
+    public function addVectorField(
+        string $name,
+        string $algorithm = VectorField::ALGORITHM_FLAT,
+        string $type = VectorField::TYPE_FLOAT32,
+        int $dim = 128,
+        string $distanceMetric = VectorField::DISTANCE_COSINE,
+        array $extraAttributes = []
+    ): IndexInterface;
     public function tagValues(string $name): array;
     public function add($document): bool;
     public function addMany(array $documents, $disableAtomicity = false, $replace = false);
