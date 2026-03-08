@@ -45,16 +45,12 @@ class Document implements DocumentInterface
         $properties = [
             $completeId,
             '__score',
-            $this->score
+            $this->score,
         ];
 
         if (!is_null($this->getLanguage())) {
             $properties[] = '__language';
             $properties[] = $this->getLanguage();
-        }
-
-        if ($this->isReplace()) {
-            $properties[] = 'REPLACE';
         }
 
         return $this->addFieldsToProperties($properties);

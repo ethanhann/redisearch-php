@@ -6,13 +6,16 @@ use Ehann\RediSearch\Aggregate\Builder as AggregateBuilder;
 use Ehann\RediSearch\Aggregate\BuilderInterface as AggregateBuilderInterface;
 use Ehann\RediSearch\Document\AbstractDocumentFactory;
 use Ehann\RediSearch\Document\DocumentInterface;
+use Ehann\RediSearch\Exceptions\DocumentAlreadyInIndexException;
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
 use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
+use Ehann\RediSearch\Exceptions\UnsupportedRediSearchLanguageException;
 use Ehann\RediSearch\Fields\FieldInterface;
 use Ehann\RediSearch\Fields\GeoField;
 use Ehann\RediSearch\Fields\NumericField;
 use Ehann\RediSearch\Fields\TagField;
 use Ehann\RediSearch\Fields\TextField;
+use Ehann\RediSearch\Fields\VectorField;
 use Ehann\RediSearch\Query\Builder as QueryBuilder;
 use Ehann\RediSearch\Query\BuilderInterface as QueryBuilderInterface;
 use Ehann\RediSearch\Query\SearchResult;
@@ -61,6 +64,10 @@ class Index extends AbstractIndex implements IndexInterface
             $properties[] = count($this->stopWords);
             $properties = array_merge($properties, $this->stopWords);
         }
+        $properties[] = 'SCORE_FIELD';
+        $properties[] = '__score';
+        $properties[] = 'LANGUAGE_FIELD';
+        $properties[] = '__language';
         $properties[] = 'SCHEMA';
 
         $fieldDefinitions = [];
@@ -187,6 +194,29 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * Adds a VECTOR field to the index schema. Available in RediSearch v2.2+.
+     *
+     * @param string $name
+     * @param string $algorithm FLAT or HNSW
+     * @param string $type FLOAT32 or FLOAT64
+     * @param int $dim Number of vector dimensions
+     * @param string $distanceMetric L2, IP, or COSINE
+     * @param array $extraAttributes Additional algorithm-specific attributes (key => value pairs)
+     * @return IndexInterface
+     */
+    public function addVectorField(
+        string $name,
+        string $algorithm = VectorField::ALGORITHM_FLAT,
+        string $type = VectorField::TYPE_FLOAT32,
+        int $dim = 128,
+        string $distanceMetric = VectorField::DISTANCE_COSINE,
+        array $extraAttributes = []
+    ): IndexInterface {
+        $this->$name = new VectorField($name, $algorithm, $type, $dim, $distanceMetric, $extraAttributes);
+        return $this;
+    }
+
+    /**
      * @param string $name
      * @return array
      */
@@ -196,11 +226,16 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * @param bool $deleteDocuments When true, also deletes all documents (hashes) associated with this index.
      * @return mixed
      */
-    public function drop()
+    public function drop(bool $deleteDocuments = false)
     {
-        return $this->rawCommand('FT.DROP', [$this->getIndexName()]);
+        $arguments = [$this->getIndexName()];
+        if ($deleteDocuments) {
+            $arguments[] = 'DD';
+        }
+        return $this->rawCommand('FT.DROPINDEX', $arguments);
     }
 
     /**
@@ -212,17 +247,17 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
-     * @param $id
-     * @param bool $deleteDocument
+     * Deletes a document by its ID. In RediSearch v2.x documents are stored as Redis hashes,
+     * so this deletes the underlying hash key, removing the document from the index.
+     *
+     * @param string $id The document ID.
+     * @param bool $deleteDocument Kept for API compatibility; deletion always removes the hash in v2.x.
      * @return bool
      */
     public function delete($id, $deleteDocument = false)
     {
-        $arguments = [$this->getIndexName(), $id];
-        if ($deleteDocument) {
-            $arguments[] = 'DD';
-        }
-        return boolval($this->rawCommand('FT.DEL', $arguments));
+        $key = $this->buildDocumentKey($id);
+        return boolval($this->rawCommand('DEL', [$key]));
     }
 
     /**
@@ -438,6 +473,17 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * Sets the query dialect. Available in RediSearch v2.4+.
+     *
+     * @param int $version Dialect version (1, 2, or 3)
+     * @return QueryBuilderInterface
+     */
+    public function dialect(int $version): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->dialect($version);
+    }
+
+    /**
      * @param string $query
      * @param bool $documentsAsArray
      * @return SearchResult
@@ -528,9 +574,36 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * Builds the Redis key for a document, incorporating any configured prefix.
+     */
+    private function buildDocumentKey(string $id): string
+    {
+        return !is_null($this->prefixes) && count($this->prefixes) > 0
+            ? implode(':', $this->prefixes) . ':' . $id
+            : $id;
+    }
+
+    /**
+     * Core HSET operation — stores a document as a Redis hash. No existence checks.
+     * Used internally by addMany() and addHash().
+     *
+     * @param DocumentInterface $document
+     * @return mixed
+     */
+    protected function _add(DocumentInterface $document)
+    {
+        if (is_null($document->getId())) {
+            $document->setId(uniqid(true));
+        }
+
+        $properties = $document->getHashDefinition($this->prefixes);
+        return $this->rawCommand('HSET', $properties);
+    }
+
+    /**
      * @param array $documents
      * @param bool $disableAtomicity
-     * @param bool $replace
+     * @param bool $replace Kept for API compatibility; HSET always upserts.
      */
     public function addMany(array $documents, $disableAtomicity = false, $replace = false)
     {
@@ -541,7 +614,7 @@ class Index extends AbstractIndex implements IndexInterface
             if (is_array($document)) {
                 $document = $this->arrayToDocument($document);
             }
-            $this->_add($document->setReplace($replace));
+            $this->_add($document);
         }
         try {
             $pipe->exec();
@@ -557,28 +630,6 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
-     * @param DocumentInterface $document
-     * @param bool $isFromHash
-     * @return mixed
-     */
-    protected function _add(DocumentInterface $document, bool $isFromHash = false)
-    {
-        if (is_null($document->getId())) {
-            $document->setId(uniqid(true));
-        }
-
-        $properties = $isFromHash ?
-            $document->getHashDefinition($this->prefixes) :
-            $document->getDefinition();
-        if (!$isFromHash) {
-            array_unshift($properties, $this->getIndexName());
-        }
-
-        $command = $isFromHash ? 'HSET' : 'FT.ADD';
-        return $this->rawCommand($command, $properties);
-    }
-
-    /**
      * @param $document
      * @return DocumentInterface
      * @throws Exceptions\FieldNotInSchemaException
@@ -589,23 +640,50 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * Adds a new document to the index. Throws if the index does not exist or the
+     * document ID already exists in Redis.
+     *
      * @param $document
      * @return bool
      * @throws Exceptions\FieldNotInSchemaException
+     * @throws DocumentAlreadyInIndexException
+     * @throws UnsupportedRediSearchLanguageException
      */
     public function add($document): bool
     {
-        return $this->_add($this->arrayToDocument($document));
+        $typedDocument = $this->arrayToDocument($document);
+
+        // Ensure the index exists — throws UnknownIndexNameException if not.
+        $this->info();
+
+        // Validate language before storing.
+        if (!is_null($typedDocument->getLanguage()) && !Language::isSupported($typedDocument->getLanguage())) {
+            throw new UnsupportedRediSearchLanguageException();
+        }
+
+        if (is_null($typedDocument->getId())) {
+            $typedDocument->setId(uniqid(true));
+        }
+
+        $key = $this->buildDocumentKey($typedDocument->getId());
+        if ($this->rawCommand('EXISTS', [$key])) {
+            throw new DocumentAlreadyInIndexException($this->getIndexName(), $typedDocument->getId());
+        }
+
+        return boolval($this->_add($typedDocument));
     }
 
     /**
+     * Updates (upserts) a document in the index using HSET.
+     *
      * @param $document
      * @return bool
      * @throws Exceptions\FieldNotInSchemaException
      */
     public function replace($document): bool
     {
-        return $this->_add($this->arrayToDocument($document)->setReplace(true));
+        $this->_add($this->arrayToDocument($document));
+        return true;
     }
 
     /**
@@ -618,24 +696,29 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * Adds or replaces a document stored as a Redis hash. Upsert semantics (HSET).
+     *
      * @param $document
      * @return bool
      * @throws Exceptions\FieldNotInSchemaException
      */
     public function addHash($document): bool
     {
-        $typedDocument = $this->arrayToDocument($document);
-        return $this->_add($typedDocument, true);
+        $this->_add($this->arrayToDocument($document));
+        return true;
     }
 
     /**
+     * Replaces a document stored as a Redis hash. Alias for addHash() — HSET always upserts.
+     *
      * @param $document
      * @return bool
      * @throws Exceptions\FieldNotInSchemaException
      */
     public function replaceHash($document): bool
     {
-        return $this->_add($this->arrayToDocument($document)->setReplace(true), true);
+        $this->_add($this->arrayToDocument($document));
+        return true;
     }
 
     /**

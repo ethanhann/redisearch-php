@@ -29,6 +29,7 @@ class Builder implements BuilderInterface
     protected $sortBy = '';
     protected $scorer = '';
     protected $language = '';
+    protected $dialect = '';
     protected $redis;
     private $indexName;
 
@@ -181,6 +182,19 @@ class Builder implements BuilderInterface
         return $this;
     }
 
+    /**
+     * Sets the query dialect. Available in RediSearch v2.4+.
+     * Dialect 2 enables fuzzy matching syntax, dialect 3 adds more operators.
+     *
+     * @param int $version Dialect version (1, 2, or 3)
+     * @return BuilderInterface
+     */
+    public function dialect(int $version): BuilderInterface
+    {
+        $this->dialect = "DIALECT $version";
+        return $this;
+    }
+
     protected function explodeArgument(?string $argument): array
     {
         return explode(' ', $argument ?? '');
@@ -213,6 +227,7 @@ class Builder implements BuilderInterface
                 $this->explodeArgument($this->language),
                 $this->explodeArgument($this->expander),
                 $this->explodeArgument($this->payload),
+                $this->explodeArgument($this->dialect),
             ),
             function ($item) {
                 return !is_null($item) && $item !== '';
