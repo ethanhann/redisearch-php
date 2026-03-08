@@ -371,7 +371,7 @@ class Index extends AbstractIndex implements IndexInterface
      * @param array|null $charactersToEscape
      * @return QueryBuilderInterface
      */
-    public function tagFilter(string $fieldName, array $values, array $charactersToEscape = null): QueryBuilderInterface
+    public function tagFilter(string $fieldName, array $values, ?array $charactersToEscape = null): QueryBuilderInterface
     {
         return $this->makeQueryBuilder()->tagFilter($fieldName, $values, $charactersToEscape);
     }

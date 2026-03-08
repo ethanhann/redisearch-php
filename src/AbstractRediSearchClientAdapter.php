@@ -9,7 +9,7 @@ abstract class AbstractRediSearchClientAdapter
     /** @var RediSearchRedisClient */
     protected $redisClient;
 
-    public function __construct(RedisRawClientInterface $redisClient = null)
+    public function __construct(?RedisRawClientInterface $redisClient = null)
     {
         $this->redisClient = new RediSearchRedisClient($redisClient);
     }

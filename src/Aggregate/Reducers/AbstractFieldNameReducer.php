@@ -24,6 +24,6 @@ abstract class AbstractFieldNameReducer implements CanBecomeArrayInterface
 
     protected function makeAlias(): string
     {
-        return empty($alias) ? strtolower($this->reducerKeyword) . "_" . $this->fieldName : $this->alias;
+        return empty($this->alias) ? strtolower($this->reducerKeyword) . "_" . $this->fieldName : $this->alias;
     }
 }
