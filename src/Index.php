@@ -129,12 +129,12 @@ class Index extends AbstractIndex implements IndexInterface
 
     /**
      * Returns an array of fields as cloned objects
-     * 
+     *
      * @return array
      */
     public function getFieldsCloned(): array
     {
-        return array_map(fn($field) => clone $field, $this->fields);
+        return array_map(fn ($field) => clone $field, $this->fields);
     }
 
     /**

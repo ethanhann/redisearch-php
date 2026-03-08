@@ -12,6 +12,7 @@ class RuntimeConfigurationTest extends RediSearchTestCase
 
     public function setUp(): void
     {
+        parent::setUp();
         $this->subject = (new RuntimeConfiguration($this->redisClient, 'foo'));
     }
 

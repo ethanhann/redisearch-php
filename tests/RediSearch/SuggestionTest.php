@@ -12,6 +12,7 @@ class SuggestionTest extends RediSearchTestCase
 
     public function setUp(): void
     {
+        parent::setUp();
         $this->subject = (new Suggestion($this->redisClient, 'foo'));
     }
 

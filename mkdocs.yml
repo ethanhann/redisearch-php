@@ -6,7 +6,7 @@ repo_url: https://github.com/ethanhann/redisearch-php
 site_author: Ethan Hann
 copyright: © 2018 - Ethan Hann
 
-pages:
+nav:
 - Getting Started: 'index.md'
 - Documentation:
   - 'indexing.md'
