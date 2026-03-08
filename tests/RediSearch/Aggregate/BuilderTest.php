@@ -21,6 +21,7 @@ class BuilderTest extends RediSearchTestCase
 
     public function setUp(): void
     {
+        parent::setUp();
         $this->indexName = 'AggregateBuilderTest';
         $index = (new TestIndex($this->redisClient, $this->indexName))
             ->addTextField('title', 1.0, true)

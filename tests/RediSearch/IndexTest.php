@@ -31,6 +31,7 @@ class IndexTest extends RediSearchTestCase
 
     public function setUp(): void
     {
+        parent::setUp();
         $this->indexName = 'ClientTest';
         $this->subject = (new TestIndex($this->redisClient, $this->indexName))
             ->addTextField('title')

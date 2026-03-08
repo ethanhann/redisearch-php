@@ -16,6 +16,7 @@ class BuilderTest extends RediSearchTestCase
     private $expectedResult3;
     public function setUp(): void
     {
+        parent::setUp();
         $this->indexName = 'QueryBuilderTest';
         $index = (new TestIndex($this->redisClient, $this->indexName))
             ->addTextField('title')

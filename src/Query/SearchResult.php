@@ -58,14 +58,14 @@ class SearchResult
                 $document->id = $rawRediSearchResult[$i];
             if ($withScores) {
                 $documentsAsArray ?
-                    $document['score'] = $rawRediSearchResult[$i+1] :
-                    $document->score = $rawRediSearchResult[$i+1];
+                    $document['score'] = $rawRediSearchResult[$i + 1] :
+                    $document->score = $rawRediSearchResult[$i + 1];
             }
             if ($withPayloads) {
                 $j = $withScores ? 2 : 1;
                 $documentsAsArray ?
-                    $document['payload'] = $rawRediSearchResult[$i+$j] :
-                    $document->payload = $rawRediSearchResult[$i+$j];
+                    $document['payload'] = $rawRediSearchResult[$i + $j] :
+                    $document->payload = $rawRediSearchResult[$i + $j];
             }
             if (!$noContent) {
                 $fields = $rawRediSearchResult[$i + ($documentWidth - 1)];
