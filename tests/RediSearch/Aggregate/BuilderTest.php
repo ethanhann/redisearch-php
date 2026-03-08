@@ -7,9 +7,7 @@ use Ehann\RediSearch\Aggregate\Reducers\Avg;
 use Ehann\Tests\Stubs\TestIndex;
 use Ehann\Tests\RediSearchTestCase;
 
-/**
- * @group aggregate
- */
+#[PHPUnit\Framework\Attributes\Group('aggregate')]
 class BuilderTest extends RediSearchTestCase
 {
     private Builder $subject;

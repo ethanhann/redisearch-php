@@ -5,9 +5,7 @@ namespace Ehann\Tests\RediSearch\Aggregate;
 use Ehann\RediSearch\Aggregate\AggregationResult;
 use Ehann\Tests\RediSearchTestCase;
 
-/**
- * @group aggregate
- */
+#[PHPUnit\Framework\Attributes\Group('aggregate')]
 class AggregationResultTest extends RediSearchTestCase
 {
     protected AggregationResult $subject;

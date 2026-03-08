@@ -750,9 +750,7 @@ class IndexTest extends RediSearchTestCase
         $this->assertSame($expectedDocumentCount, count($result->getDocuments()));
     }
 
-    /**
-     * @requires extension redis
-     */
+    #[PHPUnit\Framework\Attributes\RequiresPhpExtension('redis')]
     public function testBatchIndexWithAddManyUsingPhpRedisWithAtomicityDisabled(): void
     {
         // Arrange
