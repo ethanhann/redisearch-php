@@ -7,12 +7,15 @@ use PHPUnit\Framework\TestCase;
 
 class NoFieldsInIndexExceptionTest extends TestCase
 {
-    public function testShouldShowCustomMessage()
+    public function testShouldShowCustomMessage(): void
     {
+        // Arrange
         $expected = 'There needs to be at least one field defined as a property in the index.';
 
+        // Act
         $message = (new NoFieldsInIndexException())->getMessage();
 
-        $this->assertEquals($expected, $message);
+        // Assert
+        $this->assertSame($expected, $message);
     }
 }

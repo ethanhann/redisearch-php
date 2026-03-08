@@ -19,11 +19,9 @@ abstract class RediSearchTestCase extends TestCase
     public const PHP_REDIS_LIBRARY = 'PhpRedis';
     public const REDIS_CLIENT_LIBRARY = 'RedisClient';
 
-    /** @var string */
-    protected $indexName;
-    /** @var RediSearchRedisClient */
-    protected $redisClient;
-    protected $logger;
+    protected string $indexName;
+    protected RediSearchRedisClient $redisClient;
+    protected Logger $logger;
 
     public function setUp(): void
     {
@@ -69,17 +67,17 @@ abstract class RediSearchTestCase extends TestCase
         );
     }
 
-    protected function isUsingPredis()
+    protected function isUsingPredis(): bool
     {
         return getenv('REDIS_LIBRARY') === AbstractRedisRawClient::PREDIS_LIBRARY;
     }
 
-    protected function isUsingPhpRedis()
+    protected function isUsingPhpRedis(): bool
     {
         return getenv('REDIS_LIBRARY') === AbstractRedisRawClient::PHP_REDIS_LIBRARY;
     }
 
-    protected function isUsingRedisClient()
+    protected function isUsingRedisClient(): bool
     {
         return getenv('REDIS_LIBRARY') === AbstractRedisRawClient::REDIS_CLIENT_LIBRARY;
     }

@@ -9,22 +9,26 @@ use PHPUnit\Framework\TestCase;
 
 class DocumentTest extends TestCase
 {
-    public function testShouldGetDefinition()
+    public function testShouldGetDefinition(): void
     {
+        // Arrange
         $expectedNumberOfElements = 3;
         $expectedScore = 1.0;
         $subject = new Document();
 
+        // Act
         $definition = $subject->getDefinition();
 
+        // Assert
         $this->assertCount($expectedNumberOfElements, $definition);
         $this->assertNotEmpty($definition[0]);
-        $this->assertEquals($expectedScore, $definition[1]);
-        $this->assertEquals('FIELDS', $definition[2]);
+        $this->assertSame($expectedScore, $definition[1]);
+        $this->assertSame('FIELDS', $definition[2]);
     }
 
-    public function testShouldGetDefinitionWithOptions()
+    public function testShouldGetDefinitionWithOptions(): void
     {
+        // Arrange
         $expectedNumberOfElements = 13;
         $expectedPayload = 'foo';
         $isNoSave = true;
@@ -47,37 +51,47 @@ class DocumentTest extends TestCase
             ->setScore($expectedScore);
         $subject->customField = FieldFactory::make($expectedFieldName, $expectedFieldValue);
 
+        // Act
         $definition = $subject->getDefinition();
 
+        // Assert
         $this->assertCount($expectedNumberOfElements, $definition);
-        $this->assertEquals($expectedId, $definition[0]);
-        $this->assertEquals($expectedScore, $definition[1]);
-        $this->assertEquals('NOSAVE', $definition[2]);
-        $this->assertEquals('REPLACE', $definition[3]);
-        $this->assertEquals('PARTIAL', $definition[4]);
-        $this->assertEquals('NOCREATE', $definition[5]);
-        $this->assertEquals('LANGUAGE', $definition[6]);
-        $this->assertEquals($expectedLanguage, $definition[7]);
-        $this->assertEquals('PAYLOAD', $definition[8]);
-        $this->assertEquals($expectedPayload, $definition[9]);
-        $this->assertEquals('FIELDS', $definition[10]);
-        $this->assertEquals($expectedFieldName, $definition[11]);
-        $this->assertEquals($expectedFieldValue, $definition[12]);
+        $this->assertSame($expectedId, $definition[0]);
+        $this->assertSame($expectedScore, $definition[1]);
+        $this->assertSame('NOSAVE', $definition[2]);
+        $this->assertSame('REPLACE', $definition[3]);
+        $this->assertSame('PARTIAL', $definition[4]);
+        $this->assertSame('NOCREATE', $definition[5]);
+        $this->assertSame('LANGUAGE', $definition[6]);
+        $this->assertSame($expectedLanguage, $definition[7]);
+        $this->assertSame('PAYLOAD', $definition[8]);
+        $this->assertSame($expectedPayload, $definition[9]);
+        $this->assertSame('FIELDS', $definition[10]);
+        $this->assertSame($expectedFieldName, $definition[11]);
+        $this->assertSame($expectedFieldValue, $definition[12]);
     }
 
-    public function testShouldThrowExceptionWhenScoreIsTooLow()
+    public function testShouldThrowExceptionWhenScoreIsTooLow(): void
     {
-        $this->expectException(OutOfRangeDocumentScoreException::class);
+        // Arrange
         $subject = new Document();
 
+        // Assert
+        $this->expectException(OutOfRangeDocumentScoreException::class);
+
+        // Act
         $subject->setScore(-0.1);
     }
 
-    public function testShouldThrowExceptionWhenScoreIsTooHigh()
+    public function testShouldThrowExceptionWhenScoreIsTooHigh(): void
     {
-        $this->expectException(OutOfRangeDocumentScoreException::class);
+        // Arrange
         $subject = new Document();
 
+        // Assert
+        $this->expectException(OutOfRangeDocumentScoreException::class);
+
+        // Act
         $subject->setScore(1.1);
     }
 }

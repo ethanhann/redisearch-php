@@ -12,12 +12,11 @@ use Ehann\Tests\RediSearchTestCase;
  */
 class BuilderTest extends RediSearchTestCase
 {
-    /** @var Builder */
-    private $subject;
-    private $expectedResult1;
-    private $expectedResult2;
-    private $expectedResult3;
-    private $expectedResult4;
+    private Builder $subject;
+    private array $expectedResult1;
+    private array $expectedResult2;
+    private array $expectedResult3;
+    private array $expectedResult4;
 
     public function setUp(): void
     {
@@ -73,294 +72,357 @@ class BuilderTest extends RediSearchTestCase
         $this->redisClient->flushAll();
     }
 
-    public function testGetAverageOfNumeric()
+    public function testGetAverageOfNumeric(): void
     {
+        // Arrange
         $expectedCount = 3;
         $expectedAveragePrice = 14.99;
 
+        // Act
         $result = $this->subject
             ->groupBy('title')
             ->avg('price')
             ->search();
 
-        $this->assertEquals($expectedCount, $result->getCount());
+        // Assert
+        $this->assertSame($expectedCount, $result->getCount());
         $this->assertEquals($expectedAveragePrice, $result->getDocuments()[0]->avg_price);
     }
 
-    public function testGetAggregationAsArray()
+    public function testGetAggregationAsArray(): void
     {
+        // Arrange
         $expectedCount = 3;
         $expectedAveragePrice = 14.99;
 
+        // Act
         $result = $this->subject
             ->groupBy('title')
             ->avg('price')
             ->search('*', true);
 
-        $this->assertEquals($expectedCount, $result->getCount());
+        // Assert
+        $this->assertSame($expectedCount, $result->getCount());
         $this->assertEquals($expectedAveragePrice, $result->getDocuments()[0]['avg_price']);
     }
 
-    public function testGetGroupByAndReduce()
+    public function testGetGroupByAndReduce(): void
     {
+        // Arrange
         $expectedCount = 3;
         $expectedAveragePrice = 14.99;
 
+        // Act
         $result = $this->subject
             ->groupBy('title')
             ->reduce(new Avg('price'))
             ->search();
 
-        $this->assertEquals($expectedCount, $result->getCount());
+        // Assert
+        $this->assertSame($expectedCount, $result->getCount());
         $this->assertEquals($expectedAveragePrice, $result->getDocuments()[0]->avg_price);
     }
 
-    public function testGetGroupByAndReduceAndFilter()
+    public function testGetGroupByAndReduceAndFilter(): void
     {
+        // Arrange
         $expectedCount = 2;
         $expectedAveragePrice = 18.85;
 
+        // Act
         $result = $this->subject
             ->groupBy('author')
             ->reduce(new Avg('price'))
             ->filter('@author == "Jessica" || @author == "Jack"')
             ->search();
 
-        $this->assertEquals($expectedCount, $result->getCount());
+        // Assert
+        $this->assertSame($expectedCount, $result->getCount());
         $this->assertEquals($expectedAveragePrice, $result->getDocuments()[0]->avg_price);
     }
 
-    public function testPipelineHasCommands()
+    public function testPipelineHasCommands(): void
     {
+        // Arrange
         $this->subject
             ->groupBy('title')
             ->avg('price');
         $this->subject->limit(0, 10);
 
+        // Act
         $result = $this->subject->getPipeline();
 
+        // Assert
         $this->assertNotEmpty($result, 'Pipeline has no commands.');
     }
 
-    public function testClearPipeline()
+    public function testClearPipeline(): void
     {
+        // Arrange
         $this->subject
             ->groupBy('title')
             ->avg('price');
 
+        // Act
         $this->subject->clear();
 
+        // Assert
         $this->assertEmpty($this->subject->getPipeline(), 'Failed to clear pipeline.');
     }
 
-    public function testGetCount()
+    public function testGetCount(): void
     {
+        // Arrange
         $expected1 = 3;
         $expected2 = 1;
         $expected3 = 1;
 
+        // Act
         $result = $this->subject
             ->groupBy('title')
             ->count(0)
             ->search();
 
-        $this->assertEquals($expected1, $result->getDocuments()[0]->count);
-        $this->assertEquals($expected2, $result->getDocuments()[1]->count);
-        $this->assertEquals($expected3, $result->getDocuments()[2]->count);
+        // Assert
+        $this->assertSame($expected1, $result->getDocuments()[0]->count);
+        $this->assertSame($expected2, $result->getDocuments()[1]->count);
+        $this->assertSame($expected3, $result->getDocuments()[2]->count);
     }
 
-    public function testGetCountDistinct()
+    public function testGetCountDistinct(): void
     {
+        // Arrange
         $expected1 = 1;
         $expected2 = 1;
         $expected3 = 1;
 
+        // Act
         $result = $this->subject
             ->groupBy('title')
             ->countDistinct('title')
             ->search();
 
-        $this->assertEquals($expected1, $result->getDocuments()[0]->count_distinct_title);
-        $this->assertEquals($expected2, $result->getDocuments()[1]->count_distinct_title);
-        $this->assertEquals($expected3, $result->getDocuments()[2]->count_distinct_title);
+        // Assert
+        $this->assertSame($expected1, $result->getDocuments()[0]->count_distinct_title);
+        $this->assertSame($expected2, $result->getDocuments()[1]->count_distinct_title);
+        $this->assertSame($expected3, $result->getDocuments()[2]->count_distinct_title);
     }
 
-    public function testGetCountDistinctWithReduceByField()
+    public function testGetCountDistinctWithReduceByField(): void
     {
+        // Arrange
         $expected1 = 2;
         $expected2 = 1;
 
+        // Act
         $result = $this->subject
             ->groupBy('stock')
             ->countDistinct('title')
             ->search();
 
-        $this->assertEquals($expected1, $result->getDocuments()[0]->count_distinct_title);
-        $this->assertEquals($expected2, $result->getDocuments()[1]->count_distinct_title);
+        // Assert
+        $this->assertSame($expected1, $result->getDocuments()[0]->count_distinct_title);
+        $this->assertSame($expected2, $result->getDocuments()[1]->count_distinct_title);
     }
 
-    public function testGetCountDistinctApproximate()
+    public function testGetCountDistinctApproximate(): void
     {
+        // Arrange
         $expected1 = 1;
         $expected2 = 1;
         $expected3 = 1;
 
+        // Act
         $result = $this->subject
             ->groupBy('title')
             ->countDistinctApproximate('title')
             ->search();
 
-        $this->assertEquals($expected1, $result->getDocuments()[0]->count_distinctish_title);
-        $this->assertEquals($expected2, $result->getDocuments()[1]->count_distinctish_title);
-        $this->assertEquals($expected3, $result->getDocuments()[2]->count_distinctish_title);
+        // Assert
+        $this->assertSame($expected1, $result->getDocuments()[0]->count_distinctish_title);
+        $this->assertSame($expected2, $result->getDocuments()[1]->count_distinctish_title);
+        $this->assertSame($expected3, $result->getDocuments()[2]->count_distinctish_title);
     }
 
-    public function testGetSum()
+    public function testGetSum(): void
     {
+        // Arrange
         $expected1 = 472;
         $expected2 = 32;
         $expected3 = 32;
 
+        // Act
         $result = $this->subject
             ->groupBy('title')
             ->sum('stock')
             ->search();
 
-        $this->assertEquals($expected1, $result->getDocuments()[0]->sum_stock);
-        $this->assertEquals($expected2, $result->getDocuments()[1]->sum_stock);
-        $this->assertEquals($expected3, $result->getDocuments()[2]->sum_stock);
+        // Assert
+        $this->assertSame($expected1, $result->getDocuments()[0]->sum_stock);
+        $this->assertSame($expected2, $result->getDocuments()[1]->sum_stock);
+        $this->assertSame($expected3, $result->getDocuments()[2]->sum_stock);
     }
 
-    public function testGetMax()
+    public function testGetMax(): void
     {
+        // Arrange
         $expected1 = 19.99;
 
+        // Act
         $result = $this->subject
             ->groupBy('title')
             ->max('price')
             ->search();
 
+        // Assert
         $this->assertEquals($expected1, $result->getDocuments()[0]->max_price);
     }
 
-    public function testGetMin()
+    public function testGetMin(): void
     {
+        // Arrange
         $expected1 = 9.99;
 
+        // Act
         $result = $this->subject
             ->groupBy('title')
             ->min('price')
             ->search();
 
+        // Assert
         $this->assertEquals($expected1, $result->getDocuments()[0]->min_price);
     }
 
-    public function testGetAbsoluteMin()
+    public function testGetAbsoluteMin(): void
     {
+        // Arrange
         $expected = 9.99;
 
+        // Act
         $result = $this->subject
             ->groupBy()
             ->min('price')
             ->search();
 
+        // Assert
         $this->assertEquals($expected, $result->getDocuments()[0]->min_price);
     }
 
-    public function testGetAbsoluteMax()
+    public function testGetAbsoluteMax(): void
     {
+        // Arrange
         $expected = 38.85;
 
+        // Act
         $result = $this->subject
             ->groupBy()
             ->max('price')
             ->search();
 
+        // Assert
         $this->assertEquals($expected, $result->getDocuments()[0]->max_price);
     }
 
-    public function testGetQuantile()
+    public function testGetQuantile(): void
     {
+        // Arrange
         $expected1 = 19.99;
         $expected2 = 18.85;
         $expected3 = 38.85;
 
+        // Act
         $result = $this->subject
             ->groupBy('title')
             ->quantile('price', 1)
             ->search();
 
+        // Assert
         $documents = $result->getDocuments();
         $this->assertEquals($expected1, $documents[0]->quantile_price);
         $this->assertEquals($expected2, $documents[1]->quantile_price);
         $this->assertEquals($expected3, $documents[2]->quantile_price);
     }
 
-    public function testGetAbsoluteQuantile()
+    public function testGetAbsoluteQuantile(): void
     {
+        // Arrange
         $expected = 18.85;
 
+        // Act
         $result = $this->subject
             ->groupBy()
             ->quantile('price', 0.5)
             ->search();
 
+        // Assert
         $this->assertEquals($expected, $result->getDocuments()[0]->quantile_price);
     }
 
-    public function testGetStandardDeviation()
+    public function testGetStandardDeviation(): void
     {
+        // Arrange
         $expected = 5;
 
+        // Act
         $result = $this->subject
             ->groupBy('title')
             ->standardDeviation('price')
             ->search();
 
+        // Assert
         $this->assertEquals($expected, $result->getDocuments()[0]->stddev_price);
     }
 
-    public function testSortByAscending()
+    public function testSortByAscending(): void
     {
+        // Arrange
         $expected1 = 'how to be awesome, part 2 - electric boogaloo';
         $expected2 = 'how to be awesome, part 3, section 13, appendix a';
         $expected3 = 'how to be awesome.';
 
+        // Act
         $result = $this->subject
             ->groupBy('title')
             ->sortBy('title')
             ->search();
 
-        $this->assertEquals($expected1, $result->getDocuments()[0]->title);
-        $this->assertEquals($expected2, $result->getDocuments()[1]->title);
-        $this->assertEquals($expected3, $result->getDocuments()[2]->title);
+        // Assert
+        $this->assertSame($expected1, $result->getDocuments()[0]->title);
+        $this->assertSame($expected2, $result->getDocuments()[1]->title);
+        $this->assertSame($expected3, $result->getDocuments()[2]->title);
     }
 
-    public function testSortByDescending()
+    public function testSortByDescending(): void
     {
+        // Arrange
         $expected1 = 'how to be awesome.';
         $expected2 = 'how to be awesome, part 3, section 13, appendix a';
         $expected3 = 'how to be awesome, part 2 - electric boogaloo';
 
+        // Act
         $result = $this->subject
             ->groupBy('title')
             ->sortBy('title', false)
             ->search();
 
-        $this->assertEquals($expected1, $result->getDocuments()[0]->title);
-        $this->assertEquals($expected2, $result->getDocuments()[1]->title);
-        $this->assertEquals($expected3, $result->getDocuments()[2]->title);
+        // Assert
+        $this->assertSame($expected1, $result->getDocuments()[0]->title);
+        $this->assertSame($expected2, $result->getDocuments()[1]->title);
+        $this->assertSame($expected3, $result->getDocuments()[2]->title);
     }
 
-    public function testSortByWithMax()
+    public function testSortByWithMax(): void
     {
+        // Arrange
         $expected = 1;
 
+        // Act
         $result = $this->subject
             ->groupBy('title')
             ->sortBy('title', true, $expected)
             ->search();
 
-        $this->assertEquals($expected, $result->getCount());
+        // Assert
+        $this->assertSame($expected, $result->getCount());
     }
 }

@@ -26,15 +26,15 @@ composer install
 
 ```bash
 # Default (Predis client)
-vendor/bin/robo test
+just test
 
 # Specific client
-vendor/bin/robo test:predis
-vendor/bin/robo test:php-redis
-vendor/bin/robo test:redis-client
+just test-predis
+just test-php-redis
+just test-redis-client
 
 # All clients
-vendor/bin/robo test:all
+just test-all
 
 # Run phpunit directly (used by CI)
 vendor/bin/phpunit
@@ -46,7 +46,7 @@ Tests flush the entire Redis database on teardown. Never run against a Redis ins
 
 ```bash
 # Fix in place
-vendor/bin/robo task:fix-code-style
+just fmt
 
 # Check only (no modifications — used by CI)
 vendor/bin/php-cs-fixer fix src --dry-run --diff

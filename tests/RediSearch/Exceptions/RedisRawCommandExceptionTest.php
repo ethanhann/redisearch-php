@@ -7,14 +7,16 @@ use PHPUnit\Framework\TestCase;
 
 class RedisRawCommandExceptionTest extends TestCase
 {
-    public function testShouldShowCustomMessage()
+    public function testShouldShowCustomMessage(): void
     {
+        // Arrange
         $command = 'FT.SEARCH MyIndex foo';
         $expected = "Redis Raw Command Failed. $command";
-        $subject = new RedisRawCommandException($command);
 
-        $message = $subject->getMessage();
+        // Act
+        $message = (new RedisRawCommandException($command))->getMessage();
 
-        $this->assertEquals($expected, $message);
+        // Assert
+        $this->assertSame($expected, $message);
     }
 }
