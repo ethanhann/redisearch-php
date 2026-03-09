@@ -33,6 +33,15 @@ jobs:
       - name: Build docs
         run: mkdocs build
 
+      - name: Serve docs locally
+        run: python -m http.server 8080 --directory docs &
+
+      - name: Check links
+        uses: ethanhann/spidermedic@main
+        with:
+          url: 'http://localhost'
+          port: 8080
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -42,8 +51,6 @@ jobs:
     name: Deploy Docs
     runs-on: ubuntu-latest
     needs: build
-    outputs:
-      page_url: ${{ steps.deployment.outputs.page_url }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -51,12 +58,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-  link-check:
-    name: Check Links
-    runs-on: ubuntu-latest
-    needs: deploy
-    steps:
-      - uses: ethanhann/spidermedic@main
-        with:
-          url: ${{ needs.deploy.outputs.page_url }}
