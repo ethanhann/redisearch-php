@@ -50,16 +50,11 @@ jobs:
       - name: Build docs
         run: mkdocs build
 
-      - name: Serve docs locally
-        run: |
-          python -m http.server 8080 --directory docs &
-          curl --retry 10 --retry-delay 1 --retry-connrefused -s http://localhost:8080/ > /dev/null
-
       - name: Check links
-        uses: ethanhann/spidermedic@main
+        uses: lycheeverse/lychee-action@v2
         with:
-          url: 'http://localhost'
-          port: 8080
+          args: --no-progress --offline './docs/**/*.html'
+          fail: true
 
   test:
     name: Test (PHP ${{ matrix.php-version }})
