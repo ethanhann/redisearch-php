@@ -281,56 +281,71 @@ class Index extends AbstractIndex implements IndexInterface
         $info = $this->info();
 
         // Find 'attributes' key in the flat alternating key-value response array
-        $attributesIndex = array_search('attributes', $info);
-        if ($attributesIndex === false) {
+        $attributesIndex = array_search('attributes', $info, true);
+        if ($attributesIndex === false || !isset($info[$attributesIndex + 1])) {
             return $this;
         }
-        $attributes = $info[$attributesIndex + 1];
 
-        foreach ($attributes as $attr) {
-            // Convert flat alternating key-value pairs to an associative array (lowercase keys)
-            $pairs = [];
-            for ($i = 0; $i + 1 < count($attr); $i += 2) {
-                $pairs[strtolower((string)$attr[$i])] = $attr[$i + 1];
-            }
+        foreach ($info[$attributesIndex + 1] as $attr) {
+            $map = $this->parseAttributeDescriptor($attr);
 
-            $name = (string)($pairs['attribute'] ?? '');
+            $name = (string)($map['attribute'] ?? $map['identifier'] ?? '');
             if ($name === '' || str_starts_with($name, '__')) {
                 continue; // skip internal fields like __score, __language
             }
 
-            $type = strtoupper((string)($pairs['type'] ?? ''));
-            $rawFlags = $pairs['flags'] ?? [];
-            $flags = is_array($rawFlags) ? array_map('strtoupper', $rawFlags) : [];
+            $flags = is_array($map['flags'] ?? null) ? array_map('strtoupper', $map['flags']) : [];
             $sortable = in_array('SORTABLE', $flags, true);
             $noindex = in_array('NOINDEX', $flags, true);
+            $type = strtoupper((string)($map['type'] ?? ''));
 
-            switch ($type) {
-                case 'TEXT':
-                    $weight = (float)($pairs['weight'] ?? 1.0);
-                    $this->addTextField($name, $weight, $sortable, $noindex);
-                    break;
-                case 'NUMERIC':
-                    $this->addNumericField($name, $sortable, $noindex);
-                    break;
-                case 'TAG':
-                    $separator = (string)($pairs['separator'] ?? ',');
-                    $this->addTagField($name, $sortable, $noindex, $separator);
-                    break;
-                case 'GEO':
-                    $this->addGeoField($name, $noindex);
-                    break;
-                case 'VECTOR':
-                    $algorithm = strtoupper((string)($pairs['algorithm'] ?? VectorField::ALGORITHM_FLAT));
-                    $vectorType = strtoupper((string)($pairs['data_type'] ?? VectorField::TYPE_FLOAT32));
-                    $dim = (int)($pairs['dim'] ?? 128);
-                    $distanceMetric = strtoupper((string)($pairs['distance_metric'] ?? VectorField::DISTANCE_COSINE));
-                    $this->addVectorField($name, $algorithm, $vectorType, $dim, $distanceMetric);
-                    break;
+            $field = match ($type) {
+                'TEXT' => (new TextField($name))
+                    ->setWeight((float)($map['weight'] ?? 1.0))
+                    ->setSortable($sortable)
+                    ->setNoindex($noindex)
+                    ->setNoStem(in_array('NOSTEM', $flags, true)),
+                'NUMERIC' => (new NumericField($name))
+                    ->setSortable($sortable)
+                    ->setNoindex($noindex),
+                'TAG' => (new TagField($name))
+                    ->setSeparator((string)($map['separator'] ?? ','))
+                    ->setSortable($sortable)
+                    ->setNoindex($noindex),
+                'GEO' => (new GeoField($name))
+                    ->setNoindex($noindex),
+                'VECTOR' => new VectorField(
+                    $name,
+                    strtoupper((string)($map['algorithm'] ?? VectorField::ALGORITHM_FLAT)),
+                    strtoupper((string)($map['data_type'] ?? VectorField::TYPE_FLOAT32)),
+                    (int)($map['dim'] ?? 128),
+                    strtoupper((string)($map['distance_metric'] ?? VectorField::DISTANCE_COSINE)),
+                ),
+                default => null,
+            };
+
+            if ($field !== null) {
+                $this->fields[$name] = $field;
             }
         }
 
         return $this;
+    }
+
+    /**
+     * Converts a flat alternating [key, value, key, value, ...] attribute descriptor
+     * from FT.INFO into an associative array with lowercased keys.
+     */
+    private function parseAttributeDescriptor(array $attr): array
+    {
+        $map = [];
+        $i = 0;
+        $count = count($attr);
+        while ($i < $count - 1) {
+            $map[strtolower((string)$attr[$i])] = $attr[$i + 1];
+            $i += 2;
+        }
+        return $map;
     }
 
     /**

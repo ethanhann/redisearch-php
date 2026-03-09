@@ -16,6 +16,7 @@ use Ehann\RediSearch\Exceptions\UnsupportedRediSearchLanguageException;
 use Ehann\RediSearch\Fields\FieldFactory;
 use Ehann\RediSearch\Fields\GeoField;
 use Ehann\RediSearch\Fields\GeoLocation;
+use Ehann\RediSearch\Fields\VectorField;
 use Ehann\RediSearch\Fields\NumericField;
 use Ehann\RediSearch\Fields\TextField;
 use Ehann\RediSearch\IndexInterface;
@@ -157,6 +158,84 @@ class IndexTest extends RediSearchTestCase
 
         // Assert
         $this->assertTrue($result);
+    }
+
+    public function testLoadFieldsShouldNotIncludeInternalFields(): void
+    {
+        // Arrange
+        $this->subject->create();
+        $freshIndex = new TestIndex($this->redisClient, $this->indexName);
+
+        // Act
+        $freshIndex->loadFields();
+
+        // Assert — only the 6 user-defined fields, no __score / __language
+        $this->assertCount(6, $freshIndex->getFields());
+        $this->assertArrayNotHasKey('__score', $freshIndex->getFields());
+        $this->assertArrayNotHasKey('__language', $freshIndex->getFields());
+    }
+
+    public function testLoadFieldsShouldRestoreTextFieldWeight(): void
+    {
+        // Arrange
+        $indexName = 'LoadFieldsWeightTest';
+        (new TestIndex($this->redisClient, $indexName))
+            ->addTextField('title', 2.5)
+            ->create();
+        $freshIndex = new TestIndex($this->redisClient, $indexName);
+
+        // Act
+        $freshIndex->loadFields();
+
+        // Assert
+        $this->assertInstanceOf(TextField::class, $freshIndex->getFields()['title']);
+        $this->assertEquals(2.5, $freshIndex->getFields()['title']->getWeight());
+    }
+
+    public function testLoadFieldsShouldRestoreSortableFlag(): void
+    {
+        // Arrange
+        $indexName = 'LoadFieldsSortableTest';
+        (new TestIndex($this->redisClient, $indexName))
+            ->addTextField('title', 1.0, true)
+            ->create();
+        $freshIndex = new TestIndex($this->redisClient, $indexName);
+
+        // Act
+        $freshIndex->loadFields();
+
+        // Assert
+        $this->assertTrue($freshIndex->getFields()['title']->isSortable());
+    }
+
+    public function testLoadFieldsShouldRestoreTagFieldSeparator(): void
+    {
+        // Arrange
+        $indexName = 'LoadFieldsSeparatorTest';
+        (new TestIndex($this->redisClient, $indexName))
+            ->addTagField('keywords', false, false, '|')
+            ->create();
+        $freshIndex = new TestIndex($this->redisClient, $indexName);
+
+        // Act
+        $freshIndex->loadFields();
+
+        // Assert
+        $this->assertInstanceOf(TagField::class, $freshIndex->getFields()['keywords']);
+        $this->assertSame('|', $freshIndex->getFields()['keywords']->getSeparator());
+    }
+
+    public function testLoadFieldsShouldReturnSelfForFluentChaining(): void
+    {
+        // Arrange
+        $this->subject->create();
+        $freshIndex = new TestIndex($this->redisClient, $this->indexName);
+
+        // Act
+        $result = $freshIndex->loadFields();
+
+        // Assert
+        $this->assertSame($freshIndex, $result);
     }
 
     public function testShouldDeleteDocumentById(): void
