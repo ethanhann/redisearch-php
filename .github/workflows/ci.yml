@@ -37,28 +37,23 @@ jobs:
     name: Docs Link Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: docs-site/package-lock.json
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
 
       - name: Install dependencies
-        run: npm ci
-        working-directory: docs-site
+        run: bun install
 
-      - name: Build docs
-        run: npm run build
-        working-directory: docs-site
+      - name: Build site
+        run: bun x astro build
 
       - name: Serve docs locally
         run: |
-          npx serve docs-site/dist -l 8080 &
+          bun x astro preview --port 4330 &
           HOST_IP=$(ip addr show docker0 | awk '/inet / {print $2}' | cut -d/ -f1)
-          echo "DOCS_URL=http://${HOST_IP}:8080" >> $GITHUB_ENV
+          echo "DOCS_URL=http://${HOST_IP}:4330/redisearch-php/" >> $GITHUB_ENV
 
       - name: Wait for server
         run: |
