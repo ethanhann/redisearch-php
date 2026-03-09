@@ -121,6 +121,30 @@ class IndexTest extends RediSearchTestCase
         $this->assertTrue(count($result) > 0);
     }
 
+    public function testFtInfoAttributesKeyIsPresent(): void
+    {
+        // Diagnostic test: verify that 'attributes' key exists in the flat FT.INFO response.
+        // This will fail with a useful message if the Redis Stack version uses a different key name
+        // or if Predis returns the response in an unexpected format.
+        $this->subject->create();
+        $info = $this->subject->info();
+
+        $foundAt = null;
+        $topLevelKeys = [];
+        for ($i = 0; $i < count($info) - 1; $i += 2) {
+            $key = (string)$info[$i];
+            $topLevelKeys[] = sprintf('[%d]%s(%s)', $i, $key, gettype($info[$i]));
+            if ($key === 'attributes') {
+                $foundAt = $i;
+            }
+        }
+
+        $this->assertNotNull(
+            $foundAt,
+            "Expected 'attributes' key in FT.INFO flat response. Top-level keys found: " . implode(', ', $topLevelKeys)
+        );
+    }
+
     public function testShouldLoadFieldsFromExistingIndex(): void
     {
         // Arrange — create the full index (title, author, price, stock, place, color)

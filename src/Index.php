@@ -280,13 +280,21 @@ class Index extends AbstractIndex implements IndexInterface
     {
         $info = $this->info();
 
-        // Find 'attributes' key in the flat alternating key-value response array
-        $attributesIndex = array_search('attributes', $info, true);
-        if ($attributesIndex === false || !isset($info[$attributesIndex + 1])) {
+        // Iterate in pairs to find 'attributes' key, casting to string so that
+        // Predis Status objects (used for simple-string RESP2 responses) compare correctly.
+        $attributes = null;
+        for ($i = 0; $i < count($info) - 1; $i += 2) {
+            if ((string)$info[$i] === 'attributes') {
+                $attributes = $info[$i + 1];
+                break;
+            }
+        }
+
+        if (!is_array($attributes)) {
             return $this;
         }
 
-        foreach ($info[$attributesIndex + 1] as $attr) {
+        foreach ($attributes as $attr) {
             $map = $this->parseAttributeDescriptor($attr);
 
             $name = (string)($map['attribute'] ?? $map['identifier'] ?? '');
@@ -294,7 +302,9 @@ class Index extends AbstractIndex implements IndexInterface
                 continue; // skip internal fields like __score, __language
             }
 
-            $flags = is_array($map['flags'] ?? null) ? array_map('strtoupper', $map['flags']) : [];
+            // Cast each flag to string to handle Predis Status objects
+            $rawFlags = $map['flags'] ?? [];
+            $flags = is_array($rawFlags) ? array_map(fn ($f) => strtoupper((string)$f), $rawFlags) : [];
             $sortable = in_array('SORTABLE', $flags, true);
             $noindex = in_array('NOINDEX', $flags, true);
             $type = strtoupper((string)($map['type'] ?? ''));
