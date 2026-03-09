@@ -302,11 +302,14 @@ class Index extends AbstractIndex implements IndexInterface
                 continue; // skip internal fields like __score, __language
             }
 
-            // Cast each flag to string to handle Predis Status objects
+            // Cast each flag to string to handle Predis Status objects.
+            // Older Redis Stack puts SORTABLE/NOINDEX/NOSTEM inside a 'flags' sub-array;
+            // newer versions represent them as standalone key-value pairs in the descriptor.
+            // Check both forms for compatibility.
             $rawFlags = $map['flags'] ?? [];
             $flags = is_array($rawFlags) ? array_map(fn ($f) => strtoupper((string)$f), $rawFlags) : [];
-            $sortable = in_array('SORTABLE', $flags, true);
-            $noindex = in_array('NOINDEX', $flags, true);
+            $sortable = in_array('SORTABLE', $flags, true) || array_key_exists('sortable', $map);
+            $noindex = in_array('NOINDEX', $flags, true) || array_key_exists('noindex', $map);
             $type = strtoupper((string)($map['type'] ?? ''));
 
             $field = match ($type) {
@@ -314,7 +317,7 @@ class Index extends AbstractIndex implements IndexInterface
                     ->setWeight((float)($map['weight'] ?? 1.0))
                     ->setSortable($sortable)
                     ->setNoindex($noindex)
-                    ->setNoStem(in_array('NOSTEM', $flags, true)),
+                    ->setNoStem(in_array('NOSTEM', $flags, true) || array_key_exists('nostem', $map)),
                 'NUMERIC' => (new NumericField($name))
                     ->setSortable($sortable)
                     ->setNoindex($noindex),
