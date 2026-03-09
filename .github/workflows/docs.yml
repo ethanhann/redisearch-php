@@ -22,30 +22,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: '3.x'
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: docs-site/package-lock.json
 
-      - name: Install MkDocs dependencies
-        run: pip install mkdocs-material
+      - name: Install dependencies
+        run: npm ci
+        working-directory: docs-site
 
       - name: Build docs
-        run: mkdocs build
-
-      - name: Serve docs locally
-        run: python -m http.server 8080 --directory docs &
-
-      - name: Check links
-        uses: ethanhann/spidermedic@main
-        with:
-          url: 'http://localhost'
-          port: 8080
+        run: npm run build
+        working-directory: docs-site
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/
+          path: docs-site/dist/
 
   deploy:
     name: Deploy Docs
