@@ -53,7 +53,7 @@ jobs:
       - name: Serve docs locally
         run: |
           python -m http.server 8080 --directory site &
-          sleep 2
+          curl --retry 10 --retry-delay 1 --retry-connrefused -sf http://localhost:8080/ > /dev/null
 
       - name: Check links
         uses: ethanhann/spidermedic@main
