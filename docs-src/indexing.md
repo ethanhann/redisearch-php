@@ -2,7 +2,7 @@
 
 ## Field Types
 
-There are four types of fields that can be added to a document: **TextField**, **NumericField**, **GeoField** and **TagField**.
+There are five types of fields that can be added to a document: **TextField**, **NumericField**, **GeoField**, **TagField**, and **VectorField**.
 
 They are instantiated like this:
 
@@ -11,6 +11,7 @@ new TextField('author', 'Charles Dickens');
 new NumericField('price', 9.99);
 new GeoField('place', new GeoLocation(-77.0366, 38.8977));
 new TagField('color', 'red');
+new VectorField('embedding', VectorField::ALGORITHM_HNSW, VectorField::TYPE_FLOAT32, 128, VectorField::DISTANCE_COSINE);
 ```
 
 Fields can also be made with the FieldFactory class:
@@ -27,6 +28,23 @@ FieldFactory::make('place', new GeoLocation(-77.0366, 38.8977));
 
 // Alternative syntax for: new TagField('color', 'red');
 FieldFactory::make('color', 'red');
+```
+
+### Vector Fields
+
+Vector fields enable nearest-neighbor similarity search (available in RediSearch v2.2+).
+Use `addVectorField()` when defining the schema:
+
+```php-inline
+use Ehann\RediSearch\Fields\VectorField;
+
+$bookIndex->addVectorField(
+    'embedding',
+    VectorField::ALGORITHM_HNSW,  // FLAT or HNSW
+    VectorField::TYPE_FLOAT32,    // FLOAT32 or FLOAT64
+    128,                          // number of dimensions
+    VectorField::DISTANCE_COSINE  // L2, IP, or COSINE
+);
 ```
 
 ## Adding Documents
@@ -51,7 +69,7 @@ $bookIndex->add([
     'author' => 'Charles Dickens',
     'price' => 9.99,
     'place' => new GeoLocation(-77.0366, 38.8977),
-    'color' => new TagField('color', 'red'),,
+    'color' => new TagField('color', 'red'),
 ]);
 ```
 
@@ -65,7 +83,7 @@ $document->price->setValue(9.99);
 $document->place->setValue(new GeoLocation(-77.0366, 38.8977));
 $document->color->setValue(new Tag('red'));
 
-$this->add($document);
+$bookIndex->add($document);
 ```
 
 DocBlocks can (optionally) be used to type hint field property names:
@@ -77,7 +95,7 @@ $document = $bookIndex->makeDocument();
 // "title" will auto-complete correctly in your IDE provided BookDocument has a "title" property or @property annotation.
 $document->title->setValue('How to be awesome.');
 
-$this->add($document);
+$bookIndex->add($document);
 ```
 
 ```php
@@ -160,7 +178,7 @@ foreach ($records as $record) {
     $newDocument = $bookIndex->makeDocument($record->id);
     $newDocument->title->setValue($record->title);
     $newDocument->author->setValue($record->author);
-    $documents[] = $newDocument; 
+    $documents[] = $newDocument;
 }
 
 // Add all the documents at once.
@@ -171,32 +189,79 @@ $bookIndex->addMany($documents);
 $bookIndex->addMany($documents, true);
 ```
 
-## Indexing From a Hash
+## Document Storage in v2
 
-Redis hashes are key/value pairs referenced by a key. 
-It is possible to index an existing hash with the **addHash** method.
-The document's ID has to be the same as the hash's key.
-Attempting to index a hash that does not exist will result in an exception.
+In RediSearch v2, all documents are stored as Redis hashes (key/value pairs) internally.
+The library writes every document via `HSET` — there is no separate indexing step.
 
-Index a hash with the key "foo":
+`addHash()` and `replaceHash()` are available as aliases for `add()` and `replace()` respectively,
+both using upsert semantics:
 
-```php
+```php-inline
 $document = $bookIndex->makeDocument('foo');
-$bookIndex->addHash($document);
+$document->title->setValue('How to be awesome.');
+$bookIndex->addHash($document);   // upsert (same as add/replace)
+$bookIndex->replaceHash($document); // also upsert
 ```
 
-Replace a document in the index from a hash:
+## Key Prefixes
 
-```php
-$document = $bookIndex->makeDocument('foo');
-$bookIndex->replaceHash($document);
+You can configure one or more key prefixes so RediSearch only indexes hashes whose Redis key
+starts with a given string. Multiple prefixes are treated as **alternatives** — each is a
+separate key namespace, not a compound path.
+
+When writing documents, the library always uses the **first** configured prefix to build the
+hash key. Each prefix must include its own separator character (e.g. `'post:'`, not `'post'`).
+
+```php-inline
+// Index covers keys starting with 'post:' OR 'blog:'
+$index->setPrefixes(['post:', 'blog:'])->create();
+
+// Documents are written under the first prefix: 'post:{id}'
+$index->add($document);
+```
+
+## Index Creation Options
+
+Several `FT.CREATE` options can be set before calling `create()`:
+
+```php-inline
+$index
+    ->setIndexType('HASH')       // 'HASH' (default) or 'JSON' (requires RedisJSON)
+    ->setFilter('@price > 0')    // only index documents matching this expression
+    ->setMaxTextFields()         // allow more than 32 TEXT fields
+    ->setTemporary(3600)         // auto-expire index after 3600 seconds of inactivity
+    ->setSkipInitialScan()       // don't scan existing keys on creation
+    ->addTextField('title')
+    ->addNumericField('price')
+    ->create();
+```
+
+## Schema Expansion
+
+Fields can be added to an existing index without recreating it using `alter()`.
+Note that existing documents are not retroactively re-indexed for new fields;
+only newly added or updated documents will include them.
+
+```php-inline
+use Ehann\RediSearch\Fields\NumericField;
+
+$bookIndex->alter(new NumericField('year'));
+```
+
+## Listing Indexes
+
+All index names in the current Redis instance can be retrieved:
+
+```php-inline
+$names = $bookIndex->listIndexes(); // e.g. ['bookIndex', 'authorIndex']
 ```
 
 ## Aliasing
 
 Indexes can be aliased.
- 
-Note that an exception will be thrown if any alias method is called before an index's [schema](/#create-the-schema) is created.  
+
+Note that an exception will be thrown if any alias method is called before an index's [schema](/#create-the-schema) is created.
 
 ### Adding an Alias
 
@@ -240,4 +305,10 @@ An index can be removed:
 
 ```php-inline
 $index->drop();
+```
+
+Passing `true` also deletes all underlying document hashes from Redis:
+
+```php-inline
+$index->drop(true);
 ```

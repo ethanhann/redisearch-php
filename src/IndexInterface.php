@@ -4,6 +4,7 @@ namespace Ehann\RediSearch;
 
 use Ehann\RediSearch\Aggregate\BuilderInterface as AggregateBuilderInterface;
 use Ehann\RediSearch\Document\DocumentInterface;
+use Ehann\RediSearch\Fields\FieldInterface;
 use Ehann\RediSearch\Fields\VectorField;
 use Ehann\RediSearch\Query\BuilderInterface;
 
@@ -51,4 +52,18 @@ interface IndexInterface extends BuilderInterface
     public function addAlias(string $name): bool;
     public function updateAlias(string $name): bool;
     public function deleteAlias(string $name): bool;
+    public function params(array $params): BuilderInterface;
+    public function setIndexType(string $type): IndexInterface;
+    public function setFilter(string $expression): IndexInterface;
+    public function setMaxTextFields(bool $enable = true): IndexInterface;
+    public function setTemporary(int $seconds): IndexInterface;
+    public function setSkipInitialScan(bool $skip = true): IndexInterface;
+    public function alter(FieldInterface ...$fields): mixed;
+    public function listIndexes(): array;
+    public function synUpdate(string $synonymGroupId, string ...$terms): mixed;
+    public function synDump(): array;
+    public function spellCheck(string $query, int $distance = 1): array;
+    public function dictAdd(string $dict, string ...$terms): int;
+    public function dictDelete(string $dict, string ...$terms): int;
+    public function dictDump(string $dict): array;
 }

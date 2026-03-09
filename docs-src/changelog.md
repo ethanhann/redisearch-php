@@ -1,5 +1,29 @@
 # Changelog
 
+## 2.0.0
+
+### Breaking Changes
+
+* **PHP 8.2+** is now required.
+* **`FT.ADD` removed** — documents are now written as Redis hashes via `HSET`. Use `add()`, `replace()`, and `addMany()`.
+* **`FT.DROP` replaced by `FT.DROPINDEX`** — use `drop(bool $deleteDocuments = false)`. Pass `true` to also delete all underlying document hashes.
+* **`FT.DEL` replaced by `DEL`** — use `delete($id)`.
+
+### New Features
+
+* **VectorField** — new field type for nearest-neighbor similarity search (RediSearch v2.2+). Use `addVectorField()` to add to a schema and the `params()`/`dialect()` methods to issue KNN queries.
+* **`dialect(int $version)`** — selects the RediSearch query dialect (1, 2, or 3). Required for vector search and extended query syntax (RediSearch v2.4+).
+* **`params(array $params)`** — passes named parameters to `FT.SEARCH`, enabling parameterized vector/hybrid KNN queries. Requires dialect 2+.
+* **Index creation options** — `setIndexType()` (HASH/JSON), `setFilter()`, `setMaxTextFields()`, `setTemporary()`, and `setSkipInitialScan()` for richer `FT.CREATE` control.
+* **`alter(FieldInterface ...$fields)`** — adds fields to an existing index schema without recreating it (`FT.ALTER`).
+* **`listIndexes()`** — returns all index names in the current Redis instance (`FT._LIST`).
+* **`synUpdate()` / `synDump()`** — synonym group management (`FT.SYNUPDATE` / `FT.SYNDUMP`).
+* **`spellCheck(string $query, int $distance = 1)`** — spell-check suggestions (`FT.SPELLCHECK`).
+* **`dictAdd()` / `dictDelete()` / `dictDump()`** — custom dictionary management for spell checking.
+* **`withCursor()` / `cursorRead()` / `cursorDelete()`** — cursor-based pagination for large aggregate result sets.
+* **Additional language constants** — BASQUE, CATALAN, CHINESE, GREEK, INDONESIAN, IRISH, LITHUANIAN, NEPALI added to the `Language` class.
+* **`Language::isSupported()` / `Language::getSupported()`** — helpers for language validation.
+
 ## 1.1.2
 
 [Changes since last release](https://github.com/ethanhann/redisearch-php/compare/1.1.1...1.1.2)

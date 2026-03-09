@@ -25,6 +25,7 @@ interface BuilderInterface
     public function scorer(string $scoringFunction): BuilderInterface;
     public function language(string $languageName): BuilderInterface;
     public function dialect(int $version): BuilderInterface;
+    public function params(array $params): BuilderInterface;
     public function search(string $query = '', bool $documentsAsArray = false): SearchResult;
     public function explain(string $query): string;
     public function count(string $query = ''): int;

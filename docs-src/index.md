@@ -4,8 +4,8 @@ RediSearch-PHP is a PHP client library for the [RediSearch](http://redisearch.io
 
 ## Requirements
 
-* Redis running with the [RediSearch module loaded](http://redisearch.io/Quick_Start/).
-* PHP >=7
+* [Redis Stack](https://redis.io/docs/stack/) or Redis with the RediSearch module v2.x loaded.
+* PHP >=8.2
 * [PhpRedis](https://github.com/phpredis/phpredis), [Predis](https://github.com/nrk/predis), or [php-redis-client](https://github.com/cheprasov/php-redis-client).
 
 ## Install

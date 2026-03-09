@@ -38,9 +38,9 @@ class Document implements DocumentInterface
     public function getHashDefinition(array $prefixes = null): array
     {
         $id = $this->getId();
-        $completeId = !is_null($prefixes) && count($prefixes) > 0 ?
-            implode(':', $prefixes) . ':' . $id :
-            $id;
+        $completeId = !is_null($prefixes) && count($prefixes) > 0
+            ? $prefixes[0] . $id
+            : $id;
 
         $properties = [
             $completeId,
