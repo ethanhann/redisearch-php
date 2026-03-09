@@ -51,7 +51,9 @@ jobs:
         run: mkdocs build
 
       - name: Serve docs locally
-        run: python -m http.server 8080 --directory docs &
+        run: |
+          python -m http.server 8080 --directory site &
+          sleep 2
 
       - name: Check links
         uses: ethanhann/spidermedic@main
