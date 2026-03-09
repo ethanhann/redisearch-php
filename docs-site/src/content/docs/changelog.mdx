@@ -1,0 +1,148 @@
+---
+title: Changelog
+draft: false
+description: Version history and release notes.
+---
+
+## 3.0.0
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/2.1.0...3.0.0)
+
+### PHP Compatibility
+
+* **PHP 8.3 support** — fixed "Typed property must not be accessed before initialization" fatal errors.
+* **PHP 8.4+ compatibility** — fixed implicitly nullable parameters and dynamic property deprecations.
+
+### Tooling
+
+* **Replaced Robo with `justfile`** — `just test`, `just fmt`, etc. are now the standard commands.
+* **GitHub Actions CI** — lint-and-format job plus PHPUnit test matrix across PHP 8.2, 8.3, and 8.4.
+* Removed deprecated `version` field from `docker-compose.yml`.
+
+### Developer Experience
+
+* Added `CLAUDE.md` with contributor guidance and project structure documentation.
+* Added `/contribute` and `/unit-test` Claude Code skills for contributors.
+* Upgraded `/unit-test` skill to target PHPUnit 11 and enforce AAA (Arrange-Act-Assert) test style.
+
+## 2.1.0
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/2.0.0...2.1.0)
+
+### New Features
+
+* **Index prefix support** — fixed index creation to correctly apply prefix options.
+* **Improved hash support** — better `addHash` functionality for adding documents as Redis hashes.
+
+## 2.0.0
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/1.9.0...2.0.0)
+
+### Breaking Changes
+
+* **PHP 8.0+** is now required.
+* **`FT.ADDHASH` removed** — replaced with `HSET` to align with RediSearch v2 API.
+
+### New Features
+
+* **`replaceMany()`** — bulk replace documents alongside the existing `addMany()`.
+* **`FT.TAGVALS` support** — retrieve all values in a tag field.
+* **Tag field auto-detection** — array values passed to `FieldFactory::make` are automatically treated as Tag fields.
+* **Aggregation improvements** — operations now support optional field lists; group-by filter feature added.
+* **`Index::getFields()` made public.**
+* **Suggestion scores** — support for retrieving scores with autocomplete suggestions.
+
+### Bug Fixes
+
+* Fixed suggestion score incrementation.
+* Escaped special characters in tag field filters.
+* Fixed handling of "document already exists" and "unsupported language" return values from Redis.
+* `DocumentAlreadyInIndexException` now includes the index name and document ID in the message.
+
+## 1.1.2
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/1.1.1...1.1.2)
+
+* Loosen version requirement for redis raw to pull in bug fix(es).
+
+## 1.1.1
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/1.1.0...1.1.1)
+
+* Fix issue with implicitly named indexes.
+
+## 1.1.0
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/1.0.1...1.1.0)
+
+* Support [aggregations](/aggregating/).
+
+## 1.0.1
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/1.0.0...1.0.1)
+
+* Support NOINDEX fields.
+
+## 1.0.0
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.11.0...1.0.0)
+
+* Support complete RediSearch API, now including RETURN, SUMMARIZE, HIGHLIGHT, EXPANDER, and PAYLOAD in search queries.
+
+## 0.11.0
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.10.1...0.11.0)
+
+* Add [hash indexing](/indexing/#document-storage-in-v2).
+
+## 0.10.1
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.10.0...0.10.1)
+
+* Polished docs, and added a section on the Laravel RediSearch package.
+* Made internal changes to how numeric and geo search queries are generated.
+
+## 0.10.0
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.9.0...0.10.0)
+
+* Remove RedisClient class and add adapter functionality.
+* There are now adapters for Predis, PhpRedis, and the Cheprasov client. They all extend [AbstractRedisClient](https://github.com/ethanhann/redisearch-php/blob/master/src/Redis/AbstractRedisClient.php) which implements [RedisClientInterface](https://github.com/ethanhann/redisearch-php/blob/master/src/Redis/RedisClientInterface.php). An additional adapter can be created by extending AbstractRedisClient or by implementing RedisClientInterface if needed for some reason.
+* Handle RediSearch module error when index is created on a Redis database other than 0.
+* Return boolean true instead of "OK" when using PredisAdapter.
+* A new index now requires that a redis client is passed into its constructor - removed the magic behavior where a default RedisClient instance was auto initialized.
+
+## 0.9.0
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.8.0...0.9.0)
+
+* An exception is now thrown when the RediSearch module is not loaded in Redis.
+* Allow a [language to be specified](/searching/#setting-a-language) when searching.
+
+## 0.8.0
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.7.0...0.8.0)
+
+* Add [search result sorting](/searching/#sorting-results).
+* Remove NoScoreIdx and Optimize methods as they are deprecated and/or non-functional in RediSearch.
+* Add [explain method](/searching/#explaining-a-query) for explaining a query.
+* Add optional [query logging](/searching/#logging-queries).
+* Add [suggestions](/suggesting/).
+
+## 0.7.0
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.6.0...0.7.0)
+
+* Many bug fixes and code quality improvements.
+
+## 0.6.0
+
+[Changes since last release](https://github.com/ethanhann/redisearch-php/compare/0.5.0...0.6.0)
+
+* Add [batch indexing](/indexing/#batch-indexing).
+
+## 0.5.0
+
+* Rename vendor namespace from **Eeh** to **Ehann**
+* **AbstractIndex** was renamed to **Index** and is no longer abstract.
+* Custom document ID is now properly set when adding to an index.
