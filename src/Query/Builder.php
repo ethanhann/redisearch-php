@@ -30,6 +30,7 @@ class Builder implements BuilderInterface
     protected $scorer = '';
     protected $language = '';
     protected $dialect = '';
+    protected array $params = [];
     protected $redis;
     private $indexName;
 
@@ -191,13 +192,43 @@ class Builder implements BuilderInterface
      */
     public function dialect(int $version): BuilderInterface
     {
+        if (!in_array($version, [1, 2, 3], true)) {
+            throw new \InvalidArgumentException("Invalid dialect version $version. Expected 1, 2, or 3.");
+        }
         $this->dialect = "DIALECT $version";
+        return $this;
+    }
+
+    /**
+     * Sets named parameters for parameterized queries (e.g. vector KNN queries).
+     * Emits PARAMS {n} key1 val1 ... in the FT.SEARCH command.
+     * Requires DIALECT 2 or higher.
+     *
+     * @param array $params Associative array of parameter names to values.
+     * @return BuilderInterface
+     */
+    public function params(array $params): BuilderInterface
+    {
+        $this->params = $params;
         return $this;
     }
 
     protected function explodeArgument(?string $argument): array
     {
         return explode(' ', $argument ?? '');
+    }
+
+    protected function buildParamsArguments(): array
+    {
+        if (empty($this->params)) {
+            return [];
+        }
+        $args = ['PARAMS', count($this->params) * 2];
+        foreach ($this->params as $key => $value) {
+            $args[] = $key;
+            $args[] = $value;
+        }
+        return $args;
     }
 
     public function makeSearchCommandArguments(string $query): array
@@ -227,6 +258,7 @@ class Builder implements BuilderInterface
                 $this->explodeArgument($this->language),
                 $this->explodeArgument($this->expander),
                 $this->explodeArgument($this->payload),
+                $this->buildParamsArguments(),
                 $this->explodeArgument($this->dialect),
             ),
             function ($item) {

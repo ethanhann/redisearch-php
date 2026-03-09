@@ -36,6 +36,11 @@ class Index extends AbstractIndex implements IndexInterface
     private $prefixes;
     /** @var array */
     private $fields = [];
+    private string $indexType = 'HASH';
+    private ?string $filter = null;
+    private bool $maxTextFields = false;
+    private ?int $temporary = null;
+    private bool $skipInitialScan = false;
 
     /**
      * @return mixed
@@ -44,6 +49,24 @@ class Index extends AbstractIndex implements IndexInterface
     public function create()
     {
         $properties = [$this->getIndexName()];
+
+        $properties[] = 'ON';
+        $properties[] = $this->indexType;
+
+        if (!is_null($this->filter)) {
+            $properties[] = 'FILTER';
+            $properties[] = $this->filter;
+        }
+        if ($this->maxTextFields) {
+            $properties[] = 'MAXTEXTFIELDS';
+        }
+        if (!is_null($this->temporary)) {
+            $properties[] = 'TEMPORARY';
+            $properties[] = $this->temporary;
+        }
+        if ($this->skipInitialScan) {
+            $properties[] = 'SKIPINITIALSCAN';
+        }
 
         if (!is_null($this->prefixes)) {
             $properties[] = 'PREFIX';
@@ -381,14 +404,84 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
-     * @param array $prefixes
+     * Sets the key prefixes used in both FT.CREATE and document key construction.
      *
+     * RediSearch supports multiple PREFIX alternatives (e.g. ['post:', 'blog:'])
+     * so the index covers hashes under any of those prefixes. However, when writing
+     * documents via add()/replace(), only the first prefix is used to construct the
+     * hash key. Each prefix must include its own separator (e.g. 'post:', not 'post').
+     *
+     * @param array $prefixes
      * @return IndexInterface
      */
     public function setPrefixes(array $prefixes = []): IndexInterface
     {
         $this->prefixes = $prefixes;
 
+        return $this;
+    }
+
+    /**
+     * Sets the index data type. Use 'HASH' (default) or 'JSON' (requires RedisJSON module).
+     *
+     * @param string $type 'HASH' or 'JSON'
+     * @return IndexInterface
+     */
+    public function setIndexType(string $type): IndexInterface
+    {
+        $valid = ['HASH', 'JSON'];
+        if (!in_array(strtoupper($type), $valid, true)) {
+            throw new \InvalidArgumentException("Invalid index type '$type'. Expected one of: " . implode(', ', $valid));
+        }
+        $this->indexType = strtoupper($type);
+        return $this;
+    }
+
+    /**
+     * Sets a filter expression applied to documents at index creation time.
+     * Only documents for which the expression is true are indexed.
+     *
+     * @param string $expression RediSearch filter expression (e.g. '@age > 18')
+     * @return IndexInterface
+     */
+    public function setFilter(string $expression): IndexInterface
+    {
+        $this->filter = $expression;
+        return $this;
+    }
+
+    /**
+     * Enables MAXTEXTFIELDS, allowing more than the default 32 text attributes.
+     *
+     * @return IndexInterface
+     */
+    public function setMaxTextFields(bool $enable = true): IndexInterface
+    {
+        $this->maxTextFields = $enable;
+        return $this;
+    }
+
+    /**
+     * Creates a temporary index that expires after the given number of seconds of inactivity.
+     *
+     * @param int $seconds TTL in seconds
+     * @return IndexInterface
+     */
+    public function setTemporary(int $seconds): IndexInterface
+    {
+        $this->temporary = $seconds;
+        return $this;
+    }
+
+    /**
+     * When enabled, the index is created without scanning existing keys.
+     * Newly added/modified keys matching the prefix will still be indexed.
+     *
+     * @return IndexInterface
+     */
+    public function setSkipInitialScan(bool $skip = true): IndexInterface
+    {
+        $this->skipInitialScan = $skip;
         return $this;
     }
 
@@ -484,6 +577,18 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * Sets named parameters for parameterized queries (e.g. vector KNN search).
+     * Emits PARAMS {n} key1 val1 ... in FT.SEARCH. Requires DIALECT 2+.
+     *
+     * @param array $params Associative array of parameter names to values.
+     * @return QueryBuilderInterface
+     */
+    public function params(array $params): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->params($params);
+    }
+
+    /**
      * @param string $query
      * @param bool $documentsAsArray
      * @return SearchResult
@@ -575,11 +680,17 @@ class Index extends AbstractIndex implements IndexInterface
 
     /**
      * Builds the Redis key for a document, incorporating any configured prefix.
+     *
+     * Uses only the first configured prefix. RediSearch's PREFIX option accepts
+     * multiple alternative prefixes (e.g. PREFIX 2 post: blog:), meaning the
+     * index covers hashes under either prefix. When writing a document, a single
+     * concrete prefix must be chosen — the first entry is used. Prefixes should
+     * include their own separator (e.g. 'post:' not 'post').
      */
     private function buildDocumentKey(string $id): string
     {
         return !is_null($this->prefixes) && count($this->prefixes) > 0
-            ? implode(':', $this->prefixes) . ':' . $id
+            ? $this->prefixes[0] . $id
             : $id;
     }
 
@@ -805,5 +916,102 @@ class Index extends AbstractIndex implements IndexInterface
     public function deleteAlias(string $name): bool
     {
         return $this->rawCommand('FT.ALIASDEL', [$name]);
+    }
+
+    /**
+     * Adds one or more fields to an existing index schema (FT.ALTER).
+     * Existing documents are not re-indexed for new fields; only newly
+     * added/updated documents will include the new fields.
+     *
+     * @param FieldInterface ...$fields
+     * @return mixed
+     */
+    public function alter(FieldInterface ...$fields): mixed
+    {
+        $args = [$this->getIndexName(), 'SCHEMA', 'ADD'];
+        foreach ($fields as $field) {
+            $args = array_merge($args, $field->getTypeDefinition());
+        }
+        return $this->rawCommand('FT.ALTER', $args);
+    }
+
+    /**
+     * Returns a list of all index names in the current Redis instance (FT._LIST).
+     *
+     * @return array
+     */
+    public function listIndexes(): array
+    {
+        return $this->rawCommand('FT._LIST', []) ?? [];
+    }
+
+    /**
+     * Creates or updates a synonym group with the given terms (FT.SYNUPDATE).
+     *
+     * @param string $synonymGroupId
+     * @param string ...$terms
+     * @return mixed
+     */
+    public function synUpdate(string $synonymGroupId, string ...$terms): mixed
+    {
+        return $this->rawCommand('FT.SYNUPDATE', array_merge([$this->getIndexName(), $synonymGroupId], $terms));
+    }
+
+    /**
+     * Returns all synonym mappings for the index (FT.SYNDUMP).
+     *
+     * @return array
+     */
+    public function synDump(): array
+    {
+        return $this->rawCommand('FT.SYNDUMP', [$this->getIndexName()]) ?? [];
+    }
+
+    /**
+     * Performs spell checking on a query string (FT.SPELLCHECK).
+     * Returns suggestions for misspelled terms.
+     *
+     * @param string $query
+     * @param int $distance Maximum Levenshtein distance for suggestions (1–4)
+     * @return array
+     */
+    public function spellCheck(string $query, int $distance = 1): array
+    {
+        return $this->rawCommand('FT.SPELLCHECK', [$this->getIndexName(), $query, 'DISTANCE', $distance]) ?? [];
+    }
+
+    /**
+     * Adds terms to a custom dictionary used by FT.SPELLCHECK (FT.DICTADD).
+     *
+     * @param string $dict Dictionary name
+     * @param string ...$terms
+     * @return int Number of terms added
+     */
+    public function dictAdd(string $dict, string ...$terms): int
+    {
+        return (int) $this->rawCommand('FT.DICTADD', array_merge([$dict], $terms));
+    }
+
+    /**
+     * Removes terms from a custom dictionary (FT.DICTDEL).
+     *
+     * @param string $dict Dictionary name
+     * @param string ...$terms
+     * @return int Number of terms removed
+     */
+    public function dictDelete(string $dict, string ...$terms): int
+    {
+        return (int) $this->rawCommand('FT.DICTDEL', array_merge([$dict], $terms));
+    }
+
+    /**
+     * Returns all terms in a custom dictionary (FT.DICTDUMP).
+     *
+     * @param string $dict Dictionary name
+     * @return array
+     */
+    public function dictDump(string $dict): array
+    {
+        return $this->rawCommand('FT.DICTDUMP', [$dict]) ?? [];
     }
 }

@@ -37,6 +37,22 @@ class VectorField extends AbstractField
         string $distanceMetric = self::DISTANCE_COSINE,
         array $extraAttributes = []
     ) {
+        $validAlgorithms = [self::ALGORITHM_FLAT, self::ALGORITHM_HNSW];
+        if (!in_array($algorithm, $validAlgorithms, true)) {
+            throw new \InvalidArgumentException("Invalid algorithm '$algorithm'. Expected one of: " . implode(', ', $validAlgorithms));
+        }
+        $validTypes = [self::TYPE_FLOAT32, self::TYPE_FLOAT64];
+        if (!in_array($type, $validTypes, true)) {
+            throw new \InvalidArgumentException("Invalid type '$type'. Expected one of: " . implode(', ', $validTypes));
+        }
+        $validMetrics = [self::DISTANCE_L2, self::DISTANCE_IP, self::DISTANCE_COSINE];
+        if (!in_array($distanceMetric, $validMetrics, true)) {
+            throw new \InvalidArgumentException("Invalid distance metric '$distanceMetric'. Expected one of: " . implode(', ', $validMetrics));
+        }
+        if ($dim < 1) {
+            throw new \InvalidArgumentException("Dimension must be >= 1, got $dim.");
+        }
+
         parent::__construct($name);
         $this->algorithm = $algorithm;
         $this->type = $type;

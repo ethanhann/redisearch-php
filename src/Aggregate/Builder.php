@@ -29,6 +29,7 @@ class Builder implements BuilderInterface
     private $indexName = '';
     protected $pipeline = [];
     private $load = [];
+    private string $cursor = '';
 
 
     public function __construct(RediSearchRedisClient $redis, string $indexName)
@@ -246,6 +247,42 @@ class Builder implements BuilderInterface
     }
 
     /**
+     * Enables cursor-based iteration of aggregate results (WITHCURSOR COUNT {n}).
+     * Use cursorRead() to retrieve subsequent pages.
+     *
+     * @param int $count Number of results to return per cursor batch
+     * @return BuilderInterface
+     */
+    public function withCursor(int $count = 100): BuilderInterface
+    {
+        $this->cursor = "WITHCURSOR COUNT $count";
+        return $this;
+    }
+
+    /**
+     * Reads the next batch from an open aggregate cursor (FT.CURSOR READ).
+     *
+     * @param int $cursorId  The cursor ID returned in the previous aggregate result
+     * @param int $count     Number of results to return
+     * @return mixed
+     */
+    public function cursorRead(int $cursorId, int $count = 100): mixed
+    {
+        return $this->redis->rawCommand('FT.CURSOR', ['READ', $this->indexName, $cursorId, 'COUNT', $count]);
+    }
+
+    /**
+     * Deletes an open aggregate cursor, freeing server-side resources (FT.CURSOR DEL).
+     *
+     * @param int $cursorId
+     * @return mixed
+     */
+    public function cursorDelete(int $cursorId): mixed
+    {
+        return $this->redis->rawCommand('FT.CURSOR', ['DEL', $this->indexName, $cursorId]);
+    }
+
+    /**
      * @param string $query
      * @return array
      */
@@ -259,11 +296,14 @@ class Builder implements BuilderInterface
             return is_null($prev) ? $next : array_merge($prev, $next);
         });
 
+        $cursorArgs = $this->cursor !== '' ? explode(' ', $this->cursor) : [];
+
         return array_filter(
             array_merge(
                 trim($query) === '' ? [$this->indexName] : [$this->indexName, $query],
                 $this->load,
-                $pipelineOperations
+                $pipelineOperations,
+                $cursorArgs
             ),
             function ($item) {
                 return !is_null($item) && $item !== '';
