@@ -33,6 +33,32 @@ jobs:
       - name: Check code format
         run: vendor/bin/php-cs-fixer fix --dry-run --diff src
 
+  docs-link-check:
+    name: Docs Link Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install MkDocs dependencies
+        run: pip install mkdocs-material
+
+      - name: Build docs
+        run: mkdocs build
+
+      - name: Serve docs locally
+        run: python -m http.server 8080 --directory docs &
+
+      - name: Check links
+        uses: ethanhann/spidermedic@main
+        with:
+          url: 'http://localhost'
+          port: 8080
+
   test:
     name: Test (PHP ${{ matrix.php-version }})
     runs-on: ubuntu-latest
