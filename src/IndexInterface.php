@@ -4,6 +4,7 @@ namespace Ehann\RediSearch;
 
 use Ehann\RediSearch\Aggregate\BuilderInterface as AggregateBuilderInterface;
 use Ehann\RediSearch\Document\DocumentInterface;
+use Ehann\RediSearch\Fields\FieldInterface;
 use Ehann\RediSearch\Fields\VectorField;
 use Ehann\RediSearch\Query\BuilderInterface;
 
