@@ -2,6 +2,9 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
 export default defineConfig({
+  site: 'https://ethanhann.com',
+  base: '/redisearch-php/',
+
   integrations: [
     starlight({
       title: 'RediSearch-PHP',
@@ -16,7 +19,7 @@ export default defineConfig({
       customCss: ['./src/styles/custom.css'],
       editLink: {
         baseUrl:
-          'https://github.com/ethanhann/redisearch-php/edit/master/docs-site/src/content/docs/',
+            'https://github.com/ethanhann/redisearch-php/edit/master/docs-site/src/content/docs/',
       },
       sidebar: [
         { label: 'Getting Started', link: '/' },
