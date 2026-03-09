@@ -7,12 +7,15 @@ use PHPUnit\Framework\TestCase;
 
 class NumericFieldTest extends TestCase
 {
-    public function testShouldGetCorrectType()
+    public function testShouldGetCorrectType(): void
     {
+        // Arrange
         $expected = 'NUMERIC';
 
+        // Act
         $type = (new NumericField('MyNumericField'))->getType();
 
-        $this->assertEquals($expected, $type);
+        // Assert
+        $this->assertSame($expected, $type);
     }
 }

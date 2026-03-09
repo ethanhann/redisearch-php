@@ -6,13 +6,16 @@ use Ehann\RediSearch\Aggregate\Builder as AggregateBuilder;
 use Ehann\RediSearch\Aggregate\BuilderInterface as AggregateBuilderInterface;
 use Ehann\RediSearch\Document\AbstractDocumentFactory;
 use Ehann\RediSearch\Document\DocumentInterface;
+use Ehann\RediSearch\Exceptions\DocumentAlreadyInIndexException;
 use Ehann\RediSearch\Exceptions\NoFieldsInIndexException;
 use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
+use Ehann\RediSearch\Exceptions\UnsupportedRediSearchLanguageException;
 use Ehann\RediSearch\Fields\FieldInterface;
 use Ehann\RediSearch\Fields\GeoField;
 use Ehann\RediSearch\Fields\NumericField;
 use Ehann\RediSearch\Fields\TagField;
 use Ehann\RediSearch\Fields\TextField;
+use Ehann\RediSearch\Fields\VectorField;
 use Ehann\RediSearch\Query\Builder as QueryBuilder;
 use Ehann\RediSearch\Query\BuilderInterface as QueryBuilderInterface;
 use Ehann\RediSearch\Query\SearchResult;
@@ -33,6 +36,11 @@ class Index extends AbstractIndex implements IndexInterface
     private $prefixes;
     /** @var array */
     private $fields = [];
+    private string $indexType = 'HASH';
+    private ?string $filter = null;
+    private bool $maxTextFields = false;
+    private ?int $temporary = null;
+    private bool $skipInitialScan = false;
 
     /**
      * @return mixed
@@ -41,6 +49,24 @@ class Index extends AbstractIndex implements IndexInterface
     public function create()
     {
         $properties = [$this->getIndexName()];
+
+        $properties[] = 'ON';
+        $properties[] = $this->indexType;
+
+        if (!is_null($this->filter)) {
+            $properties[] = 'FILTER';
+            $properties[] = $this->filter;
+        }
+        if ($this->maxTextFields) {
+            $properties[] = 'MAXTEXTFIELDS';
+        }
+        if (!is_null($this->temporary)) {
+            $properties[] = 'TEMPORARY';
+            $properties[] = $this->temporary;
+        }
+        if ($this->skipInitialScan) {
+            $properties[] = 'SKIPINITIALSCAN';
+        }
 
         if (!is_null($this->prefixes)) {
             $properties[] = 'PREFIX';
@@ -61,6 +87,10 @@ class Index extends AbstractIndex implements IndexInterface
             $properties[] = count($this->stopWords);
             $properties = array_merge($properties, $this->stopWords);
         }
+        $properties[] = 'SCORE_FIELD';
+        $properties[] = '__score';
+        $properties[] = 'LANGUAGE_FIELD';
+        $properties[] = '__language';
         $properties[] = 'SCHEMA';
 
         $fieldDefinitions = [];
@@ -187,6 +217,29 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * Adds a VECTOR field to the index schema. Available in RediSearch v2.2+.
+     *
+     * @param string $name
+     * @param string $algorithm FLAT or HNSW
+     * @param string $type FLOAT32 or FLOAT64
+     * @param int $dim Number of vector dimensions
+     * @param string $distanceMetric L2, IP, or COSINE
+     * @param array $extraAttributes Additional algorithm-specific attributes (key => value pairs)
+     * @return IndexInterface
+     */
+    public function addVectorField(
+        string $name,
+        string $algorithm = VectorField::ALGORITHM_FLAT,
+        string $type = VectorField::TYPE_FLOAT32,
+        int $dim = 128,
+        string $distanceMetric = VectorField::DISTANCE_COSINE,
+        array $extraAttributes = []
+    ): IndexInterface {
+        $this->$name = new VectorField($name, $algorithm, $type, $dim, $distanceMetric, $extraAttributes);
+        return $this;
+    }
+
+    /**
      * @param string $name
      * @return array
      */
@@ -196,11 +249,16 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * @param bool $deleteDocuments When true, also deletes all documents (hashes) associated with this index.
      * @return mixed
      */
-    public function drop()
+    public function drop(bool $deleteDocuments = false)
     {
-        return $this->rawCommand('FT.DROP', [$this->getIndexName()]);
+        $arguments = [$this->getIndexName()];
+        if ($deleteDocuments) {
+            $arguments[] = 'DD';
+        }
+        return $this->rawCommand('FT.DROPINDEX', $arguments);
     }
 
     /**
@@ -212,17 +270,17 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
-     * @param $id
-     * @param bool $deleteDocument
+     * Deletes a document by its ID. In RediSearch v2.x documents are stored as Redis hashes,
+     * so this deletes the underlying hash key, removing the document from the index.
+     *
+     * @param string $id The document ID.
+     * @param bool $deleteDocument Kept for API compatibility; deletion always removes the hash in v2.x.
      * @return bool
      */
     public function delete($id, $deleteDocument = false)
     {
-        $arguments = [$this->getIndexName(), $id];
-        if ($deleteDocument) {
-            $arguments[] = 'DD';
-        }
-        return boolval($this->rawCommand('FT.DEL', $arguments));
+        $key = $this->buildDocumentKey($id);
+        return boolval($this->rawCommand('DEL', [$key]));
     }
 
     /**
@@ -346,14 +404,84 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
-     * @param array $prefixes
+     * Sets the key prefixes used in both FT.CREATE and document key construction.
      *
+     * RediSearch supports multiple PREFIX alternatives (e.g. ['post:', 'blog:'])
+     * so the index covers hashes under any of those prefixes. However, when writing
+     * documents via add()/replace(), only the first prefix is used to construct the
+     * hash key. Each prefix must include its own separator (e.g. 'post:', not 'post').
+     *
+     * @param array $prefixes
      * @return IndexInterface
      */
     public function setPrefixes(array $prefixes = []): IndexInterface
     {
         $this->prefixes = $prefixes;
 
+        return $this;
+    }
+
+    /**
+     * Sets the index data type. Use 'HASH' (default) or 'JSON' (requires RedisJSON module).
+     *
+     * @param string $type 'HASH' or 'JSON'
+     * @return IndexInterface
+     */
+    public function setIndexType(string $type): IndexInterface
+    {
+        $valid = ['HASH', 'JSON'];
+        if (!in_array(strtoupper($type), $valid, true)) {
+            throw new \InvalidArgumentException("Invalid index type '$type'. Expected one of: " . implode(', ', $valid));
+        }
+        $this->indexType = strtoupper($type);
+        return $this;
+    }
+
+    /**
+     * Sets a filter expression applied to documents at index creation time.
+     * Only documents for which the expression is true are indexed.
+     *
+     * @param string $expression RediSearch filter expression (e.g. '@age > 18')
+     * @return IndexInterface
+     */
+    public function setFilter(string $expression): IndexInterface
+    {
+        $this->filter = $expression;
+        return $this;
+    }
+
+    /**
+     * Enables MAXTEXTFIELDS, allowing more than the default 32 text attributes.
+     *
+     * @return IndexInterface
+     */
+    public function setMaxTextFields(bool $enable = true): IndexInterface
+    {
+        $this->maxTextFields = $enable;
+        return $this;
+    }
+
+    /**
+     * Creates a temporary index that expires after the given number of seconds of inactivity.
+     *
+     * @param int $seconds TTL in seconds
+     * @return IndexInterface
+     */
+    public function setTemporary(int $seconds): IndexInterface
+    {
+        $this->temporary = $seconds;
+        return $this;
+    }
+
+    /**
+     * When enabled, the index is created without scanning existing keys.
+     * Newly added/modified keys matching the prefix will still be indexed.
+     *
+     * @return IndexInterface
+     */
+    public function setSkipInitialScan(bool $skip = true): IndexInterface
+    {
+        $this->skipInitialScan = $skip;
         return $this;
     }
 
@@ -435,6 +563,29 @@ class Index extends AbstractIndex implements IndexInterface
     public function explain(string $query): string
     {
         return $this->makeQueryBuilder()->explain($query);
+    }
+
+    /**
+     * Sets the query dialect. Available in RediSearch v2.4+.
+     *
+     * @param int $version Dialect version (1, 2, or 3)
+     * @return QueryBuilderInterface
+     */
+    public function dialect(int $version): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->dialect($version);
+    }
+
+    /**
+     * Sets named parameters for parameterized queries (e.g. vector KNN search).
+     * Emits PARAMS {n} key1 val1 ... in FT.SEARCH. Requires DIALECT 2+.
+     *
+     * @param array $params Associative array of parameter names to values.
+     * @return QueryBuilderInterface
+     */
+    public function params(array $params): QueryBuilderInterface
+    {
+        return $this->makeQueryBuilder()->params($params);
     }
 
     /**
@@ -528,9 +679,42 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * Builds the Redis key for a document, incorporating any configured prefix.
+     *
+     * Uses only the first configured prefix. RediSearch's PREFIX option accepts
+     * multiple alternative prefixes (e.g. PREFIX 2 post: blog:), meaning the
+     * index covers hashes under either prefix. When writing a document, a single
+     * concrete prefix must be chosen — the first entry is used. Prefixes should
+     * include their own separator (e.g. 'post:' not 'post').
+     */
+    private function buildDocumentKey(string $id): string
+    {
+        return !is_null($this->prefixes) && count($this->prefixes) > 0
+            ? $this->prefixes[0] . $id
+            : $id;
+    }
+
+    /**
+     * Core HSET operation — stores a document as a Redis hash. No existence checks.
+     * Used internally by addMany() and addHash().
+     *
+     * @param DocumentInterface $document
+     * @return mixed
+     */
+    protected function _add(DocumentInterface $document)
+    {
+        if (is_null($document->getId())) {
+            $document->setId(uniqid(true));
+        }
+
+        $properties = $document->getHashDefinition($this->prefixes);
+        return $this->rawCommand('HSET', $properties);
+    }
+
+    /**
      * @param array $documents
      * @param bool $disableAtomicity
-     * @param bool $replace
+     * @param bool $replace Kept for API compatibility; HSET always upserts.
      */
     public function addMany(array $documents, $disableAtomicity = false, $replace = false)
     {
@@ -541,7 +725,7 @@ class Index extends AbstractIndex implements IndexInterface
             if (is_array($document)) {
                 $document = $this->arrayToDocument($document);
             }
-            $this->_add($document->setReplace($replace));
+            $this->_add($document);
         }
         try {
             $pipe->exec();
@@ -557,28 +741,6 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
-     * @param DocumentInterface $document
-     * @param bool $isFromHash
-     * @return mixed
-     */
-    protected function _add(DocumentInterface $document, bool $isFromHash = false)
-    {
-        if (is_null($document->getId())) {
-            $document->setId(uniqid(true));
-        }
-
-        $properties = $isFromHash ?
-            $document->getHashDefinition($this->prefixes) :
-            $document->getDefinition();
-        if (!$isFromHash) {
-            array_unshift($properties, $this->getIndexName());
-        }
-
-        $command = $isFromHash ? 'HSET' : 'FT.ADD';
-        return $this->rawCommand($command, $properties);
-    }
-
-    /**
      * @param $document
      * @return DocumentInterface
      * @throws Exceptions\FieldNotInSchemaException
@@ -589,23 +751,50 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * Adds a new document to the index. Throws if the index does not exist or the
+     * document ID already exists in Redis.
+     *
      * @param $document
      * @return bool
      * @throws Exceptions\FieldNotInSchemaException
+     * @throws DocumentAlreadyInIndexException
+     * @throws UnsupportedRediSearchLanguageException
      */
     public function add($document): bool
     {
-        return $this->_add($this->arrayToDocument($document));
+        $typedDocument = $this->arrayToDocument($document);
+
+        // Ensure the index exists — throws UnknownIndexNameException if not.
+        $this->info();
+
+        // Validate language before storing.
+        if (!is_null($typedDocument->getLanguage()) && !Language::isSupported($typedDocument->getLanguage())) {
+            throw new UnsupportedRediSearchLanguageException();
+        }
+
+        if (is_null($typedDocument->getId())) {
+            $typedDocument->setId(uniqid(true));
+        }
+
+        $key = $this->buildDocumentKey($typedDocument->getId());
+        if ($this->rawCommand('EXISTS', [$key])) {
+            throw new DocumentAlreadyInIndexException($this->getIndexName(), $typedDocument->getId());
+        }
+
+        return boolval($this->_add($typedDocument));
     }
 
     /**
+     * Updates (upserts) a document in the index using HSET.
+     *
      * @param $document
      * @return bool
      * @throws Exceptions\FieldNotInSchemaException
      */
     public function replace($document): bool
     {
-        return $this->_add($this->arrayToDocument($document)->setReplace(true));
+        $this->_add($this->arrayToDocument($document));
+        return true;
     }
 
     /**
@@ -618,24 +807,29 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * Adds or replaces a document stored as a Redis hash. Upsert semantics (HSET).
+     *
      * @param $document
      * @return bool
      * @throws Exceptions\FieldNotInSchemaException
      */
     public function addHash($document): bool
     {
-        $typedDocument = $this->arrayToDocument($document);
-        return $this->_add($typedDocument, true);
+        $this->_add($this->arrayToDocument($document));
+        return true;
     }
 
     /**
+     * Replaces a document stored as a Redis hash. Alias for addHash() — HSET always upserts.
+     *
      * @param $document
      * @return bool
      * @throws Exceptions\FieldNotInSchemaException
      */
     public function replaceHash($document): bool
     {
-        return $this->_add($this->arrayToDocument($document)->setReplace(true), true);
+        $this->_add($this->arrayToDocument($document));
+        return true;
     }
 
     /**
@@ -722,5 +916,102 @@ class Index extends AbstractIndex implements IndexInterface
     public function deleteAlias(string $name): bool
     {
         return $this->rawCommand('FT.ALIASDEL', [$name]);
+    }
+
+    /**
+     * Adds one or more fields to an existing index schema (FT.ALTER).
+     * Existing documents are not re-indexed for new fields; only newly
+     * added/updated documents will include the new fields.
+     *
+     * @param FieldInterface ...$fields
+     * @return mixed
+     */
+    public function alter(FieldInterface ...$fields): mixed
+    {
+        $args = [$this->getIndexName(), 'SCHEMA', 'ADD'];
+        foreach ($fields as $field) {
+            $args = array_merge($args, $field->getTypeDefinition());
+        }
+        return $this->rawCommand('FT.ALTER', $args);
+    }
+
+    /**
+     * Returns a list of all index names in the current Redis instance (FT._LIST).
+     *
+     * @return array
+     */
+    public function listIndexes(): array
+    {
+        return $this->rawCommand('FT._LIST', []) ?? [];
+    }
+
+    /**
+     * Creates or updates a synonym group with the given terms (FT.SYNUPDATE).
+     *
+     * @param string $synonymGroupId
+     * @param string ...$terms
+     * @return mixed
+     */
+    public function synUpdate(string $synonymGroupId, string ...$terms): mixed
+    {
+        return $this->rawCommand('FT.SYNUPDATE', array_merge([$this->getIndexName(), $synonymGroupId], $terms));
+    }
+
+    /**
+     * Returns all synonym mappings for the index (FT.SYNDUMP).
+     *
+     * @return array
+     */
+    public function synDump(): array
+    {
+        return $this->rawCommand('FT.SYNDUMP', [$this->getIndexName()]) ?? [];
+    }
+
+    /**
+     * Performs spell checking on a query string (FT.SPELLCHECK).
+     * Returns suggestions for misspelled terms.
+     *
+     * @param string $query
+     * @param int $distance Maximum Levenshtein distance for suggestions (1–4)
+     * @return array
+     */
+    public function spellCheck(string $query, int $distance = 1): array
+    {
+        return $this->rawCommand('FT.SPELLCHECK', [$this->getIndexName(), $query, 'DISTANCE', $distance]) ?? [];
+    }
+
+    /**
+     * Adds terms to a custom dictionary used by FT.SPELLCHECK (FT.DICTADD).
+     *
+     * @param string $dict Dictionary name
+     * @param string ...$terms
+     * @return int Number of terms added
+     */
+    public function dictAdd(string $dict, string ...$terms): int
+    {
+        return (int) $this->rawCommand('FT.DICTADD', array_merge([$dict], $terms));
+    }
+
+    /**
+     * Removes terms from a custom dictionary (FT.DICTDEL).
+     *
+     * @param string $dict Dictionary name
+     * @param string ...$terms
+     * @return int Number of terms removed
+     */
+    public function dictDelete(string $dict, string ...$terms): int
+    {
+        return (int) $this->rawCommand('FT.DICTDEL', array_merge([$dict], $terms));
+    }
+
+    /**
+     * Returns all terms in a custom dictionary (FT.DICTDUMP).
+     *
+     * @param string $dict Dictionary name
+     * @return array
+     */
+    public function dictDump(string $dict): array
+    {
+        return $this->rawCommand('FT.DICTDUMP', [$dict]) ?? [];
     }
 }

@@ -23,6 +23,7 @@ abstract class RediSearchTestCase extends TestCase
     protected $indexName;
     /** @var RediSearchRedisClient */
     protected $redisClient;
+    /** @var Logger|null */
     protected $logger;
 
     public function setUp(): void
@@ -69,17 +70,17 @@ abstract class RediSearchTestCase extends TestCase
         );
     }
 
-    protected function isUsingPredis()
+    protected function isUsingPredis(): bool
     {
         return getenv('REDIS_LIBRARY') === AbstractRedisRawClient::PREDIS_LIBRARY;
     }
 
-    protected function isUsingPhpRedis()
+    protected function isUsingPhpRedis(): bool
     {
         return getenv('REDIS_LIBRARY') === AbstractRedisRawClient::PHP_REDIS_LIBRARY;
     }
 
-    protected function isUsingRedisClient()
+    protected function isUsingRedisClient(): bool
     {
         return getenv('REDIS_LIBRARY') === AbstractRedisRawClient::REDIS_CLIENT_LIBRARY;
     }

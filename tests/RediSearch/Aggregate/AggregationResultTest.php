@@ -5,14 +5,11 @@ namespace Ehann\Tests\RediSearch\Aggregate;
 use Ehann\RediSearch\Aggregate\AggregationResult;
 use Ehann\Tests\RediSearchTestCase;
 
-/**
- * @group aggregate
- */
+#[PHPUnit\Framework\Attributes\Group('aggregate')]
 class AggregationResultTest extends RediSearchTestCase
 {
-    /** @var AggregationResult */
-    protected $subject;
-    protected $expectedDocuments;
+    protected AggregationResult $subject;
+    protected array $expectedDocuments;
 
     public function setUp(): void
     {
@@ -23,26 +20,37 @@ class AggregationResultTest extends RediSearchTestCase
         $this->subject = new AggregationResult(count($this->expectedDocuments), $this->expectedDocuments);
     }
 
-    public function testGetCount()
+    public function testGetCount(): void
     {
+        // Arrange
         $expected = count($this->expectedDocuments);
 
+        // Act
         $result = $this->subject->getCount();
 
-        $this->assertEquals($expected, $result);
+        // Assert
+        $this->assertSame($expected, $result);
     }
 
-    public function testGetDocuments()
+    public function testGetDocuments(): void
     {
+        // Arrange — see setUp()
+
+        // Act
         $result = $this->subject->getDocuments();
 
-        $this->assertEquals($this->expectedDocuments, $result);
+        // Assert
+        $this->assertSame($this->expectedDocuments, $result);
     }
 
-    public function testMakeAggregationResultWithInvalidRedisResult()
+    public function testMakeAggregationResultWithInvalidRedisResult(): void
     {
+        // Arrange — no result data, invalid Redis response
+
+        // Act
         $result = AggregationResult::makeAggregationResult([], false);
 
+        // Assert
         $this->assertFalse($result);
     }
 }

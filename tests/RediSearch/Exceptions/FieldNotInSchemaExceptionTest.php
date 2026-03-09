@@ -7,12 +7,15 @@ use PHPUnit\Framework\TestCase;
 
 class FieldNotInSchemaExceptionTest extends TestCase
 {
-    public function testShouldShowCustomMessage()
+    public function testShouldShowCustomMessage(): void
     {
+        // Arrange
         $expected = 'The field is not a property in the index.';
 
+        // Act
         $message = (new FieldNotInSchemaException())->getMessage();
 
-        $this->assertEquals($expected, $message);
+        // Assert
+        $this->assertSame($expected, $message);
     }
 }

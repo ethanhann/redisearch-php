@@ -2,7 +2,7 @@
 
 ## The Basics
 
-Make an [index](indexing.md) and add a few documents to it: 
+Make an [index](indexing.md) and add a few documents to it:
 
 ```php-inline
 use Ehann\RediSearch\Index;
@@ -26,4 +26,34 @@ Now group by title and get the average price:
 $results = $bookIndex->makeAggregateBuilder()
     ->groupBy('title')
     ->avg('price');
+```
+
+## Cursor-Based Pagination
+
+For large result sets, use `withCursor()` to retrieve results in batches instead of all at once.
+The first call returns an initial batch; subsequent batches are read with `cursorRead()`.
+Always call `cursorDelete()` when done to free the server-side cursor.
+
+```php-inline
+$builder = $bookIndex->makeAggregateBuilder();
+
+// Request the first batch of up to 50 results.
+$result = $builder
+    ->groupBy('author')
+    ->count()
+    ->withCursor(50)
+    ->search();
+
+// $result contains the first batch and a cursor ID.
+$cursorId = $result->getCursorId();
+
+// Read subsequent batches until the cursor is exhausted (cursorId becomes 0).
+while ($cursorId !== 0) {
+    $next = $builder->cursorRead($cursorId, 50);
+    $cursorId = $next->getCursorId();
+    // process $next->getDocuments() ...
+}
+
+// If you need to abandon iteration early, delete the cursor explicitly.
+$builder->cursorDelete($cursorId);
 ```

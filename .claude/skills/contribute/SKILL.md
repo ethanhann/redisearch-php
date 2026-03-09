@@ -20,6 +20,7 @@ Identify the interface(s) the new code must implement or extend.
 ### 2. Implement the Change
 
 **Source code conventions:**
+
 - Namespace: `Ehann\RediSearch\<Subdirectory>`
 - Use native PHP 8.2+ type hints on all parameters and return types
 - Interfaces end in `Interface`; abstract classes start with `Abstract`
@@ -37,6 +38,7 @@ vendor/bin/robo task:fix-code-style
 Every change needs a corresponding test. See the `/unit-test` skill for details.
 
 Quick checklist:
+
 - Add a test file at `tests/RediSearch/<matching path>/<ClassName>Test.php`
 - Extend `Ehann\Tests\RediSearchTestCase`
 - Cover the happy path and any notable edge cases
@@ -108,4 +110,5 @@ class MyReducer extends AbstractReducer
 
 ### Adding a new Query Operation
 
-Follow the pattern in `src/Aggregate/Operations/` — implement `OperationInterface` and emit the correct RediSearch command fragment from `__toString()`.
+Follow the pattern in `src/Aggregate/Operations/` — implement `OperationInterface` and emit the correct RediSearch
+command fragment from `__toString()`.

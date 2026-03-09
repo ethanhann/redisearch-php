@@ -7,8 +7,7 @@ use Ehann\Tests\RediSearchTestCase;
 
 class SuggestionTest extends RediSearchTestCase
 {
-    /** @var Suggestion */
-    private $subject;
+    private Suggestion $subject;
 
     public function setUp(): void
     {
@@ -21,55 +20,68 @@ class SuggestionTest extends RediSearchTestCase
         $this->redisClient->flushAll();
     }
 
-    public function testShouldAddSuggestion()
+    public function testShouldAddSuggestion(): void
     {
+        // Arrange
         $expectedSizeOfIndex = 1;
 
+        // Act
         $result = $this->subject->add('bar', 9.23);
 
-        $this->assertEquals($expectedSizeOfIndex, $result);
+        // Assert
+        $this->assertSame($expectedSizeOfIndex, $result);
     }
 
-    public function testShouldIncrementExistingSuggestion()
+    public function testShouldIncrementExistingSuggestion(): void
     {
+        // Arrange
         $expectedSizeOfIndex = 2;
         $expectedFirstResult = 'bar';
         $expectedSecondResult = 'baz';
         $this->subject->add($expectedFirstResult, 5);
         $this->subject->add($expectedSecondResult, 7);
 
+        // Act
         $result = $this->subject->add($expectedFirstResult, 10, true);
 
+        // Assert
         $actualSuggestion = $this->subject->get('ba');
-        $this->assertEquals($expectedSizeOfIndex, $result);
-        $this->assertEquals($expectedFirstResult, $actualSuggestion[0]);
-        $this->assertEquals($expectedSecondResult, $actualSuggestion[1]);
+        $this->assertSame($expectedSizeOfIndex, $result);
+        $this->assertSame($expectedFirstResult, $actualSuggestion[0]);
+        $this->assertSame($expectedSecondResult, $actualSuggestion[1]);
     }
 
-    public function testShouldDeleteSuggestion()
+    public function testShouldDeleteSuggestion(): void
     {
+        // Arrange
         $string = 'bar';
         $this->subject->add($string, 9.23);
 
+        // Act
         $result = $this->subject->delete($string);
 
+        // Assert
         $this->assertTrue($result);
     }
 
-    public function testShouldGetDictionaryLength()
+    public function testShouldGetDictionaryLength(): void
     {
+        // Arrange
         $this->subject->add('bar', 9.23);
         $this->subject->add('baz', 4.99);
         $this->subject->add('qux', 14.0);
         $expectedSizeOfIndex = 3;
 
+        // Act
         $result = $this->subject->length();
 
-        $this->assertEquals($expectedSizeOfIndex, $result);
+        // Assert
+        $this->assertSame($expectedSizeOfIndex, $result);
     }
 
-    public function testShouldGetSuggestion()
+    public function testShouldGetSuggestion(): void
     {
+        // Arrange
         $expectedFirstResult = 'baz';
         $expectedSecondResult = 'bar';
         $this->subject->add('bar', 1.23);
@@ -77,15 +89,18 @@ class SuggestionTest extends RediSearchTestCase
         $this->subject->add('qux', 14.0);
         $expectedSizeOfResults = 2;
 
+        // Act
         $result = $this->subject->get('ba');
 
+        // Assert
         $this->assertCount($expectedSizeOfResults, $result);
-        $this->assertEquals($expectedFirstResult, $result[0]);
-        $this->assertEquals($expectedSecondResult, $result[1]);
+        $this->assertSame($expectedFirstResult, $result[0]);
+        $this->assertSame($expectedSecondResult, $result[1]);
     }
 
-    public function testShouldGetSuggestionWithScore()
+    public function testShouldGetSuggestionWithScore(): void
     {
+        // Arrange
         $expectedSuggestion = 'bar';
         $expectedScore = '2147483648';
         $this->subject->add('bar', 1.23);
@@ -93,10 +108,12 @@ class SuggestionTest extends RediSearchTestCase
         $this->subject->add('qux', 14.0);
         $expectedSizeOfResults = 2;
 
+        // Act
         $result = $this->subject->get('bar', false, false, 1, true);
 
+        // Assert
         $this->assertCount($expectedSizeOfResults, $result);
-        $this->assertEquals($expectedSuggestion, $result[0]);
-        $this->assertEquals($expectedScore, $result[1]);
+        $this->assertSame($expectedSuggestion, $result[0]);
+        $this->assertSame($expectedScore, $result[1]);
     }
 }

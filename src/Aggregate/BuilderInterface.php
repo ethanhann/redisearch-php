@@ -25,4 +25,7 @@ interface BuilderInterface
     public function firstValue(string $fieldName, ?string $byFieldName = null, bool $isAscending = true): BuilderInterface;
     public function quantile(string $fieldName, float $quantile): BuilderInterface;
     public function toList(string $fieldName): BuilderInterface;
+    public function withCursor(int $count = 100): BuilderInterface;
+    public function cursorRead(int $cursorId, int $count = 100): mixed;
+    public function cursorDelete(int $cursorId): mixed;
 }

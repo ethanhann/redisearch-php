@@ -33,6 +33,42 @@ jobs:
       - name: Check code format
         run: vendor/bin/php-cs-fixer fix --dry-run --diff src
 
+  docs-link-check:
+    name: Docs Link Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install MkDocs dependencies
+        run: pip install mkdocs-material
+
+      - name: Build docs
+        run: mkdocs build
+
+      - name: Serve docs locally
+        run: |
+          python3 -m http.server 8080 --directory docs &
+          HOST_IP=$(ip addr show docker0 | awk '/inet / {print $2}' | cut -d/ -f1)
+          echo "DOCS_URL=http://${HOST_IP}:8080" >> $GITHUB_ENV
+
+      - name: Wait for server
+        run: |
+          for i in $(seq 1 30); do
+            curl -sf $DOCS_URL > /dev/null && echo "Server ready" && exit 0
+            sleep 1
+          done
+          echo "Server did not start in time" && exit 1
+
+      - name: Check links
+        uses: ethanhann/spidermedic@main
+        with:
+          url: '${{ env.DOCS_URL }}'
+
   test:
     name: Test (PHP ${{ matrix.php-version }})
     runs-on: ubuntu-latest
