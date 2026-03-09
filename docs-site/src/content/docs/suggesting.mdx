@@ -1,0 +1,48 @@
+---
+title: Suggesting
+draft: false
+description: Suggestion index creation and management.
+---
+
+## Creating a Suggestion Index
+
+Create a suggestion index called "MySuggestions":
+
+```php
+use Ehann\RediSearch\Suggestion;
+
+$suggestion = new Suggestion($redisClient, 'MySuggestions');
+
+```
+
+## Adding a Suggestion
+
+Add a suggestion with a score:
+
+```php
+$suggestion->add('Tale of Two Cities', 1.10);
+```
+
+## Getting a Suggestion
+
+Pass a partial string to the get method:
+
+```php
+$result = $suggestion->get('Cities');
+```
+
+## Deleting a Suggestion
+
+Pass the entire suggestion string to the delete method:
+
+```php
+$result = $suggestion->delete('Tale of Two Cities');
+```
+
+## Getting the Number of Possible Suggestions
+
+Simply use the suggestion index's length method:
+
+```php
+$numberOfPossibleSuggestions = $suggestion->length();
+```

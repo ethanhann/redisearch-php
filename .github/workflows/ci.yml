@@ -39,20 +39,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: '3.x'
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: docs-site/package-lock.json
 
-      - name: Install MkDocs dependencies
-        run: pip install mkdocs-material
+      - name: Install dependencies
+        run: npm ci
+        working-directory: docs-site
 
       - name: Build docs
-        run: mkdocs build
+        run: npm run build
+        working-directory: docs-site
 
       - name: Serve docs locally
         run: |
-          python3 -m http.server 8080 --directory docs &
+          npx serve docs-site/dist -l 8080 &
           HOST_IP=$(ip addr show docker0 | awk '/inet / {print $2}' | cut -d/ -f1)
           echo "DOCS_URL=http://${HOST_IP}:8080" >> $GITHUB_ENV
 
