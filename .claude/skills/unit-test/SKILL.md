@@ -15,9 +15,9 @@ Guide for writing, running, and debugging unit tests in redisearch-php.
 
 Mirror the source path under `tests/RediSearch/`:
 
-| Source file | Test file |
-|---|---|
-| `src/Fields/NumericField.php` | `tests/RediSearch/Fields/NumericFieldTest.php` |
+| Source file                      | Test file                                         |
+|----------------------------------|---------------------------------------------------|
+| `src/Fields/NumericField.php`    | `tests/RediSearch/Fields/NumericFieldTest.php`    |
 | `src/Aggregate/Reducers/Avg.php` | `tests/RediSearch/Aggregate/Reducers/AvgTest.php` |
 
 ### AAA structure
@@ -68,9 +68,11 @@ class NumericFieldTest extends RediSearchTestCase
 ```
 
 **AAA rules:**
+
 - Always include all three section comments, even when one section is trivial.
 - If the full arrange is in `setUp()`, use `// Arrange — see setUp()` as a one-liner with no body.
-- For exception tests, place `expectException()` in the Assert section (before the act), because PHPUnit registers the expectation before execution:
+- For exception tests, place `expectException()` in the Assert section (before the act), because PHPUnit registers the
+  expectation before execution:
 
 ```php
 public function testThrowsWhenIndexHasNoFields(): void
@@ -89,7 +91,8 @@ public function testThrowsWhenIndexHasNoFields(): void
 ### Quality conventions
 
 - Use `assertSame` instead of `assertEquals` when type identity matters (e.g., comparing ints, floats, or booleans).
-- One logical assertion per test where practical; multiple assertions are acceptable when they together verify a single behaviour.
+- One logical assertion per test where practical; multiple assertions are acceptable when they together verify a single
+  behaviour.
 - Mark all test methods `void`: `public function testFoo(): void`.
 - Use `@group <name>` PHPDoc to tag logical groups (e.g., `@group aggregate`, `@group query`).
 - Do not commit permanently-skipped tests — fix the underlying issue or remove the test.
@@ -180,14 +183,18 @@ vendor/bin/phpunit --coverage-text
 vendor/bin/phpunit --coverage-html coverage/
 ```
 
-Coverage requires a driver: install **Xdebug** (`php -m | grep xdebug`) or **PCOV** (`php -m | grep pcov`). If neither is present, PHPUnit will warn and skip coverage collection.
+Coverage requires a driver: install **Xdebug** (`php -m | grep xdebug`) or **PCOV** (`php -m | grep pcov`). If neither
+is present, PHPUnit will warn and skip coverage collection.
 
 ## Debugging Failures
 
 1. **Connection refused**: Redis isn't running — `just up`
-2. **Command not found (FT.*)**: Redis Stack module not loaded — ensure you're using the `redis/redis-stack` or `redis/redis-stack-server` image, not plain Redis
-3. **Index already exists**: a previous test run didn't clean up — `tearDown` calls `flushAll`; if interrupted, run `redis-cli -p 6381 flushall` manually
-4. **Style errors in test files**: run `vendor/bin/php-cs-fixer fix tests --dry-run --diff` to see what needs fixing (php-cs-fixer only auto-fixes `src/` by default, but the check applies to `tests/` too)
+2. **Command not found (FT.*)**: Redis Stack module not loaded — ensure you're using the `redis/redis-stack` or
+   `redis/redis-stack-server` image, not plain Redis
+3. **Index already exists**: a previous test run didn't clean up — `tearDown` calls `flushAll`; if interrupted, run
+   `redis-cli -p 6381 flushall` manually
+4. **Style errors in test files**: run `vendor/bin/php-cs-fixer fix tests --dry-run --diff` to see what needs fixing (
+   php-cs-fixer only auto-fixes `src/` by default, but the check applies to `tests/` too)
 
 ## Test Conventions
 
