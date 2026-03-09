@@ -50,11 +50,24 @@ jobs:
       - name: Build docs
         run: mkdocs build
 
+      - name: Serve docs locally
+        run: |
+          python3 -m http.server 8080 --directory docs &
+          HOST_IP=$(ip addr show docker0 | awk '/inet / {print $2}' | cut -d/ -f1)
+          echo "DOCS_URL=http://${HOST_IP}:8080" >> $GITHUB_ENV
+
+      - name: Wait for server
+        run: |
+          for i in $(seq 1 30); do
+            curl -sf $DOCS_URL > /dev/null && echo "Server ready" && exit 0
+            sleep 1
+          done
+          echo "Server did not start in time" && exit 1
+
       - name: Check links
-        uses: lycheeverse/lychee-action@v2
+        uses: ethanhann/spidermedic@main
         with:
-          args: --no-progress --offline './docs/**/*.html'
-          fail: true
+          url: '${{ env.DOCS_URL }}'
 
   test:
     name: Test (PHP ${{ matrix.php-version }})
