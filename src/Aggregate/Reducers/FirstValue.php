@@ -8,7 +8,7 @@ class FirstValue extends AbstractFieldNameReducer
     public $byFieldName;
     public $isAscending;
 
-    public function __construct(string $fieldName, string $byFieldName = null, bool $isAscending = true)
+    public function __construct(string $fieldName, ?string $byFieldName = null, bool $isAscending = true)
     {
         parent::__construct($fieldName);
         $this->byFieldName = $byFieldName;

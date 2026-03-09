@@ -2,11 +2,9 @@
 
 namespace Ehann\RediSearch\Document;
 
-use AllowDynamicProperties;
 use Ehann\RediSearch\Exceptions\OutOfRangeDocumentScoreException;
 use Ehann\RediSearch\Fields\FieldInterface;
 
-#[AllowDynamicProperties]
 class Document implements DocumentInterface
 {
     protected $id;
@@ -17,16 +15,32 @@ class Document implements DocumentInterface
     protected $noCreate = false;
     protected $payload;
     protected $language;
+    protected array $fields = [];
 
     public function __construct($id = null)
     {
         $this->id = $id ?? uniqid(true);
     }
 
+    public function __set(string $name, FieldInterface $value): void
+    {
+        $this->fields[$name] = $value;
+    }
+
+    public function __get(string $name): ?FieldInterface
+    {
+        return $this->fields[$name] ?? null;
+    }
+
+    public function __isset(string $name): bool
+    {
+        return isset($this->fields[$name]);
+    }
+
     protected function addFieldsToProperties($properties): array
     {
         /** @var FieldInterface $field */
-        foreach (get_object_vars($this) as $field) {
+        foreach ($this->fields as $field) {
             if ($field instanceof FieldInterface && !is_null($field->getValue())) {
                 $properties[] = $field->getName();
                 $properties[] = $field->getValue();
@@ -35,7 +49,7 @@ class Document implements DocumentInterface
         return $properties;
     }
 
-    public function getHashDefinition(array $prefixes = null): array
+    public function getHashDefinition(?array $prefixes = null): array
     {
         $id = $this->getId();
         $completeId = !is_null($prefixes) && count($prefixes) > 0

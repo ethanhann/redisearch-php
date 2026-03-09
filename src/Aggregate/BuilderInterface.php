@@ -7,7 +7,7 @@ use Ehann\RediSearch\CanBecomeArrayInterface;
 interface BuilderInterface
 {
     public function load(array $fieldNames): BuilderInterface;
-    public function groupBy($fieldName, CanBecomeArrayInterface $reducer = null): BuilderInterface;
+    public function groupBy($fieldName, ?CanBecomeArrayInterface $reducer = null): BuilderInterface;
     public function reduce(CanBecomeArrayInterface $reducer): BuilderInterface;
     public function sortBy($fieldName, $isAscending = true, int $max = -1): BuilderInterface;
     public function apply(string $expression, string $asName): BuilderInterface;
@@ -22,7 +22,7 @@ interface BuilderInterface
     public function max(string $fieldName): BuilderInterface;
     public function min(string $fieldName): BuilderInterface;
     public function standardDeviation(string $fieldName): BuilderInterface;
-    public function firstValue(string $fieldName, string $byFieldName = null, bool $isAscending = true): BuilderInterface;
+    public function firstValue(string $fieldName, ?string $byFieldName = null, bool $isAscending = true): BuilderInterface;
     public function quantile(string $fieldName, float $quantile): BuilderInterface;
     public function toList(string $fieldName): BuilderInterface;
     public function withCursor(int $count = 100): BuilderInterface;

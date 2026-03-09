@@ -36,6 +36,7 @@ just test-redis-client
 # All clients
 just test-all
 
+
 # Run phpunit directly (used by CI)
 vendor/bin/phpunit
 ```

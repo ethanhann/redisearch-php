@@ -130,7 +130,7 @@ class Builder implements BuilderInterface
         return $this;
     }
 
-    public function tagFilter(string $fieldName, array $values, array $charactersToEscape = null): BuilderInterface
+    public function tagFilter(string $fieldName, array $values, ?array $charactersToEscape = null): BuilderInterface
     {
         if ($charactersToEscape == null) {
             $charactersToEscape = [' ', '-'];
