@@ -14,6 +14,7 @@ interface IndexInterface extends BuilderInterface
     public function exists(): bool;
     public function drop(bool $deleteDocuments = false);
     public function info();
+    public function loadFields(): static;
     public function delete($id, $deleteDocument = false);
     public function getFields(): array;
     public function makeDocument($id = null): DocumentInterface;

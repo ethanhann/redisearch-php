@@ -270,6 +270,70 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * Loads field definitions from an existing RediSearch index by calling FT.INFO and
+     * parsing the schema. This allows working with a pre-existing index without having
+     * to manually re-define all fields on every instantiation.
+     *
+     * @return static
+     */
+    public function loadFields(): static
+    {
+        $info = $this->info();
+
+        // Find 'attributes' key in the flat alternating key-value response array
+        $attributesIndex = array_search('attributes', $info);
+        if ($attributesIndex === false) {
+            return $this;
+        }
+        $attributes = $info[$attributesIndex + 1];
+
+        foreach ($attributes as $attr) {
+            // Convert flat alternating key-value pairs to an associative array (lowercase keys)
+            $pairs = [];
+            for ($i = 0; $i + 1 < count($attr); $i += 2) {
+                $pairs[strtolower((string)$attr[$i])] = $attr[$i + 1];
+            }
+
+            $name = (string)($pairs['attribute'] ?? '');
+            if ($name === '' || str_starts_with($name, '__')) {
+                continue; // skip internal fields like __score, __language
+            }
+
+            $type = strtoupper((string)($pairs['type'] ?? ''));
+            $rawFlags = $pairs['flags'] ?? [];
+            $flags = is_array($rawFlags) ? array_map('strtoupper', $rawFlags) : [];
+            $sortable = in_array('SORTABLE', $flags, true);
+            $noindex = in_array('NOINDEX', $flags, true);
+
+            switch ($type) {
+                case 'TEXT':
+                    $weight = (float)($pairs['weight'] ?? 1.0);
+                    $this->addTextField($name, $weight, $sortable, $noindex);
+                    break;
+                case 'NUMERIC':
+                    $this->addNumericField($name, $sortable, $noindex);
+                    break;
+                case 'TAG':
+                    $separator = (string)($pairs['separator'] ?? ',');
+                    $this->addTagField($name, $sortable, $noindex, $separator);
+                    break;
+                case 'GEO':
+                    $this->addGeoField($name, $noindex);
+                    break;
+                case 'VECTOR':
+                    $algorithm = strtoupper((string)($pairs['algorithm'] ?? VectorField::ALGORITHM_FLAT));
+                    $vectorType = strtoupper((string)($pairs['data_type'] ?? VectorField::TYPE_FLOAT32));
+                    $dim = (int)($pairs['dim'] ?? 128);
+                    $distanceMetric = strtoupper((string)($pairs['distance_metric'] ?? VectorField::DISTANCE_COSINE));
+                    $this->addVectorField($name, $algorithm, $vectorType, $dim, $distanceMetric);
+                    break;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Deletes a document by its ID. In RediSearch v2.x documents are stored as Redis hashes,
      * so this deletes the underlying hash key, removing the document from the index.
      *

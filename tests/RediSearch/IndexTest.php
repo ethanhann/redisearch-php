@@ -14,6 +14,7 @@ use Ehann\RediSearch\Index;
 use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
 use Ehann\RediSearch\Exceptions\UnsupportedRediSearchLanguageException;
 use Ehann\RediSearch\Fields\FieldFactory;
+use Ehann\RediSearch\Fields\GeoField;
 use Ehann\RediSearch\Fields\GeoLocation;
 use Ehann\RediSearch\Fields\NumericField;
 use Ehann\RediSearch\Fields\TextField;
@@ -117,6 +118,45 @@ class IndexTest extends RediSearchTestCase
         // Assert
         $this->assertTrue(is_array($result));
         $this->assertTrue(count($result) > 0);
+    }
+
+    public function testShouldLoadFieldsFromExistingIndex(): void
+    {
+        // Arrange — create the full index (title, author, price, stock, place, color)
+        $this->subject->create();
+
+        // Act — create a fresh Index with no fields defined and load from Redis
+        $freshIndex = (new TestIndex($this->redisClient, $this->indexName))->loadFields();
+
+        // Assert — all six fields are loaded with correct types
+        $fields = $freshIndex->getFields();
+        $this->assertArrayHasKey('title', $fields);
+        $this->assertInstanceOf(TextField::class, $fields['title']);
+        $this->assertArrayHasKey('author', $fields);
+        $this->assertInstanceOf(TextField::class, $fields['author']);
+        $this->assertArrayHasKey('price', $fields);
+        $this->assertInstanceOf(NumericField::class, $fields['price']);
+        $this->assertArrayHasKey('stock', $fields);
+        $this->assertInstanceOf(NumericField::class, $fields['stock']);
+        $this->assertArrayHasKey('place', $fields);
+        $this->assertInstanceOf(GeoField::class, $fields['place']);
+        $this->assertArrayHasKey('color', $fields);
+        $this->assertInstanceOf(TagField::class, $fields['color']);
+    }
+
+    public function testLoadedFieldsCanBeUsedToMakeDocuments(): void
+    {
+        // Arrange
+        $this->subject->create();
+        $freshIndex = (new TestIndex($this->redisClient, $this->indexName))->loadFields();
+
+        // Act — makeDocument() requires fields to be defined
+        $document = $freshIndex->makeDocument('doc1');
+        $document->title->setValue('Test Book');
+        $result = $freshIndex->add($document);
+
+        // Assert
+        $this->assertTrue($result);
     }
 
     public function testShouldDeleteDocumentById(): void
