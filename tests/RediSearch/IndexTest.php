@@ -123,25 +123,38 @@ class IndexTest extends RediSearchTestCase
 
     public function testFtInfoAttributesKeyIsPresent(): void
     {
-        // Diagnostic test: verify that 'attributes' key exists in the flat FT.INFO response.
-        // This will fail with a useful message if the Redis Stack version uses a different key name
-        // or if Predis returns the response in an unexpected format.
+        // Diagnostic test: verify that 'attributes' key exists in the FT.INFO response.
+        // Handles both RESP2 (flat list) and RESP3 (associative map) formats.
         $this->subject->create();
         $info = $this->subject->info();
 
-        $foundAt = null;
+        $found = false;
         $topLevelKeys = [];
-        for ($i = 0; $i < count($info) - 1; $i += 2) {
-            $key = (string)$info[$i];
-            $topLevelKeys[] = sprintf('[%d]%s(%s)', $i, $key, gettype($info[$i]));
-            if ($key === 'attributes') {
-                $foundAt = $i;
+
+        if (!array_is_list($info)) {
+            // RESP3: associative map
+            foreach ($info as $k => $v) {
+                $topLevelKeys[] = sprintf('%s(%s)', $k, gettype($v));
+                if (strtolower((string)$k) === 'attributes') {
+                    $found = true;
+                    break;
+                }
+            }
+        } else {
+            // RESP2: flat [key, value, …] list
+            for ($i = 0; $i < count($info) - 1; $i += 2) {
+                $key = (string)$info[$i];
+                $topLevelKeys[] = sprintf('[%d]%s(%s)', $i, $key, gettype($info[$i]));
+                if ($key === 'attributes') {
+                    $found = true;
+                    break;
+                }
             }
         }
 
-        $this->assertNotNull(
-            $foundAt,
-            "Expected 'attributes' key in FT.INFO flat response. Top-level keys found: " . implode(', ', $topLevelKeys)
+        $this->assertTrue(
+            $found,
+            "Expected 'attributes' key in FT.INFO response. Top-level keys found: " . implode(', ', $topLevelKeys)
         );
     }
 

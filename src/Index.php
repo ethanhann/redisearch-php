@@ -280,13 +280,26 @@ class Index extends AbstractIndex implements IndexInterface
     {
         $info = $this->info();
 
-        // Iterate in pairs to find 'attributes' key, casting to string so that
-        // Predis Status objects (used for simple-string RESP2 responses) compare correctly.
+        // FT.INFO returns either:
+        //   RESP2 – a flat [key, value, key, value, …] list (array_is_list === true)
+        //   RESP3 – an associative map keyed by string (array_is_list === false)
+        // Handle both so the same code works regardless of the Redis client / protocol version.
         $attributes = null;
-        for ($i = 0; $i < count($info) - 1; $i += 2) {
-            if ((string)$info[$i] === 'attributes') {
-                $attributes = $info[$i + 1];
-                break;
+        if (!array_is_list($info)) {
+            // RESP3: direct associative lookup (keys may be mixed-case).
+            foreach ($info as $k => $v) {
+                if (strtolower((string)$k) === 'attributes') {
+                    $attributes = $v;
+                    break;
+                }
+            }
+        } else {
+            // RESP2: iterate in pairs, casting to string to handle Predis Status objects.
+            for ($i = 0; $i < count($info) - 1; $i += 2) {
+                if ((string)$info[$i] === 'attributes') {
+                    $attributes = $info[$i + 1];
+                    break;
+                }
             }
         }
 
@@ -346,11 +359,23 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
-     * Converts a flat alternating [key, value, key, value, ...] attribute descriptor
-     * from FT.INFO into an associative array with lowercased keys.
+     * Converts an attribute descriptor from FT.INFO into an associative array with
+     * lowercased keys.  Handles two wire formats:
+     *   RESP2 – flat alternating [key, value, key, value, …] list
+     *   RESP3 – already an associative map (array_is_list === false)
      */
     private function parseAttributeDescriptor(array $attr): array
     {
+        if (!array_is_list($attr)) {
+            // RESP3: already a map — just lowercase the keys.
+            $map = [];
+            foreach ($attr as $k => $v) {
+                $map[strtolower((string)$k)] = $v;
+            }
+            return $map;
+        }
+
+        // RESP2: flat alternating [key, value, …] list.
         $map = [];
         $i = 0;
         $count = count($attr);
