@@ -22,17 +22,17 @@ class Application extends BaseApplication
     {
         parent::__construct('redisearch', '1.0.0');
 
-        $this->add(new IndexCreateCommand());
-        $this->add(new IndexDropCommand());
-        $this->add(new IndexListCommand());
-        $this->add(new IndexInfoCommand());
-        $this->add(new DocumentAddCommand());
-        $this->add(new DocumentGetCommand());
-        $this->add(new DocumentDeleteCommand());
-        $this->add(new SearchCommand());
-        $this->add(new AggregateCommand());
-        $this->add(new ExplainCommand());
-        $this->add(new ProfileCommand());
-        $this->add(new ShellCommand());
+        $this->addCommand(new IndexCreateCommand());
+        $this->addCommand(new IndexDropCommand());
+        $this->addCommand(new IndexListCommand());
+        $this->addCommand(new IndexInfoCommand());
+        $this->addCommand(new DocumentAddCommand());
+        $this->addCommand(new DocumentGetCommand());
+        $this->addCommand(new DocumentDeleteCommand());
+        $this->addCommand(new SearchCommand());
+        $this->addCommand(new AggregateCommand());
+        $this->addCommand(new ExplainCommand());
+        $this->addCommand(new ProfileCommand());
+        $this->addCommand(new ShellCommand());
     }
 }

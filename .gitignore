@@ -6,3 +6,4 @@ composer.phar
 tests.log
 /.phpunit.result.cache
 /docs/
+/.dev/
