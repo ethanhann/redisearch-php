@@ -39,4 +39,4 @@ lint:
     find src tests -name "*.php" -print0 | xargs -0 php -l
 
 # Full build: fmt then test
-build: fmt test
+build: fmt test-all
