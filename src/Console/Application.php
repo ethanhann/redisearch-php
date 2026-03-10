@@ -15,6 +15,7 @@ use Ehann\RediSearch\Console\Command\ProfileCommand;
 use Ehann\RediSearch\Console\Command\SearchCommand;
 use Ehann\RediSearch\Console\Command\ShellCommand;
 use Symfony\Component\Console\Application as BaseApplication;
+use Symfony\Component\Console\Command\Command;
 
 class Application extends BaseApplication
 {
@@ -22,17 +23,30 @@ class Application extends BaseApplication
     {
         parent::__construct('redisearch', '1.0.0');
 
-        $this->addCommand(new IndexCreateCommand());
-        $this->addCommand(new IndexDropCommand());
-        $this->addCommand(new IndexListCommand());
-        $this->addCommand(new IndexInfoCommand());
-        $this->addCommand(new DocumentAddCommand());
-        $this->addCommand(new DocumentGetCommand());
-        $this->addCommand(new DocumentDeleteCommand());
-        $this->addCommand(new SearchCommand());
-        $this->addCommand(new AggregateCommand());
-        $this->addCommand(new ExplainCommand());
-        $this->addCommand(new ProfileCommand());
-        $this->addCommand(new ShellCommand());
+        $this->registerCommands(
+            new IndexCreateCommand(),
+            new IndexDropCommand(),
+            new IndexListCommand(),
+            new IndexInfoCommand(),
+            new DocumentAddCommand(),
+            new DocumentGetCommand(),
+            new DocumentDeleteCommand(),
+            new SearchCommand(),
+            new AggregateCommand(),
+            new ExplainCommand(),
+            new ProfileCommand(),
+            new ShellCommand(),
+        );
+    }
+
+    private function registerCommands(Command ...$commands): void
+    {
+        foreach ($commands as $command) {
+            if (method_exists($this, 'addCommand')) {
+                $this->addCommand($command); // Symfony 8+
+            } else {
+                $this->add($command); // Symfony <=7
+            }
+        }
     }
 }
