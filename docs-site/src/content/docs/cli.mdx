@@ -1,0 +1,252 @@
+---
+title: CLI
+draft: false
+description: A command-line interface for interacting with RediSearch directly from the terminal.
+---
+
+RediSearch-PHP includes a CLI tool powered by Symfony Console. It lets you manage indexes, documents, and queries directly from the terminal — useful for debugging, exploration, and rapid prototyping.
+
+## Installation
+
+The CLI is included with the library. After installing via Composer, the binary is available at:
+
+```bash
+vendor/bin/redisearch
+```
+
+Run it without arguments to see all available commands:
+
+```bash
+vendor/bin/redisearch list
+```
+
+## Global Options
+
+All commands accept these connection options:
+
+```bash
+vendor/bin/redisearch <command> --host 127.0.0.1 --port 6379 --password secret --adapter predis
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--host` | `127.0.0.1` | Redis host |
+| `--port` / `-p` | `6379` | Redis port |
+| `--password` / `-a` | — | Redis password |
+| `--adapter` | `predis` | Adapter: `predis`, `phpredis`, or `redisclient` |
+
+## Index Management
+
+### Creating an Index
+
+Create an index from a JSON schema file:
+
+```bash
+vendor/bin/redisearch index:create products schema.json
+```
+
+The schema file defines the fields for the index:
+
+```json
+{
+  "fields": [
+    { "name": "title", "type": "TEXT", "weight": 2.0, "sortable": true },
+    { "name": "price", "type": "NUMERIC", "sortable": true },
+    { "name": "tags", "type": "TAG", "separator": "," },
+    { "name": "location", "type": "GEO" }
+  ]
+}
+```
+
+Supported field types: `TEXT`, `NUMERIC`, `TAG`, `GEO`, `VECTOR`.
+
+Additional options:
+
+```bash
+vendor/bin/redisearch index:create products schema.json \
+  --on HASH \
+  --prefix "product:" \
+  --filter "@price > 0" \
+  --stopwords the a an
+```
+
+### Listing Indexes
+
+```bash
+vendor/bin/redisearch index:list
+vendor/bin/redisearch index:list --json
+```
+
+### Viewing Index Info
+
+```bash
+vendor/bin/redisearch index:info products
+vendor/bin/redisearch index:info products --json
+```
+
+### Dropping an Index
+
+```bash
+vendor/bin/redisearch index:drop products
+vendor/bin/redisearch index:drop products --delete-docs
+```
+
+## Document Management
+
+### Adding a Document
+
+```bash
+vendor/bin/redisearch document:add products doc1 title="Laptop" price=999 tags="electronics,computer"
+```
+
+Use `--replace` to upsert, and optionally set language or score:
+
+```bash
+vendor/bin/redisearch document:add products doc1 title="Laptop Pro" price=1299 --replace --score 0.9
+```
+
+### Getting a Document
+
+Retrieve a document by its full Redis key:
+
+```bash
+vendor/bin/redisearch document:get products doc1
+vendor/bin/redisearch document:get products doc1 --json
+```
+
+### Deleting a Document
+
+```bash
+vendor/bin/redisearch document:delete products doc1
+```
+
+## Searching
+
+Run a full-text search query against an index:
+
+```bash
+vendor/bin/redisearch search products "laptop"
+```
+
+### Search Options
+
+```bash
+vendor/bin/redisearch search products "laptop" \
+  --limit 0,20 \
+  --sort price:ASC \
+  --fields title,price \
+  --highlight title \
+  --scores \
+  --json
+```
+
+| Option | Format | Description |
+|--------|--------|-------------|
+| `--limit` | `offset,count` | Paginate results (default `0,10`) |
+| `--sort` | `field:ASC\|DESC` | Sort by a sortable field |
+| `--fields` | `field1,field2` | Return only specific fields |
+| `--highlight` | `field1,field2` | Highlight matching terms |
+| `--scores` | flag | Include relevance scores |
+| `--verbatim` | flag | Disable stemming |
+| `--language` | `name` | Set stemming language |
+| `--dialect` | `1\|2\|3` | Query dialect version |
+| `--json` | flag | Output as JSON |
+
+### Filters
+
+Apply numeric, tag, or geo filters:
+
+```bash
+# Numeric filter
+vendor/bin/redisearch search products "laptop" --numeric-filter price:500:2000
+
+# Tag filter
+vendor/bin/redisearch search products "*" --tag-filter tags:electronics,computer
+
+# Geo filter (field:lon:lat:radius:unit)
+vendor/bin/redisearch search products "*" --geo-filter location:-73.9:40.7:10:km
+```
+
+Filters can be combined and repeated.
+
+## Aggregation
+
+Run aggregation queries with grouping and reducers:
+
+```bash
+vendor/bin/redisearch aggregate products "*" \
+  --group-by tags \
+  --reduce avg:price \
+  --reduce count \
+  --sort-by price:DESC \
+  --limit 0,10
+```
+
+| Option | Format | Description |
+|--------|--------|-------------|
+| `--group-by` | `field` | Group results by field |
+| `--reduce` | `func:field` | Apply reducer (repeatable) |
+| `--sort-by` | `field:ASC\|DESC` | Sort aggregated results |
+| `--apply` | `expr:alias` | Apply expression |
+| `--filter` | `expression` | Filter aggregated results |
+| `--limit` | `offset,count` | Limit results |
+| `--load` | `field1,field2` | Load additional fields |
+| `--json` | flag | Output as JSON |
+
+Available reducers: `avg`, `sum`, `min`, `max`, `count`, `count_distinct`, `count_distinctish`, `stddev`, `tolist`, `first_value`.
+
+## Developer Tools
+
+### Query Explain
+
+View the execution plan for a query using `FT.EXPLAIN`:
+
+```bash
+vendor/bin/redisearch explain products "laptop"
+```
+
+This helps understand how RediSearch parses and executes a query.
+
+### Query Profile
+
+Profile a query to see timing and execution details using `FT.PROFILE`:
+
+```bash
+vendor/bin/redisearch profile products "laptop"
+vendor/bin/redisearch profile products "laptop" --json
+```
+
+## Interactive Shell
+
+Start a REPL session for rapid experimentation:
+
+```bash
+vendor/bin/redisearch shell --host 127.0.0.1 --port 6379
+```
+
+Example session:
+
+```
+redisearch> index:list
+redisearch> use products
+redisearch (products)> search "laptop"
+redisearch (products)> explain "laptop"
+redisearch (products)> aggregate "*" --group-by tags --reduce count
+redisearch (products)> exit
+```
+
+The shell supports:
+
+- `use <index>` — set a default index so you don't have to repeat it
+- `help` — list available commands
+- `exit` / `quit` — leave the shell
+- Command history via readline
+- Quoted strings for queries with spaces
+
+## JSON Output
+
+Most commands support `--json` for machine-readable output, making the CLI useful in scripts:
+
+```bash
+vendor/bin/redisearch search products "laptop" --json | jq '.documents[].title'
+```

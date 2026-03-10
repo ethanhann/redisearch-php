@@ -1,0 +1,20 @@
+#!/usr/bin/env php
+<?php
+
+// Installed as a dependency (vendor/ethanhann/redisearch-php/bin/redisearch)
+$autoloadPaths = [
+    __DIR__ . '/../../../autoload.php',
+    __DIR__ . '/../vendor/autoload.php',
+];
+
+foreach ($autoloadPaths as $autoloadPath) {
+    if (file_exists($autoloadPath)) {
+        require $autoloadPath;
+        break;
+    }
+}
+
+use Ehann\RediSearch\Console\Application;
+
+$app = new Application();
+$app->run();

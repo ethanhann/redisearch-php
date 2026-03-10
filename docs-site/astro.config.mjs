@@ -27,6 +27,7 @@ export default defineConfig({
             { label: 'Searching', link: '/searching/' },
             { label: 'Aggregating', link: '/aggregating/' },
             { label: 'Suggesting', link: '/suggesting/' },
+            { label: 'CLI', link: '/cli/' },
           ],
         },
         { label: 'Laravel Support', link: '/laravel-support/' },
