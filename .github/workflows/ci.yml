@@ -67,6 +67,7 @@ jobs:
         uses: ethanhann/spidermedic@main
         with:
           url: '${{ env.DOCS_URL }}'
+          path: '/redisearch-php/'
 
   test:
     name: Test (PHP ${{ matrix.php-version }})
