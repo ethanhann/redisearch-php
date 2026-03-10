@@ -36,6 +36,9 @@ jobs:
   docs-link-check:
     name: Docs Link Check
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs-site
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -51,7 +54,7 @@ jobs:
 
       - name: Serve docs locally
         run: |
-          bun x astro preview --port 4330 &
+          bun astro preview --port 4330 &
           HOST_IP=$(ip addr show docker0 | awk '/inet / {print $2}' | cut -d/ -f1)
           echo "DOCS_URL=http://${HOST_IP}:4330/redisearch-php/" >> $GITHUB_ENV
 
