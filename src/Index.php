@@ -270,6 +270,141 @@ class Index extends AbstractIndex implements IndexInterface
     }
 
     /**
+     * Loads field definitions from an existing RediSearch index by calling FT.INFO and
+     * parsing the schema. This allows working with a pre-existing index without having
+     * to manually re-define all fields on every instantiation.
+     *
+     * @return static
+     */
+    public function loadFields(): static
+    {
+        $info = $this->info();
+
+        // FT.INFO returns either:
+        //   RESP2 – a flat [key, value, key, value, …] list (array_is_list === true)
+        //   RESP3 – an associative map keyed by string (array_is_list === false)
+        // Handle both so the same code works regardless of the Redis client / protocol version.
+        $attributes = null;
+        if (!array_is_list($info)) {
+            // RESP3: direct associative lookup (keys may be mixed-case).
+            foreach ($info as $k => $v) {
+                if (strtolower((string)$k) === 'attributes') {
+                    $attributes = $v;
+                    break;
+                }
+            }
+        } else {
+            // RESP2: iterate in pairs, casting to string to handle Predis Status objects.
+            for ($i = 0; $i < count($info) - 1; $i += 2) {
+                if ((string)$info[$i] === 'attributes') {
+                    $attributes = $info[$i + 1];
+                    break;
+                }
+            }
+        }
+
+        if (!is_array($attributes)) {
+            return $this;
+        }
+
+        foreach ($attributes as $attr) {
+            $map = $this->parseAttributeDescriptor($attr);
+
+            $name = (string)($map['attribute'] ?? $map['identifier'] ?? '');
+            if ($name === '' || str_starts_with($name, '__')) {
+                continue; // skip internal fields like __score, __language
+            }
+
+            // Cast each flag to string to handle Predis Status objects.
+            // Older Redis Stack puts SORTABLE/NOINDEX/NOSTEM inside a 'flags' sub-array;
+            // newer versions represent them as standalone key-value pairs in the descriptor.
+            // Check both forms for compatibility.
+            $rawFlags = $map['flags'] ?? [];
+            $flags = is_array($rawFlags) ? array_map(fn ($f) => strtoupper((string)$f), $rawFlags) : [];
+            $sortable = in_array('SORTABLE', $flags, true) || array_key_exists('sortable', $map);
+            $noindex = in_array('NOINDEX', $flags, true) || array_key_exists('noindex', $map);
+            $type = strtoupper((string)($map['type'] ?? ''));
+
+            $field = match ($type) {
+                'TEXT' => (new TextField($name))
+                    ->setWeight((float)($map['weight'] ?? 1.0))
+                    ->setSortable($sortable)
+                    ->setNoindex($noindex)
+                    ->setNoStem(in_array('NOSTEM', $flags, true) || array_key_exists('nostem', $map)),
+                'NUMERIC' => (new NumericField($name))
+                    ->setSortable($sortable)
+                    ->setNoindex($noindex),
+                'TAG' => (new TagField($name))
+                    ->setSeparator((string)($map['separator'] ?? ','))
+                    ->setSortable($sortable)
+                    ->setNoindex($noindex),
+                'GEO' => (new GeoField($name))
+                    ->setNoindex($noindex),
+                'VECTOR' => new VectorField(
+                    $name,
+                    strtoupper((string)($map['algorithm'] ?? VectorField::ALGORITHM_FLAT)),
+                    strtoupper((string)($map['data_type'] ?? VectorField::TYPE_FLOAT32)),
+                    (int)($map['dim'] ?? 128),
+                    strtoupper((string)($map['distance_metric'] ?? VectorField::DISTANCE_COSINE)),
+                ),
+                default => null,
+            };
+
+            if ($field !== null) {
+                $this->fields[$name] = $field;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Converts an attribute descriptor from FT.INFO into an associative array with
+     * lowercased keys.  Handles two wire formats:
+     *   RESP2 – flat alternating [key, value, key, value, …] list
+     *   RESP3 – already an associative map (array_is_list === false)
+     */
+    private function parseAttributeDescriptor(array $attr): array
+    {
+        if (!array_is_list($attr)) {
+            // RESP3: already a map — just lowercase the keys.
+            $map = [];
+            foreach ($attr as $k => $v) {
+                $map[strtolower((string)$k)] = $v;
+            }
+            return $map;
+        }
+
+        // RESP2: flat alternating [key, value, …] list.
+        // Boolean flags (SORTABLE, NOSTEM, NOINDEX, UNF) are appended as standalone
+        // elements after the key-value pairs with no paired value.  This makes the
+        // array odd-length for one flag, or even-length for two (where they would
+        // mis-parse as a key-value pair).  Handle both:
+        //   1. Process the normal pairs.
+        //   2. If count is odd, the last element is a standalone flag.
+        //   3. Re-scan every element for known flag names and mark them explicitly
+        //      (catches the even-length multi-flag mis-pairing case).
+        $map = [];
+        $i = 0;
+        $count = count($attr);
+        while ($i < $count - 1) {
+            $map[strtolower((string)$attr[$i])] = $attr[$i + 1];
+            $i += 2;
+        }
+        if ($count % 2 === 1) {
+            $map[strtolower((string)$attr[$count - 1])] = true;
+        }
+        static $booleanFlags = ['sortable', 'unf', 'nostem', 'noindex'];
+        foreach ($attr as $element) {
+            $lower = strtolower((string)$element);
+            if (in_array($lower, $booleanFlags, true)) {
+                $map[$lower] = true;
+            }
+        }
+        return $map;
+    }
+
+    /**
      * Deletes a document by its ID. In RediSearch v2.x documents are stored as Redis hashes,
      * so this deletes the underlying hash key, removing the document from the index.
      *
