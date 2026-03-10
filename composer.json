@@ -24,7 +24,7 @@
     "require": {
         "php": ">=8.2",
         "psr/log": "^3.0.0",
-        "ethanhann/redis-raw": "^3.0.0",
+        "ethanhann/redis-raw": "^3.0.2",
         "symfony/console": "^8.0"
     },
     "suggest": {
