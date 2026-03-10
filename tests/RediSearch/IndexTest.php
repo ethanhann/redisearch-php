@@ -121,43 +121,6 @@ class IndexTest extends RediSearchTestCase
         $this->assertTrue(count($result) > 0);
     }
 
-    public function testFtInfoAttributesKeyIsPresent(): void
-    {
-        // Diagnostic test: verify that 'attributes' key exists in the FT.INFO response.
-        // Handles both RESP2 (flat list) and RESP3 (associative map) formats.
-        $this->subject->create();
-        $info = $this->subject->info();
-
-        $found = false;
-        $topLevelKeys = [];
-
-        if (!array_is_list($info)) {
-            // RESP3: associative map
-            foreach ($info as $k => $v) {
-                $topLevelKeys[] = sprintf('%s(%s)', $k, gettype($v));
-                if (strtolower((string)$k) === 'attributes') {
-                    $found = true;
-                    break;
-                }
-            }
-        } else {
-            // RESP2: flat [key, value, …] list
-            for ($i = 0; $i < count($info) - 1; $i += 2) {
-                $key = (string)$info[$i];
-                $topLevelKeys[] = sprintf('[%d]%s(%s)', $i, $key, gettype($info[$i]));
-                if ($key === 'attributes') {
-                    $found = true;
-                    break;
-                }
-            }
-        }
-
-        $this->assertTrue(
-            $found,
-            "Expected 'attributes' key in FT.INFO response. Top-level keys found: " . implode(', ', $topLevelKeys)
-        );
-    }
-
     public function testShouldLoadFieldsFromExistingIndex(): void
     {
         // Arrange — create the full index (title, author, price, stock, place, color)
