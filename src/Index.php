@@ -376,12 +376,30 @@ class Index extends AbstractIndex implements IndexInterface
         }
 
         // RESP2: flat alternating [key, value, …] list.
+        // Boolean flags (SORTABLE, NOSTEM, NOINDEX, UNF) are appended as standalone
+        // elements after the key-value pairs with no paired value.  This makes the
+        // array odd-length for one flag, or even-length for two (where they would
+        // mis-parse as a key-value pair).  Handle both:
+        //   1. Process the normal pairs.
+        //   2. If count is odd, the last element is a standalone flag.
+        //   3. Re-scan every element for known flag names and mark them explicitly
+        //      (catches the even-length multi-flag mis-pairing case).
         $map = [];
         $i = 0;
         $count = count($attr);
         while ($i < $count - 1) {
             $map[strtolower((string)$attr[$i])] = $attr[$i + 1];
             $i += 2;
+        }
+        if ($count % 2 === 1) {
+            $map[strtolower((string)$attr[$count - 1])] = true;
+        }
+        static $booleanFlags = ['sortable', 'unf', 'nostem', 'noindex'];
+        foreach ($attr as $element) {
+            $lower = strtolower((string)$element);
+            if (in_array($lower, $booleanFlags, true)) {
+                $map[$lower] = true;
+            }
         }
         return $map;
     }
