@@ -12,10 +12,14 @@ description: Version history and release notes.
 
 * **PHP 8.5** — Added PHP 8.5 to the CI build matrix.
 
-### Developer Experience
+### New Features
 
-* Added `bin/redisearch` CLI tool for managing indexes.
 * Added `loadFields` method to `Index` to load fields from Redis.
+* Added `bin/redisearch` CLI tool for managing indexes.
+
+### Bug Fixes
+
+* Upgraded redis-raw to 3.0.2 to fix a bug where FT.INFO would respond with garbage.
 
 ## 3.0.0
 
