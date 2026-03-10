@@ -253,6 +253,60 @@ use Ehann\RediSearch\Fields\NumericField;
 $bookIndex->alter(new NumericField('year'));
 ```
 
+## Loading Fields from an Existing Index
+
+`loadFields()` introspects a pre-existing RediSearch index and reconstructs all of
+its field definitions on the `Index` object — without you having to re-declare every
+field manually. This is especially useful when multiple services share the same index,
+or when you want to instantiate an `Index` that reflects the live schema in Redis.
+
+Internally the method calls `FT.INFO` and parses the returned attribute descriptors to
+create the appropriate `TextField`, `NumericField`, `TagField`, `GeoField`, or
+`VectorField` objects, preserving weights, sortable flags, separators, and vector
+parameters. Internal fields (`__score`, `__language`, etc.) are silently ignored.
+
+```php
+// The index already exists in Redis — no need to call create() or add any fields.
+$bookIndex = (new Index($redisClient, 'bookIndex'))->loadFields();
+
+// All fields are now available for search, document creation, etc.
+$results = $bookIndex->search('Dickens');
+$document = $bookIndex->makeDocument();
+```
+
+`loadFields()` returns `static`, so it chains with other methods:
+
+```php
+$results = (new Index($redisClient, 'bookIndex'))
+    ->loadFields()
+    ->search('Dickens');
+```
+
+Field metadata is fully restored:
+
+```php
+// TEXT field with a custom weight and the SORTABLE flag
+$bookIndex->addTextField('title', weight: 2.0, sortable: true)->create();
+
+// Later, in a different request / process:
+$bookIndex2 = (new Index($redisClient, 'bookIndex'))->loadFields();
+// $bookIndex2->title is a TextField with weight=2.0 and sortable=true
+```
+
+Works with all five field types:
+
+```php
+$index->addTextField('title', weight: 2.0, sortable: true)
+      ->addNumericField('price', sortable: true)
+      ->addTagField('categories', separator: '|')
+      ->addGeoField('location')
+      ->addVectorField('embedding', VectorField::ALGORITHM_HNSW, VectorField::TYPE_FLOAT32, 128, VectorField::DISTANCE_COSINE)
+      ->create();
+
+// Reconstitute the same schema elsewhere:
+$index2 = (new Index($redisClient, 'myIndex'))->loadFields();
+```
+
 ## Listing Indexes
 
 All index names in the current Redis instance can be retrieved:
