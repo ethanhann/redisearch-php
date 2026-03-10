@@ -121,6 +121,73 @@ class IndexTest extends RediSearchTestCase
         $this->assertTrue(count($result) > 0);
     }
 
+    /**
+     * TEMPORARY DIAGNOSTIC — always fails and dumps the raw FT.INFO structure
+     * for a SORTABLE TEXT field so we can see exactly what Redis/Predis returns.
+     * Remove once the wire format is understood.
+     */
+    public function testDiagnosticDumpRawFtInfoForSortableTextField(): void
+    {
+        $indexName = 'DiagSortableRaw';
+        (new TestIndex($this->redisClient, $indexName))
+            ->addTextField('title', 1.0, true)
+            ->create();
+
+        $info = (new TestIndex($this->redisClient, $indexName))->info();
+
+        // --- top-level structure ---
+        $infoIsList = array_is_list($info);
+        $topKeys = [];
+        if ($infoIsList) {
+            for ($i = 0; $i < min(count($info), 30); $i++) {
+                $topKeys[] = is_scalar($info[$i])
+                    ? sprintf('[%d]=%s(%s)', $i, (string)$info[$i], gettype($info[$i]))
+                    : sprintf('[%d](%s)', $i, gettype($info[$i]));
+            }
+        } else {
+            foreach ($info as $k => $v) {
+                $topKeys[] = sprintf('%s(%s)', $k, gettype($v));
+            }
+        }
+
+        // --- find attributes ---
+        $attributes = null;
+        if (!$infoIsList) {
+            foreach ($info as $k => $v) {
+                if (strtolower((string)$k) === 'attributes') {
+                    $attributes = $v;
+                    break;
+                }
+            }
+        } else {
+            for ($i = 0; $i < count($info) - 1; $i += 2) {
+                if (strtolower((string)$info[$i]) === 'attributes') {
+                    $attributes = $info[$i + 1];
+                    break;
+                }
+            }
+        }
+
+        // --- first attribute descriptor ---
+        $firstAttr = null;
+        $attrIsList = null;
+        if (is_array($attributes) && count($attributes) > 0) {
+            $firstAttr = reset($attributes);
+            $attrIsList = is_array($firstAttr) ? array_is_list($firstAttr) : null;
+        }
+
+        $dump = [
+            'info_is_list'         => $infoIsList,
+            'info_top_elements'    => $topKeys,
+            'attributes_found'     => $attributes !== null,
+            'attributes_count'     => is_array($attributes) ? count($attributes) : null,
+            'first_attr_is_list'   => $attrIsList,
+            'first_attr_raw'       => $firstAttr,
+        ];
+
+        $this->fail('DIAGNOSTIC DUMP: ' . json_encode($dump, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    }
+
     public function testFtInfoAttributesKeyIsPresent(): void
     {
         // Diagnostic test: verify that 'attributes' key exists in the FT.INFO response.
