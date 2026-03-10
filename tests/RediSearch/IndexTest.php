@@ -14,7 +14,9 @@ use Ehann\RediSearch\Index;
 use Ehann\RediSearch\Exceptions\UnknownIndexNameException;
 use Ehann\RediSearch\Exceptions\UnsupportedRediSearchLanguageException;
 use Ehann\RediSearch\Fields\FieldFactory;
+use Ehann\RediSearch\Fields\GeoField;
 use Ehann\RediSearch\Fields\GeoLocation;
+use Ehann\RediSearch\Fields\VectorField;
 use Ehann\RediSearch\Fields\NumericField;
 use Ehann\RediSearch\Fields\TextField;
 use Ehann\RediSearch\IndexInterface;
@@ -117,6 +119,160 @@ class IndexTest extends RediSearchTestCase
         // Assert
         $this->assertTrue(is_array($result));
         $this->assertTrue(count($result) > 0);
+    }
+
+    public function testFtInfoAttributesKeyIsPresent(): void
+    {
+        // Diagnostic test: verify that 'attributes' key exists in the FT.INFO response.
+        // Handles both RESP2 (flat list) and RESP3 (associative map) formats.
+        $this->subject->create();
+        $info = $this->subject->info();
+
+        $found = false;
+        $topLevelKeys = [];
+
+        if (!array_is_list($info)) {
+            // RESP3: associative map
+            foreach ($info as $k => $v) {
+                $topLevelKeys[] = sprintf('%s(%s)', $k, gettype($v));
+                if (strtolower((string)$k) === 'attributes') {
+                    $found = true;
+                    break;
+                }
+            }
+        } else {
+            // RESP2: flat [key, value, …] list
+            for ($i = 0; $i < count($info) - 1; $i += 2) {
+                $key = (string)$info[$i];
+                $topLevelKeys[] = sprintf('[%d]%s(%s)', $i, $key, gettype($info[$i]));
+                if ($key === 'attributes') {
+                    $found = true;
+                    break;
+                }
+            }
+        }
+
+        $this->assertTrue(
+            $found,
+            "Expected 'attributes' key in FT.INFO response. Top-level keys found: " . implode(', ', $topLevelKeys)
+        );
+    }
+
+    public function testShouldLoadFieldsFromExistingIndex(): void
+    {
+        // Arrange — create the full index (title, author, price, stock, place, color)
+        $this->subject->create();
+
+        // Act — create a fresh Index with no fields defined and load from Redis
+        $freshIndex = (new TestIndex($this->redisClient, $this->indexName))->loadFields();
+
+        // Assert — all six fields are loaded with correct types
+        $fields = $freshIndex->getFields();
+        $this->assertArrayHasKey('title', $fields);
+        $this->assertInstanceOf(TextField::class, $fields['title']);
+        $this->assertArrayHasKey('author', $fields);
+        $this->assertInstanceOf(TextField::class, $fields['author']);
+        $this->assertArrayHasKey('price', $fields);
+        $this->assertInstanceOf(NumericField::class, $fields['price']);
+        $this->assertArrayHasKey('stock', $fields);
+        $this->assertInstanceOf(NumericField::class, $fields['stock']);
+        $this->assertArrayHasKey('place', $fields);
+        $this->assertInstanceOf(GeoField::class, $fields['place']);
+        $this->assertArrayHasKey('color', $fields);
+        $this->assertInstanceOf(TagField::class, $fields['color']);
+    }
+
+    public function testLoadedFieldsCanBeUsedToMakeDocuments(): void
+    {
+        // Arrange
+        $this->subject->create();
+        $freshIndex = (new TestIndex($this->redisClient, $this->indexName))->loadFields();
+
+        // Act — makeDocument() requires fields to be defined
+        $document = $freshIndex->makeDocument('doc1');
+        $document->title->setValue('Test Book');
+        $result = $freshIndex->add($document);
+
+        // Assert
+        $this->assertTrue($result);
+    }
+
+    public function testLoadFieldsShouldNotIncludeInternalFields(): void
+    {
+        // Arrange
+        $this->subject->create();
+        $freshIndex = new TestIndex($this->redisClient, $this->indexName);
+
+        // Act
+        $freshIndex->loadFields();
+
+        // Assert — only the 6 user-defined fields, no __score / __language
+        $this->assertCount(6, $freshIndex->getFields());
+        $this->assertArrayNotHasKey('__score', $freshIndex->getFields());
+        $this->assertArrayNotHasKey('__language', $freshIndex->getFields());
+    }
+
+    public function testLoadFieldsShouldRestoreTextFieldWeight(): void
+    {
+        // Arrange
+        $indexName = 'LoadFieldsWeightTest';
+        (new TestIndex($this->redisClient, $indexName))
+            ->addTextField('title', 2.5)
+            ->create();
+        $freshIndex = new TestIndex($this->redisClient, $indexName);
+
+        // Act
+        $freshIndex->loadFields();
+
+        // Assert
+        $this->assertInstanceOf(TextField::class, $freshIndex->getFields()['title']);
+        $this->assertEquals(2.5, $freshIndex->getFields()['title']->getWeight());
+    }
+
+    public function testLoadFieldsShouldRestoreSortableFlag(): void
+    {
+        // Arrange
+        $indexName = 'LoadFieldsSortableTest';
+        (new TestIndex($this->redisClient, $indexName))
+            ->addTextField('title', 1.0, true)
+            ->create();
+        $freshIndex = new TestIndex($this->redisClient, $indexName);
+
+        // Act
+        $freshIndex->loadFields();
+
+        // Assert
+        $this->assertTrue($freshIndex->getFields()['title']->isSortable());
+    }
+
+    public function testLoadFieldsShouldRestoreTagFieldSeparator(): void
+    {
+        // Arrange
+        $indexName = 'LoadFieldsSeparatorTest';
+        (new TestIndex($this->redisClient, $indexName))
+            ->addTagField('keywords', false, false, '|')
+            ->create();
+        $freshIndex = new TestIndex($this->redisClient, $indexName);
+
+        // Act
+        $freshIndex->loadFields();
+
+        // Assert
+        $this->assertInstanceOf(TagField::class, $freshIndex->getFields()['keywords']);
+        $this->assertSame('|', $freshIndex->getFields()['keywords']->getSeparator());
+    }
+
+    public function testLoadFieldsShouldReturnSelfForFluentChaining(): void
+    {
+        // Arrange
+        $this->subject->create();
+        $freshIndex = new TestIndex($this->redisClient, $this->indexName);
+
+        // Act
+        $result = $freshIndex->loadFields();
+
+        // Assert
+        $this->assertSame($freshIndex, $result);
     }
 
     public function testShouldDeleteDocumentById(): void
